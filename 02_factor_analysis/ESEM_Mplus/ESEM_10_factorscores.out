@@ -1,0 +1,2244 @@
+Mplus VERSION 8.7 (Mac)
+MUTHEN & MUTHEN
+03/23/2022   2:40 PM
+
+INPUT INSTRUCTIONS
+
+  TITLE:	EFA with continuous, censored, categorical, and count factor indicators
+
+  DATA:	FILE = "ELAdata_touse_forFA_noNAs_noOriginalVar.csv";
+  listwise is on;
+
+  VARIABLE:
+
+  NAMES =
+  altID
+  famhx_ss_fath_prob_alc_p
+  famhx_ss_fath_prob_dg_p
+  asr_scr_anxdisord_r
+  asr_scr_somaticpr_r
+  asr_scr_depress_r
+  asr_scr_avoidant_r
+  asr_scr_adhd_r
+  asr_scr_antisocial_r
+  demo_prnt_ed_v2
+  demo_comb_income_v2
+  crpbi_parent1_y
+  crpbi_caregiver12_y
+  crpbi_parent2_y
+  crpbi_caregiver13_y
+  crpbi_parent3_y
+  crpbi_caregiver14_y
+  crpbi_parent4_y
+  crpbi_caregiver15_y
+  crpbi_parent5_y
+  crpbi_caregiver16_y
+  fes_youth_q1
+  fes_youth_q2
+  fes_youth_q3
+  fes_youth_q4
+  fes_youth_q5
+  fes_youth_q6
+  fes_youth_q7
+  fes_youth_q8
+  fes_youth_q9
+  fam_enviro1_p
+  fam_enviro2r_p
+  fam_enviro3_p
+  fam_enviro4r_p
+  fam_enviro5_p
+  fam_enviro6_p
+  fam_enviro7r_p
+  fam_enviro8_p
+  fam_enviro9r_p
+  ksads_ptsd_raw_754_p
+  ksads_ptsd_raw_755_p
+  ksads_ptsd_raw_756_p
+  ksads_ptsd_raw_757_p
+  ksads_ptsd_raw_766_p
+  ksads_ptsd_raw_770_p
+  parent_monitor_q1_y
+  parent_monitor_q2_y
+  parent_monitor_q3_y
+  parent_monitor_q4_y
+  parent_monitor_q5_y
+  nsc_p_ss_mean_3_items
+  neighborhood_crime_y
+  reshist_addr1_adi_wsum
+  demo_prim_biosep
+  demo_parent_sep
+  ksads_ptsd_raw_758_759_760
+  ksads_ptsd_raw_761_to_765
+  ksads_ptsd_raw_767_768_769
+  demo_fam_exp1_5_v2
+  demo_fam_exp6_7_v2
+  famhx_ss_moth_prob_alc_dg;
+
+  USEVARIABLES=
+  famhx_ss_fath_prob_alc_p
+  famhx_ss_fath_prob_dg_p
+  asr_scr_anxdisord_r
+  asr_scr_somaticpr_r
+  asr_scr_depress_r
+  asr_scr_avoidant_r
+  asr_scr_adhd_r
+  asr_scr_antisocial_r
+  demo_prnt_ed_v2
+  demo_comb_income_v2
+  crpbi_parent1_y
+  crpbi_caregiver12_y
+  crpbi_parent2_y
+  crpbi_caregiver13_y
+  crpbi_parent3_y
+  crpbi_caregiver14_y
+  crpbi_parent4_y
+  crpbi_caregiver15_y
+  crpbi_parent5_y
+  crpbi_caregiver16_y
+  fes_youth_q1
+  fes_youth_q2
+  fes_youth_q3
+  fes_youth_q4
+  fes_youth_q5
+  fes_youth_q6
+  fes_youth_q7
+  fes_youth_q8
+  fes_youth_q9
+  fam_enviro1_p
+  fam_enviro2r_p
+  fam_enviro3_p
+  fam_enviro4r_p
+  fam_enviro5_p
+  fam_enviro6_p
+  fam_enviro7r_p
+  fam_enviro8_p
+  fam_enviro9r_p
+  ksads_ptsd_raw_754_p
+  ksads_ptsd_raw_755_p
+  ksads_ptsd_raw_756_p
+  ksads_ptsd_raw_757_p
+  ksads_ptsd_raw_766_p
+  ksads_ptsd_raw_770_p
+  parent_monitor_q1_y
+  parent_monitor_q2_y
+  parent_monitor_q3_y
+  parent_monitor_q4_y
+  parent_monitor_q5_y
+  nsc_p_ss_mean_3_items
+  neighborhood_crime_y
+  reshist_addr1_adi_wsum
+  demo_prim_biosep
+  demo_parent_sep
+  ksads_ptsd_raw_758_759_760
+  ksads_ptsd_raw_761_to_765
+  ksads_ptsd_raw_767_768_769
+  demo_fam_exp1_5_v2
+  demo_fam_exp6_7_v2
+  famhx_ss_moth_prob_alc_dg;
+
+  CATEGORICAL =
+  famhx_ss_fath_prob_alc_p
+  famhx_ss_fath_prob_dg_p
+  demo_prnt_ed_v2
+  demo_comb_income_v2
+  crpbi_parent1_y
+  crpbi_caregiver12_y
+  crpbi_parent2_y
+  crpbi_caregiver13_y
+  crpbi_parent3_y
+  crpbi_caregiver14_y
+  crpbi_parent4_y
+  crpbi_caregiver15_y
+  crpbi_parent5_y
+  crpbi_caregiver16_y
+  fes_youth_q1
+  fes_youth_q2
+  fes_youth_q3
+  fes_youth_q4
+  fes_youth_q5
+  fes_youth_q6
+  fes_youth_q7
+  fes_youth_q8
+  fes_youth_q9
+  fam_enviro1_p
+  fam_enviro2r_p
+  fam_enviro3_p
+  fam_enviro4r_p
+  fam_enviro5_p
+  fam_enviro6_p
+  fam_enviro7r_p
+  fam_enviro8_p
+  fam_enviro9r_p
+  ksads_ptsd_raw_754_p
+  ksads_ptsd_raw_755_p
+  ksads_ptsd_raw_756_p
+  ksads_ptsd_raw_757_p
+  ksads_ptsd_raw_766_p
+  ksads_ptsd_raw_770_p
+  demo_prim_biosep
+  demo_parent_sep
+  ksads_ptsd_raw_758_759_760
+  ksads_ptsd_raw_761_to_765
+  ksads_ptsd_raw_767_768_769
+  demo_fam_exp1_5_v2
+  demo_fam_exp6_7_v2
+  famhx_ss_moth_prob_alc_dg;
+
+  IDVARIABLE IS altID;
+
+  ANALYSIS: iterations = 10000;
+
+  MODEL:
+  f1-f10 BY
+  famhx_ss_fath_prob_alc_p-famhx_ss_moth_prob_alc_dg (*1);
+
+  savedata: file is 10factors_fscores.dat;
+  save = fscores;
+
+  OUTPUT: SAMPSTAT;
+
+
+
+*** WARNING in VARIABLE command
+  Note that only the first 8 characters of variable names are used in the output.
+  Shorten variable names to avoid any confusion.
+   1 WARNING(S) FOUND IN THE INPUT INSTRUCTIONS
+
+
+
+EFA with continuous, censored, categorical, and count factor indicators
+
+SUMMARY OF ANALYSIS
+
+Number of groups                                                 1
+Number of observations                                        7115
+
+Number of dependent variables                                   60
+Number of independent variables                                  0
+Number of continuous latent variables                           10
+
+Observed dependent variables
+
+  Continuous
+   ASR_SCR_AN  ASR_SCR_SO  ASR_SCR_DE  ASR_SCR_AV  ASR_SCR_AD  ASR_SCR_AN
+   PARENT_MON  PARENT_MON  PARENT_MON  PARENT_MON  PARENT_MON  NSC_P_SS_M
+   NEIGHBORHO  RESHIST_AD
+
+  Binary and ordered categorical (ordinal)
+   FAMHX_SS    FAMHX_SS    DEMO_PRN    DEMO_COM    CRPBI_PA    CRPBI_CA
+   CRPBI_PA    CRPBI_CA    CRPBI_PA    CRPBI_CA    CRPBI_PA    CRPBI_CA
+   CRPBI_PA    CRPBI_CA    FES_YOUT    FES_YOUT    FES_YOUT    FES_YOUT
+   FES_YOUT    FES_YOUT    FES_YOUT    FES_YOUT    FES_YOUT    FAM_ENVI
+   FAM_ENVI    FAM_ENVI    FAM_ENVI    FAM_ENVI    FAM_ENVI    FAM_ENVI
+   FAM_ENVI    FAM_ENVI    KSADS_PT    KSADS_PT    KSADS_PT    KSADS_PT
+   KSADS_PT    KSADS_PT    DEMO_PRI    DEMO_PAR    KSADS_PT    KSADS_PT
+   KSADS_PT    DEMO_FAM    DEMO_FAM    FAMHX_SS
+
+Continuous latent variables
+
+  EFA factors
+  *1:   F1          F2          F3          F4          F5          F6
+   F7          F8          F9          F10
+
+Variables with special functions
+
+  ID variable           ALTID
+
+Estimator                                                    WLSMV
+Rotation                                                    GEOMIN
+Row standardization                                    CORRELATION
+Type of rotation                                           OBLIQUE
+Epsilon value                                               Varies
+Maximum number of iterations                                 10000
+Convergence criterion                                    0.500D-04
+Maximum number of steepest descent iterations                   20
+Optimization Specifications for the Exploratory Factor Analysis
+Rotation Algorithm
+  Number of random starts                                       30
+  Maximum number of iterations                               10000
+  Derivative convergence criterion                       0.100D-04
+Parameterization                                             DELTA
+Link                                                        PROBIT
+
+Input data file(s)
+  ELAdata_touse_forFA_noNAs_noOriginalVar.csv
+
+Input data format  FREE
+
+
+UNIVARIATE PROPORTIONS AND COUNTS FOR CATEGORICAL VARIABLES
+
+    FAMHX_SS
+      Category 1    0.880         6262.000
+      Category 2    0.120          853.000
+    FAMHX_SS
+      Category 1    0.916         6517.000
+      Category 2    0.084          598.000
+    DEMO_PRN
+      Category 1    0.376         2674.000
+      Category 2    0.267         1899.000
+      Category 3    0.241         1712.000
+      Category 4    0.081          577.000
+      Category 5    0.036          253.000
+    DEMO_COM
+      Category 1    0.122          868.000
+      Category 2    0.320         2279.000
+      Category 3    0.151         1072.000
+      Category 4    0.137          975.000
+      Category 5    0.082          585.000
+      Category 6    0.055          394.000
+      Category 7    0.042          297.000
+      Category 8    0.025          177.000
+      Category 9    0.034          241.000
+      Category 10    0.032          227.000
+    CRPBI_PA
+      Category 1    0.794         5649.000
+      Category 2    0.186         1323.000
+      Category 3    0.020          143.000
+    CRPBI_CA
+      Category 1    0.659         4688.000
+      Category 2    0.291         2072.000
+      Category 3    0.050          355.000
+    CRPBI_PA
+      Category 1    0.764         5439.000
+      Category 2    0.218         1550.000
+      Category 3    0.018          126.000
+    CRPBI_CA
+      Category 1    0.713         5075.000
+      Category 2    0.242         1725.000
+      Category 3    0.044          315.000
+    CRPBI_PA
+      Category 1    0.814         5791.000
+      Category 2    0.171         1220.000
+      Category 3    0.015          104.000
+    CRPBI_CA
+      Category 1    0.724         5151.000
+      Category 2    0.239         1702.000
+      Category 3    0.037          262.000
+    CRPBI_PA
+      Category 1    0.940         6685.000
+      Category 2    0.056          399.000
+      Category 3    0.004           31.000
+    CRPBI_CA
+      Category 1    0.885         6298.000
+      Category 2    0.103          734.000
+      Category 3    0.012           83.000
+    CRPBI_PA
+      Category 1    0.700         4982.000
+      Category 2    0.272         1937.000
+      Category 3    0.028          196.000
+    CRPBI_CA
+      Category 1    0.654         4651.000
+      Category 2    0.288         2052.000
+      Category 3    0.058          412.000
+    FES_YOUT
+      Category 1    0.770         5479.000
+      Category 2    0.230         1636.000
+    FES_YOUT
+      Category 1    0.685         4871.000
+      Category 2    0.315         2244.000
+    FES_YOUT
+      Category 1    0.883         6283.000
+      Category 2    0.117          832.000
+    FES_YOUT
+      Category 1    0.645         4590.000
+      Category 2    0.355         2525.000
+    FES_YOUT
+      Category 1    0.815         5797.000
+      Category 2    0.185         1318.000
+    FES_YOUT
+      Category 1    0.794         5649.000
+      Category 2    0.206         1466.000
+    FES_YOUT
+      Category 1    0.915         6508.000
+      Category 2    0.085          607.000
+    FES_YOUT
+      Category 1    0.781         5558.000
+      Category 2    0.219         1557.000
+    FES_YOUT
+      Category 1    0.764         5435.000
+      Category 2    0.236         1680.000
+    FAM_ENVI
+      Category 1    0.841         5982.000
+      Category 2    0.159         1133.000
+    FAM_ENVI
+      Category 1    0.501         3563.000
+      Category 2    0.499         3552.000
+    FAM_ENVI
+      Category 1    0.877         6243.000
+      Category 2    0.123          872.000
+    FAM_ENVI
+      Category 1    0.486         3460.000
+      Category 2    0.514         3655.000
+    FAM_ENVI
+      Category 1    0.683         4862.000
+      Category 2    0.317         2253.000
+    FAM_ENVI
+      Category 1    0.891         6343.000
+      Category 2    0.109          772.000
+    FAM_ENVI
+      Category 1    0.894         6362.000
+      Category 2    0.106          753.000
+    FAM_ENVI
+      Category 1    0.843         5998.000
+      Category 2    0.157         1117.000
+    FAM_ENVI
+      Category 1    0.501         3563.000
+      Category 2    0.499         3552.000
+    KSADS_PT
+      Category 1    0.963         6849.000
+      Category 2    0.037          266.000
+    KSADS_PT
+      Category 1    0.955         6792.000
+      Category 2    0.045          323.000
+    KSADS_PT
+      Category 1    0.978         6956.000
+      Category 2    0.022          159.000
+    KSADS_PT
+      Category 1    0.976         6944.000
+      Category 2    0.024          171.000
+    KSADS_PT
+      Category 1    0.928         6606.000
+      Category 2    0.072          509.000
+    KSADS_PT
+      Category 1    0.762         5425.000
+      Category 2    0.238         1690.000
+    DEMO_PRI
+      Category 1    0.974         6931.000
+      Category 2    0.026          184.000
+    DEMO_PAR
+      Category 1    0.782         5567.000
+      Category 2    0.218         1548.000
+    KSADS_PT
+      Category 1    0.988         7031.000
+      Category 2    0.010           74.000
+      Category 3    0.001           10.000
+    KSADS_PT
+      Category 1    0.985         7010.000
+      Category 2    0.013           95.000
+      Category 3    0.001           10.000
+    KSADS_PT
+      Category 1    0.982         6990.000
+      Category 2    0.016          113.000
+      Category 3    0.002           12.000
+    DEMO_FAM
+      Category 1    0.851         6057.000
+      Category 2    0.112          798.000
+      Category 3    0.033          234.000
+      Category 4    0.004           26.000
+    DEMO_FAM
+      Category 1    0.900         6404.000
+      Category 2    0.065          466.000
+      Category 3    0.034          245.000
+    FAMHX_SS
+      Category 1    0.948         6745.000
+      Category 2    0.039          275.000
+      Category 3    0.013           95.000
+
+
+SAMPLE STATISTICS
+
+
+     ESTIMATED SAMPLE STATISTICS
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              FAMHX_SS      FAMHX_SS      ASR_SCR_      ASR_SCR_      ASR_SCR_
+              ________      ________      ________      ________      ________
+                1.176         1.378         3.695         1.862         3.920
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              ASR_SCR_      ASR_SCR_      ASR_SCR_      DEMO_PRN      DEMO_PRN
+              ________      ________      ________      ________      ________
+                1.999         3.738         2.076        -0.316         0.366
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              DEMO_PRN      DEMO_PRN      DEMO_COM      DEMO_COM      DEMO_COM
+              ________      ________      ________      ________      ________
+                1.192         1.805        -1.165        -0.145         0.235
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              DEMO_COM      DEMO_COM      DEMO_COM      DEMO_COM      DEMO_COM
+              ________      ________      ________      ________      ________
+                0.613         0.886         1.115         1.337         1.508
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              DEMO_COM      CRPBI_PA      CRPBI_PA      CRPBI_CA      CRPBI_CA
+              ________      ________      ________      ________      ________
+                1.854         0.820         2.052         0.409         1.646
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              CRPBI_PA      CRPBI_PA      CRPBI_CA      CRPBI_CA      CRPBI_PA
+              ________      ________      ________      ________      ________
+                0.721         2.104         0.563         1.703         0.892
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              CRPBI_PA      CRPBI_CA      CRPBI_CA      CRPBI_PA      CRPBI_PA
+              ________      ________      ________      ________      ________
+                2.180         0.595         1.789         1.551         2.623
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              CRPBI_CA      CRPBI_CA      CRPBI_PA      CRPBI_PA      CRPBI_CA
+              ________      ________      ________      ________      ________
+                1.201         2.268         0.525         1.918         0.395
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              CRPBI_CA      FES_YOUT      FES_YOUT      FES_YOUT      FES_YOUT
+              ________      ________      ________      ________      ________
+                1.573         0.739         0.481         1.190         0.372
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              FES_YOUT      FES_YOUT      FES_YOUT      FES_YOUT      FES_YOUT
+              ________      ________      ________      ________      ________
+                0.896         0.820         1.370         0.776         0.719
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              FAM_ENVI      FAM_ENVI      FAM_ENVI      FAM_ENVI      FAM_ENVI
+              ________      ________      ________      ________      ________
+                0.998         0.002         1.162        -0.034         0.477
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              FAM_ENVI      FAM_ENVI      FAM_ENVI      FAM_ENVI      KSADS_PT
+              ________      ________      ________      ________      ________
+                1.235         1.249         1.007         0.002         1.782
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              KSADS_PT      KSADS_PT      KSADS_PT      KSADS_PT      KSADS_PT
+              ________      ________      ________      ________      ________
+                1.691         2.008         1.977         1.464         0.714
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              PARENT_M      PARENT_M      PARENT_M      PARENT_M      PARENT_M
+              ________      ________      ________      ________      ________
+                1.264         1.387         1.439         3.744         1.637
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              NSC_P_SS      NEIGHBOR      RESHIST_      DEMO_PRI      DEMO_PAR
+              ________      ________      ________      ________      ________
+               -3.927         1.930        93.603         1.945         0.780
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              KSADS_PT      KSADS_PT      KSADS_PT      KSADS_PT      KSADS_PT
+              ________      ________      ________      ________      ________
+                2.263         2.988         2.177         2.988         2.107
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              KSADS_PT      DEMO_FAM      DEMO_FAM      DEMO_FAM      DEMO_FAM
+              ________      ________      ________      ________      ________
+                2.932         1.042         1.792         2.682         1.282
+
+
+           MEANS/INTERCEPTS/THRESHOLDS
+              DEMO_FAM      FAMHX_SS      FAMHX_SS
+              ________      ________      ________
+                1.819         1.626         2.216
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              FAMHX_SS      FAMHX_SS      ASR_SCR_      ASR_SCR_      ASR_SCR_
+              ________      ________      ________      ________      ________
+ FAMHX_SS
+ FAMHX_SS       0.678
+ ASR_SCR_       0.150         0.177         6.495
+ ASR_SCR_       0.124         0.184         0.442         5.257
+ ASR_SCR_       0.148         0.215         0.646         0.543        12.886
+ ASR_SCR_       0.121         0.186         0.552         0.371         0.637
+ ASR_SCR_       0.147         0.227         0.504         0.423         0.647
+ ASR_SCR_       0.164         0.212         0.422         0.353         0.532
+ DEMO_PRN       0.203         0.300         0.112         0.172         0.104
+ DEMO_COM       0.195         0.305         0.167         0.184         0.148
+ CRPBI_PA       0.008         0.064        -0.025        -0.015        -0.009
+ CRPBI_CA       0.023         0.063         0.022         0.022         0.045
+ CRPBI_PA      -0.009         0.060         0.020         0.039         0.034
+ CRPBI_CA       0.005         0.023         0.008         0.026         0.033
+ CRPBI_PA      -0.017         0.008        -0.039         0.003        -0.013
+ CRPBI_CA      -0.012         0.023         0.007         0.031         0.043
+ CRPBI_PA       0.012         0.077        -0.003         0.048         0.010
+ CRPBI_CA       0.038         0.066         0.008         0.011         0.027
+ CRPBI_PA       0.002         0.033         0.010         0.017         0.014
+ CRPBI_CA       0.050         0.039         0.043         0.065         0.055
+ FES_YOUT       0.052         0.101         0.087         0.070         0.100
+ FES_YOUT       0.072         0.095         0.058         0.054         0.045
+ FES_YOUT      -0.040         0.079         0.063         0.057         0.088
+ FES_YOUT      -0.020         0.029         0.047         0.039         0.060
+ FES_YOUT       0.039         0.088         0.063         0.047         0.064
+ FES_YOUT      -0.045        -0.023         0.041         0.056         0.043
+ FES_YOUT      -0.013        -0.006         0.020         0.059         0.074
+ FES_YOUT       0.036         0.066         0.043         0.061         0.052
+ FES_YOUT      -0.015         0.011         0.028         0.007         0.022
+ FAM_ENVI       0.191         0.206         0.307         0.198         0.328
+ FAM_ENVI       0.044         0.083         0.133         0.089         0.143
+ FAM_ENVI       0.146         0.232         0.227         0.195         0.255
+ FAM_ENVI       0.086         0.096         0.182         0.123         0.202
+ FAM_ENVI       0.096         0.118         0.247         0.186         0.258
+ FAM_ENVI       0.066         0.132         0.151         0.174         0.197
+ FAM_ENVI       0.036         0.056         0.013         0.031         0.068
+ FAM_ENVI       0.113         0.090         0.202         0.167         0.197
+ FAM_ENVI       0.030         0.033         0.081         0.042         0.118
+ KSADS_PT       0.149         0.155         0.116         0.151         0.118
+ KSADS_PT       0.114         0.145         0.114         0.111         0.131
+ KSADS_PT       0.061         0.125         0.105         0.143         0.160
+ KSADS_PT       0.041         0.142         0.069         0.121         0.108
+ KSADS_PT       0.373         0.474         0.212         0.200         0.226
+ KSADS_PT       0.126         0.194         0.170         0.154         0.150
+ PARENT_M       0.026         0.017         0.027         0.035         0.039
+ PARENT_M      -0.010         0.006         0.025         0.035         0.029
+ PARENT_M      -0.033        -0.005        -0.008        -0.012         0.003
+ PARENT_M       0.003        -0.007        -0.001        -0.008        -0.012
+ PARENT_M       0.090         0.105         0.061         0.063         0.081
+ NSC_P_SS       0.098         0.157         0.153         0.160         0.136
+ NEIGHBOR       0.095         0.135         0.065         0.104         0.084
+ RESHIST_       0.151         0.272         0.103         0.135         0.114
+ DEMO_PRI       0.237         0.446        -0.047         0.100         0.041
+ DEMO_PAR       0.314         0.356         0.097         0.113         0.093
+ KSADS_PT       0.094         0.175         0.096         0.141         0.144
+ KSADS_PT       0.227         0.213         0.120         0.173         0.164
+ KSADS_PT       0.120         0.154         0.171         0.176         0.251
+ DEMO_FAM       0.228         0.318         0.265         0.243         0.274
+ DEMO_FAM       0.191         0.282         0.297         0.293         0.315
+ FAMHX_SS       0.509         0.610         0.142         0.194         0.212
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              ASR_SCR_      ASR_SCR_      ASR_SCR_      DEMO_PRN      DEMO_COM
+              ________      ________      ________      ________      ________
+ ASR_SCR_       4.531
+ ASR_SCR_       0.481        13.118
+ ASR_SCR_       0.438         0.588         6.049
+ DEMO_PRN       0.051         0.082         0.131
+ DEMO_COM       0.111         0.101         0.145         0.698
+ CRPBI_PA       0.030         0.039         0.038         0.003         0.005
+ CRPBI_CA       0.019         0.061         0.021         0.020         0.006
+ CRPBI_PA       0.069         0.035         0.068         0.117         0.122
+ CRPBI_CA       0.025         0.036         0.020         0.078         0.060
+ CRPBI_PA       0.016         0.026         0.043         0.019         0.021
+ CRPBI_CA       0.031         0.066         0.019         0.036         0.026
+ CRPBI_PA       0.038         0.052         0.044         0.041         0.035
+ CRPBI_CA       0.025         0.032         0.025         0.054         0.042
+ CRPBI_PA       0.022         0.043         0.076         0.051         0.048
+ CRPBI_CA       0.035         0.049         0.018         0.014         0.004
+ FES_YOUT       0.107         0.116         0.123         0.120         0.139
+ FES_YOUT       0.036         0.072         0.086         0.119         0.120
+ FES_YOUT       0.072         0.081         0.078         0.155         0.193
+ FES_YOUT       0.061         0.082         0.073         0.054         0.051
+ FES_YOUT       0.061         0.071         0.097         0.097         0.117
+ FES_YOUT       0.024         0.059         0.043         0.053         0.093
+ FES_YOUT       0.046         0.061         0.051         0.105         0.153
+ FES_YOUT       0.041         0.071         0.059         0.102         0.092
+ FES_YOUT       0.028         0.045         0.031         0.011         0.031
+ FAM_ENVI       0.262         0.334         0.390        -0.002         0.039
+ FAM_ENVI       0.103         0.171         0.221         0.041         0.077
+ FAM_ENVI       0.227         0.266         0.294         0.055         0.103
+ FAM_ENVI       0.142         0.224         0.294         0.045         0.057
+ FAM_ENVI       0.223         0.259         0.351         0.101         0.098
+ FAM_ENVI       0.168         0.229         0.249         0.131         0.154
+ FAM_ENVI       0.045         0.112         0.148         0.016         0.030
+ FAM_ENVI       0.177         0.208         0.264         0.168         0.178
+ FAM_ENVI       0.094         0.139         0.166        -0.188        -0.205
+ KSADS_PT       0.079         0.102         0.116         0.132         0.145
+ KSADS_PT       0.096         0.114         0.113        -0.063        -0.015
+ KSADS_PT       0.122         0.100         0.096         0.125         0.109
+ KSADS_PT       0.101         0.104         0.075         0.008         0.037
+ KSADS_PT       0.186         0.219         0.243         0.246         0.279
+ KSADS_PT       0.124         0.127         0.124         0.145         0.137
+ PARENT_M       0.029         0.046         0.043         0.071         0.083
+ PARENT_M       0.027         0.032         0.033         0.128         0.127
+ PARENT_M       0.011         0.000        -0.013         0.052         0.077
+ PARENT_M      -0.052        -0.028        -0.037         0.037         0.024
+ PARENT_M       0.061         0.076         0.083         0.149         0.136
+ NSC_P_SS       0.115         0.113         0.123         0.284         0.337
+ NEIGHBOR       0.060         0.065         0.084         0.223         0.246
+ RESHIST_       0.094         0.097         0.097         0.409         0.525
+ DEMO_PRI       0.006         0.027         0.039         0.127         0.175
+ DEMO_PAR       0.070         0.085         0.138         0.463         0.636
+ KSADS_PT       0.137         0.096         0.129         0.231         0.315
+ KSADS_PT       0.136         0.154         0.116         0.148         0.185
+ KSADS_PT       0.187         0.210         0.161         0.045         0.129
+ DEMO_FAM       0.193         0.231         0.295         0.483         0.604
+ DEMO_FAM       0.256         0.274         0.271         0.355         0.484
+ FAMHX_SS       0.145         0.235         0.234         0.248         0.218
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              CRPBI_PA      CRPBI_CA      CRPBI_PA      CRPBI_CA      CRPBI_PA
+              ________      ________      ________      ________      ________
+ CRPBI_CA       0.429
+ CRPBI_PA       0.439         0.290
+ CRPBI_CA       0.320         0.520         0.448
+ CRPBI_PA       0.656         0.357         0.485         0.342
+ CRPBI_CA       0.357         0.696         0.363         0.536         0.483
+ CRPBI_PA       0.577         0.252         0.620         0.360         0.621
+ CRPBI_CA       0.342         0.587         0.362         0.632         0.385
+ CRPBI_PA       0.536         0.258         0.476         0.287         0.527
+ CRPBI_CA       0.238         0.604         0.254         0.462         0.299
+ FES_YOUT       0.223         0.212         0.256         0.187         0.224
+ FES_YOUT       0.190         0.108         0.197         0.144         0.166
+ FES_YOUT       0.108         0.099         0.148         0.137         0.174
+ FES_YOUT       0.178         0.134         0.191         0.186         0.191
+ FES_YOUT       0.178         0.168         0.231         0.180         0.220
+ FES_YOUT       0.164         0.144         0.219         0.191         0.153
+ FES_YOUT       0.330         0.210         0.311         0.222         0.330
+ FES_YOUT       0.130         0.111         0.131         0.132         0.131
+ FES_YOUT       0.186         0.140         0.197         0.153         0.172
+ FAM_ENVI       0.028         0.050         0.037         0.028         0.050
+ FAM_ENVI       0.037         0.020         0.040         0.039         0.066
+ FAM_ENVI       0.004         0.005         0.033         0.030         0.059
+ FAM_ENVI       0.039         0.006         0.055         0.015         0.058
+ FAM_ENVI       0.037         0.005         0.070         0.047         0.025
+ FAM_ENVI       0.027         0.003         0.053         0.022         0.055
+ FAM_ENVI       0.015         0.018         0.016         0.038         0.007
+ FAM_ENVI       0.011         0.037         0.069         0.042         0.000
+ FAM_ENVI       0.082         0.058         0.050         0.010         0.045
+ KSADS_PT      -0.087         0.054         0.042         0.096         0.005
+ KSADS_PT       0.023        -0.006         0.013         0.007        -0.066
+ KSADS_PT      -0.094        -0.012        -0.015         0.001        -0.040
+ KSADS_PT      -0.064         0.055        -0.020         0.072         0.001
+ KSADS_PT       0.033         0.039         0.052         0.055        -0.026
+ KSADS_PT      -0.047         0.020         0.049         0.005        -0.056
+ PARENT_M       0.160         0.113         0.181         0.142         0.166
+ PARENT_M       0.116         0.088         0.169         0.149         0.115
+ PARENT_M       0.136         0.121         0.163         0.143         0.128
+ PARENT_M      -0.257        -0.221        -0.223        -0.207        -0.250
+ PARENT_M       0.169         0.127         0.167         0.125         0.154
+ NSC_P_SS       0.004         0.015         0.075         0.026         0.017
+ NEIGHBOR       0.107         0.096         0.163         0.134         0.100
+ RESHIST_       0.008        -0.001         0.071         0.030         0.009
+ DEMO_PRI       0.045        -0.106        -0.012        -0.053         0.016
+ DEMO_PAR       0.002        -0.020         0.055         0.011         0.023
+ KSADS_PT      -0.111        -0.115         0.006         0.041        -0.096
+ KSADS_PT      -0.028         0.000        -0.008         0.011        -0.079
+ KSADS_PT      -0.056        -0.021         0.044         0.037        -0.044
+ DEMO_FAM       0.009         0.016         0.075         0.058         0.006
+ DEMO_FAM       0.006         0.044         0.065         0.040         0.033
+ FAMHX_SS       0.018         0.008        -0.024        -0.002         0.030
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              CRPBI_CA      CRPBI_PA      CRPBI_CA      CRPBI_PA      CRPBI_CA
+              ________      ________      ________      ________      ________
+ CRPBI_PA       0.403
+ CRPBI_CA       0.641         0.632
+ CRPBI_PA       0.295         0.492         0.318
+ CRPBI_CA       0.574         0.228         0.471         0.428
+ FES_YOUT       0.199         0.239         0.219         0.277         0.204
+ FES_YOUT       0.128         0.176         0.129         0.192         0.097
+ FES_YOUT       0.155         0.144         0.157         0.175         0.151
+ FES_YOUT       0.175         0.247         0.157         0.245         0.149
+ FES_YOUT       0.192         0.236         0.211         0.236         0.194
+ FES_YOUT       0.186         0.186         0.190         0.179         0.151
+ FES_YOUT       0.248         0.354         0.267         0.292         0.170
+ FES_YOUT       0.113         0.133         0.119         0.183         0.141
+ FES_YOUT       0.168         0.185         0.176         0.190         0.110
+ FAM_ENVI       0.021         0.032         0.035         0.033         0.056
+ FAM_ENVI       0.028         0.049         0.061         0.048         0.018
+ FAM_ENVI       0.038         0.074         0.038         0.054         0.024
+ FAM_ENVI       0.011         0.057         0.081         0.061         0.054
+ FAM_ENVI       0.013         0.009         0.036         0.063         0.039
+ FAM_ENVI       0.012         0.021         0.030         0.017         0.011
+ FAM_ENVI       0.024         0.026         0.005         0.059         0.066
+ FAM_ENVI       0.044         0.043         0.034         0.017         0.015
+ FAM_ENVI       0.027         0.045         0.037         0.026         0.042
+ KSADS_PT       0.062         0.078         0.088         0.058         0.063
+ KSADS_PT       0.004        -0.009         0.010         0.028         0.058
+ KSADS_PT      -0.049        -0.129        -0.002        -0.027        -0.032
+ KSADS_PT       0.022         0.015         0.083         0.051         0.051
+ KSADS_PT      -0.015         0.025         0.072         0.044         0.017
+ KSADS_PT       0.015        -0.047        -0.005         0.005         0.043
+ PARENT_M       0.136         0.216         0.136         0.177         0.087
+ PARENT_M       0.120         0.174         0.134         0.133         0.094
+ PARENT_M       0.139         0.138         0.123         0.126         0.102
+ PARENT_M      -0.229        -0.214        -0.203        -0.232        -0.157
+ PARENT_M       0.124         0.188         0.153         0.172         0.128
+ NSC_P_SS       0.012         0.031         0.021         0.036         0.035
+ NEIGHBOR       0.085         0.142         0.112         0.138         0.122
+ RESHIST_       0.003        -0.002        -0.019         0.018        -0.023
+ DEMO_PRI      -0.127        -0.040        -0.076         0.022        -0.057
+ DEMO_PAR      -0.008         0.012         0.024         0.044         0.000
+ KSADS_PT      -0.012        -0.142         0.037        -0.049        -0.219
+ KSADS_PT       0.021        -0.013         0.041        -0.012        -0.111
+ KSADS_PT      -0.003        -0.006        -0.001         0.045        -0.009
+ DEMO_FAM       0.029         0.031         0.099         0.052         0.037
+ DEMO_FAM       0.051         0.023         0.041         0.049         0.027
+ FAMHX_SS      -0.031         0.021         0.011         0.039         0.045
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              FES_YOUT      FES_YOUT      FES_YOUT      FES_YOUT      FES_YOUT
+              ________      ________      ________      ________      ________
+ FES_YOUT       0.466
+ FES_YOUT       0.446         0.219
+ FES_YOUT       0.495         0.514         0.447
+ FES_YOUT       0.486         0.285         0.380         0.339
+ FES_YOUT       0.532         0.288         0.599         0.390         0.411
+ FES_YOUT       0.365         0.307         0.257         0.335         0.310
+ FES_YOUT       0.422         0.218         0.353         0.263         0.432
+ FES_YOUT       0.224         0.254         0.176         0.279         0.241
+ FAM_ENVI       0.236         0.152         0.112         0.173         0.184
+ FAM_ENVI       0.152         0.110         0.075         0.133         0.103
+ FAM_ENVI       0.171         0.095         0.257         0.135         0.076
+ FAM_ENVI       0.168         0.116         0.143         0.160         0.100
+ FAM_ENVI       0.146         0.085         0.078         0.106         0.172
+ FAM_ENVI       0.210         0.088         0.259         0.185         0.137
+ FAM_ENVI       0.010        -0.001         0.019         0.042         0.041
+ FAM_ENVI       0.117         0.090         0.131         0.089         0.119
+ FAM_ENVI       0.050         0.035        -0.024         0.064         0.040
+ KSADS_PT       0.075         0.080         0.072         0.110         0.054
+ KSADS_PT       0.046         0.049         0.009         0.001         0.017
+ KSADS_PT       0.062        -0.009         0.019         0.004         0.079
+ KSADS_PT       0.022        -0.057        -0.100         0.042         0.039
+ KSADS_PT       0.142         0.118         0.186         0.066         0.134
+ KSADS_PT       0.057         0.037         0.055        -0.005         0.055
+ PARENT_M       0.151         0.080         0.151         0.113         0.125
+ PARENT_M       0.122         0.079         0.123         0.097         0.114
+ PARENT_M       0.096         0.054         0.115         0.090         0.081
+ PARENT_M      -0.123        -0.066        -0.071        -0.100        -0.069
+ PARENT_M       0.146         0.121         0.086         0.079         0.118
+ NSC_P_SS       0.054         0.072         0.076         0.041         0.071
+ NEIGHBOR       0.149         0.117         0.147         0.126         0.135
+ RESHIST_       0.099         0.066         0.171         0.025         0.101
+ DEMO_PRI       0.050        -0.020         0.017        -0.002         0.066
+ DEMO_PAR       0.065         0.071         0.059        -0.009         0.087
+ KSADS_PT       0.076         0.026         0.077         0.000         0.024
+ KSADS_PT       0.118         0.055         0.117         0.090         0.047
+ KSADS_PT       0.014        -0.024        -0.012        -0.001         0.107
+ DEMO_FAM       0.182         0.134         0.200         0.088         0.179
+ DEMO_FAM       0.121         0.079         0.152         0.066         0.141
+ FAMHX_SS       0.094         0.106         0.084         0.024         0.093
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              FES_YOUT      FES_YOUT      FES_YOUT      FES_YOUT      FAM_ENVI
+              ________      ________      ________      ________      ________
+ FES_YOUT       0.307
+ FES_YOUT       0.396         0.237
+ FES_YOUT       0.196         0.345         0.178
+ FAM_ENVI       0.104         0.137         0.136         0.054
+ FAM_ENVI       0.073         0.093         0.089         0.028         0.532
+ FAM_ENVI       0.146         0.062         0.114         0.044         0.498
+ FAM_ENVI       0.118         0.087         0.117         0.053         0.566
+ FAM_ENVI       0.099         0.095         0.123         0.072         0.567
+ FAM_ENVI       0.286         0.090         0.155         0.004         0.450
+ FAM_ENVI      -0.017         0.013         0.008         0.015         0.271
+ FAM_ENVI       0.163         0.114         0.180         0.038         0.373
+ FAM_ENVI       0.034         0.038         0.049         0.069         0.269
+ KSADS_PT       0.013         0.074         0.039         0.045         0.052
+ KSADS_PT      -0.003         0.040         0.031         0.041         0.114
+ KSADS_PT       0.002        -0.028         0.053        -0.059         0.114
+ KSADS_PT      -0.029         0.078        -0.004         0.013         0.109
+ KSADS_PT       0.036         0.105         0.098         0.039         0.266
+ KSADS_PT       0.014         0.023         0.017         0.001         0.073
+ PARENT_M       0.150         0.115         0.086         0.077         0.029
+ PARENT_M       0.132         0.099         0.062         0.084         0.015
+ PARENT_M       0.099         0.117         0.042         0.082        -0.021
+ PARENT_M      -0.112        -0.182        -0.065        -0.099        -0.027
+ PARENT_M       0.080         0.163         0.078         0.049         0.050
+ NSC_P_SS       0.045         0.050         0.041         0.015         0.065
+ NEIGHBOR       0.088         0.123         0.097         0.097         0.019
+ RESHIST_       0.134         0.066         0.092         0.011        -0.005
+ DEMO_PRI      -0.117         0.005        -0.002        -0.027        -0.023
+ DEMO_PAR       0.013         0.099         0.067        -0.027         0.021
+ KSADS_PT      -0.010         0.079         0.072         0.019         0.123
+ KSADS_PT       0.094         0.141         0.054         0.123         0.147
+ KSADS_PT      -0.044         0.088         0.032         0.057         0.165
+ DEMO_FAM       0.136         0.095         0.158         0.017         0.182
+ DEMO_FAM       0.049         0.134         0.103         0.040         0.246
+ FAMHX_SS      -0.007         0.071         0.079         0.015         0.190
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              FAM_ENVI      FAM_ENVI      FAM_ENVI      FAM_ENVI      FAM_ENVI
+              ________      ________      ________      ________      ________
+ FAM_ENVI       0.337
+ FAM_ENVI       0.687         0.458
+ FAM_ENVI       0.322         0.391         0.378
+ FAM_ENVI       0.247         0.664         0.359         0.393
+ FAM_ENVI       0.262         0.155         0.284         0.162         0.090
+ FAM_ENVI       0.156         0.327         0.238         0.541         0.495
+ FAM_ENVI       0.257         0.140         0.308         0.164         0.081
+ KSADS_PT       0.035         0.036         0.032         0.110         0.101
+ KSADS_PT       0.054         0.010         0.030         0.122        -0.008
+ KSADS_PT       0.071         0.110        -0.004         0.083         0.037
+ KSADS_PT       0.054         0.024         0.032         0.106        -0.007
+ KSADS_PT       0.108         0.272         0.147         0.203         0.276
+ KSADS_PT       0.036         0.067         0.020         0.052         0.066
+ PARENT_M       0.037         0.045         0.035         0.042         0.054
+ PARENT_M      -0.007         0.039         0.004         0.052         0.040
+ PARENT_M       0.004        -0.002         0.006         0.005         0.000
+ PARENT_M       0.015        -0.017        -0.003        -0.018         0.014
+ PARENT_M       0.031         0.017         0.036         0.041         0.042
+ NSC_P_SS       0.047         0.117         0.056         0.117         0.117
+ NEIGHBOR       0.038         0.060         0.044         0.070         0.061
+ RESHIST_       0.007         0.038        -0.018         0.034         0.107
+ DEMO_PRI       0.018        -0.030        -0.050         0.005         0.048
+ DEMO_PAR       0.011         0.044         0.025         0.129         0.160
+ KSADS_PT       0.092         0.028        -0.005         0.064         0.081
+ KSADS_PT       0.081         0.106         0.079         0.113         0.096
+ KSADS_PT       0.099         0.145         0.113         0.159         0.080
+ DEMO_FAM       0.090         0.212         0.140         0.250         0.253
+ DEMO_FAM       0.096         0.226         0.171         0.186         0.151
+ FAMHX_SS       0.130         0.199         0.106         0.131         0.151
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              FAM_ENVI      FAM_ENVI      FAM_ENVI      KSADS_PT      KSADS_PT
+              ________      ________      ________      ________      ________
+ FAM_ENVI       0.107
+ FAM_ENVI       0.351         0.084
+ KSADS_PT       0.017         0.112        -0.025
+ KSADS_PT      -0.018         0.049         0.036         0.347
+ KSADS_PT      -0.095         0.100        -0.076         0.285         0.281
+ KSADS_PT      -0.001         0.069        -0.021         0.295         0.276
+ KSADS_PT       0.023         0.144         0.020         0.362         0.152
+ KSADS_PT      -0.012         0.077         0.039         0.273         0.162
+ PARENT_M       0.025         0.053         0.001        -0.013         0.027
+ PARENT_M       0.023         0.061        -0.017         0.032        -0.034
+ PARENT_M       0.011         0.029        -0.008         0.014        -0.012
+ PARENT_M      -0.022        -0.031        -0.054        -0.029        -0.002
+ PARENT_M       0.010         0.070        -0.008         0.036         0.029
+ NSC_P_SS       0.004         0.126        -0.056         0.081        -0.003
+ NEIGHBOR       0.011         0.055        -0.065         0.081        -0.020
+ RESHIST_      -0.003         0.127        -0.079         0.176         0.003
+ DEMO_PRI       0.007        -0.072        -0.202         0.003         0.079
+ DEMO_PAR       0.091         0.178        -0.099         0.207         0.084
+ KSADS_PT      -0.057         0.154        -0.162         0.395         0.305
+ KSADS_PT       0.047         0.162        -0.019         0.378         0.378
+ KSADS_PT       0.068         0.172        -0.058         0.243         0.310
+ DEMO_FAM       0.087         0.258        -0.074         0.208         0.092
+ DEMO_FAM       0.052         0.189        -0.055         0.156         0.057
+ FAMHX_SS       0.108         0.111         0.007         0.130         0.115
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              KSADS_PT      KSADS_PT      KSADS_PT      KSADS_PT      PARENT_M
+              ________      ________      ________      ________      ________
+ KSADS_PT       0.494
+ KSADS_PT       0.266         0.158
+ KSADS_PT       0.198         0.214         0.296
+ PARENT_M      -0.014        -0.024         0.050        -0.031         0.301
+ PARENT_M      -0.103        -0.056         0.030        -0.024         0.318
+ PARENT_M      -0.051        -0.038         0.012        -0.028         0.180
+ PARENT_M       0.077        -0.007         0.018         0.018        -0.144
+ PARENT_M      -0.021         0.028         0.098         0.051         0.119
+ NSC_P_SS       0.082        -0.026         0.157         0.086         0.013
+ NEIGHBOR       0.059         0.000         0.145         0.090         0.109
+ RESHIST_       0.106         0.128         0.238         0.133         0.038
+ DEMO_PRI      -0.210         0.090         0.333         0.039        -0.044
+ DEMO_PAR       0.080        -0.028         0.362         0.167         0.043
+ KSADS_PT       0.456         0.538         0.461         0.382        -0.008
+ KSADS_PT       0.415         0.417         0.545         0.210         0.068
+ KSADS_PT       0.378         0.396         0.463         0.222         0.002
+ DEMO_FAM       0.179         0.048         0.381         0.219         0.075
+ DEMO_FAM       0.185         0.099         0.333         0.171         0.050
+ FAMHX_SS       0.049         0.113         0.448         0.146         0.057
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              PARENT_M      PARENT_M      PARENT_M      PARENT_M      NSC_P_SS
+              ________      ________      ________      ________      ________
+ PARENT_M       0.623
+ PARENT_M       0.224         0.753
+ PARENT_M      -0.152        -0.148         1.399
+ PARENT_M       0.086         0.059        -0.097         0.883
+ NSC_P_SS       0.045         0.024         0.032         0.065         0.869
+ NEIGHBOR       0.106         0.061        -0.050         0.117         0.278
+ RESHIST_       0.083         0.070         0.004         0.095         0.234
+ DEMO_PRI       0.008         0.042        -0.009         0.046         0.062
+ DEMO_PAR       0.050        -0.012         0.048         0.144         0.232
+ KSADS_PT       0.008         0.014         0.158         0.024         0.228
+ KSADS_PT      -0.003        -0.001        -0.010         0.042         0.072
+ KSADS_PT      -0.011        -0.024         0.061        -0.003         0.075
+ DEMO_FAM       0.101         0.053         0.018         0.124         0.305
+ DEMO_FAM       0.087         0.047        -0.017         0.099         0.241
+ FAMHX_SS       0.005         0.041        -0.008         0.095         0.123
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              NEIGHBOR      RESHIST_      DEMO_PRI      DEMO_PAR      KSADS_PT
+              ________      ________      ________      ________      ________
+ NEIGHBOR       1.108
+ RESHIST_       0.167       457.538
+ DEMO_PRI       0.025         0.175
+ DEMO_PAR       0.173         0.324         0.170
+ KSADS_PT       0.162         0.256         0.102         0.244
+ KSADS_PT       0.099         0.205         0.303         0.193         0.712
+ KSADS_PT       0.033         0.112         0.223         0.094         0.598
+ DEMO_FAM       0.214         0.461         0.118         0.445         0.354
+ DEMO_FAM       0.154         0.371         0.108         0.228         0.296
+ FAMHX_SS       0.111         0.211         0.655         0.231         0.151
+
+
+           CORRELATION MATRIX (WITH VARIANCES ON THE DIAGONAL)
+              KSADS_PT      KSADS_PT      DEMO_FAM      DEMO_FAM      FAMHX_SS
+              ________      ________      ________      ________      ________
+ KSADS_PT       0.637
+ DEMO_FAM       0.252         0.236
+ DEMO_FAM       0.144         0.237         0.640
+ FAMHX_SS       0.306         0.289         0.299         0.239
+
+
+UNIVARIATE SAMPLE STATISTICS
+
+
+     UNIVARIATE HIGHER-ORDER MOMENT DESCRIPTIVE STATISTICS
+
+         Variable/         Mean/     Skewness/   Minimum/ % with                Percentiles
+        Sample Size      Variance    Kurtosis    Maximum  Min/Max      20%/60%    40%/80%    Median
+
+     ASR_SCR_ANXDISO       3.695       0.635       0.000    8.97%       1.000      3.000      3.000
+            7115.000       6.495      -0.006      12.000    0.39%       4.000      6.000
+     ASR_SCR_SOMATIC       1.862       1.863       0.000   35.97%       0.000      1.000      1.000
+            7115.000       5.257       4.588      18.000    0.03%       2.000      3.000
+     ASR_SCR_DEPRESS       3.920       1.426       0.000   12.66%       1.000      2.000      3.000
+            7115.000      12.886       2.447      28.000    0.01%       4.000      6.000
+     ASR_SCR_AVOIDAN       1.999       1.319       0.000   30.88%       0.000      1.000      1.000
+            7115.000       4.531       1.763      14.000    0.01%       2.000      4.000
+     ASR_SCR_ADHD_R        3.738       1.437       0.000   17.23%       1.000      2.000      3.000
+            7115.000      13.118       2.389      24.000    0.01%       4.000      6.000
+     ASR_SCR_ANTISOC       2.076       2.125       0.000   29.87%       0.000      1.000      1.000
+            7115.000       6.049       6.722      22.000    0.01%       2.000      3.000
+     PARENT_MONITOR_       1.264       2.298       1.000   78.27%       1.000      1.000      1.000
+            7115.000       0.301       6.097       5.000    0.14%       1.000      2.000
+     PARENT_MONITOR_       1.387       2.491       1.000   74.49%       1.000      1.000      1.000
+            7115.000       0.623       6.749       5.000    1.67%       1.000      2.000
+     PARENT_MONITOR_       1.439       2.362       1.000   72.68%       1.000      1.000      1.000
+            7115.000       0.753       5.617       5.000    2.30%       1.000      2.000
+     PARENT_MONITOR_       3.744      -0.709       1.000    6.21%       3.000      4.000      4.000
+            7115.000       1.399      -0.334       5.000   33.16%       4.000      5.000
+     PARENT_MONITOR_       1.637       1.426       1.000   61.28%       1.000      1.000      1.000
+            7115.000       0.883       1.361       5.000    1.29%       1.000      2.000
+     NSC_P_SS_MEAN_3      -3.927       0.913      -5.000   21.05%      -5.000     -4.333     -4.000
+            7115.000       0.869       0.558      -1.000    1.63%      -4.000     -3.333
+     NEIGHBORHOOD_CR       1.930       1.034       1.000   44.65%       1.000      1.000      2.000
+            7115.000       1.108       0.418       5.000    2.88%       2.000      3.000
+     RESHIST_ADDR1_A      93.603      -1.777       1.067    0.01%      82.482     94.274     97.772
+            7115.000     457.538       4.046     125.749    0.03%     101.575    109.577
+
+
+THE MODEL ESTIMATION TERMINATED NORMALLY
+
+
+
+MODEL FIT INFORMATION
+
+Number of Free Parameters                      657
+
+Chi-Square Test of Model Fit
+
+          Value                           4260.759*
+          Degrees of Freedom                  1215
+          P-Value                           0.0000
+
+*   The chi-square value for MLM, MLMV, MLR, ULSMV, WLSM and WLSMV cannot be used
+    for chi-square difference testing in the regular way.  MLM, MLR and WLSM
+    chi-square difference testing is described on the Mplus website.  MLMV, WLSMV,
+    and ULSMV difference testing is done using the DIFFTEST option.
+
+RMSEA (Root Mean Square Error Of Approximation)
+
+          Estimate                           0.019
+          90 Percent C.I.                    0.018  0.019
+          Probability RMSEA <= .05           1.000
+
+CFI/TLI
+
+          CFI                                0.969
+          TLI                                0.955
+
+Chi-Square Test of Model Fit for the Baseline Model
+
+          Value                         100106.312
+          Degrees of Freedom                  1770
+          P-Value                           0.0000
+
+SRMR (Standardized Root Mean Square Residual)
+
+          Value                              0.030
+
+Optimum Function Value for Weighted Least-Squares Estimator
+
+          Value                     0.19050515D+00
+
+
+
+MODEL RESULTS
+
+                                                    Two-Tailed
+                    Estimate       S.E.  Est./S.E.    P-Value
+
+ F1       BY
+    FAMHX_SS_F         0.002      0.017      0.120      0.904
+    FAMHX_SS_F         0.040      0.017      2.362      0.018
+    ASR_SCR_AN         1.855      0.032     58.402      0.000
+    ASR_SCR_SO         1.276      0.026     49.936      0.000
+    ASR_SCR_DE         3.267      0.037     87.813      0.000
+    ASR_SCR_AV         1.499      0.025     60.144      0.000
+    ASR_SCR_AD         2.607      0.040     64.857      0.000
+    ASR_SCR_AN         1.355      0.026     52.535      0.000
+    DEMO_PRNT_        -0.010      0.011     -0.892      0.372
+    DEMO_COMB_         0.013      0.009      1.489      0.136
+    CRPBI_PARE         0.003      0.014      0.227      0.821
+    CRPBI_CARE         0.012      0.011      1.032      0.302
+    CRPBI_PARE         0.012      0.016      0.716      0.474
+    CRPBI_CARE        -0.031      0.015     -2.098      0.036
+    CRPBI_PARE        -0.016      0.015     -1.044      0.296
+    CRPBI_CARE         0.011      0.012      0.911      0.362
+    CRPBI_PARE        -0.007      0.021     -0.333      0.739
+    CRPBI_CARE        -0.060      0.019     -3.198      0.001
+    CRPBI_PARE         0.010      0.016      0.654      0.513
+    CRPBI_CARE         0.030      0.014      2.195      0.028
+    FES_YOUTH_         0.028      0.016      1.730      0.084
+    FES_YOUTH_         0.019      0.016      1.179      0.239
+    FES_YOUTH_        -0.009      0.017     -0.503      0.615
+    FES_YOUTH_         0.021      0.016      1.340      0.180
+    FES_YOUTH_        -0.016      0.018     -0.899      0.369
+    FES_YOUTH_        -0.025      0.016     -1.609      0.108
+    FES_YOUTH_         0.006      0.023      0.246      0.806
+    FES_YOUTH_        -0.028      0.018     -1.536      0.124
+    FES_YOUTH_         0.017      0.020      0.857      0.391
+    FAM_ENVIRO         0.116      0.019      6.269      0.000
+    FAM_ENVIRO        -0.056      0.015     -3.642      0.000
+    FAM_ENVIRO         0.039      0.017      2.320      0.020
+    FAM_ENVIRO        -0.010      0.011     -0.875      0.382
+    FAM_ENVIRO         0.075      0.018      4.083      0.000
+    FAM_ENVIRO        -0.056      0.017     -3.214      0.001
+    FAM_ENVIRO        -0.027      0.021     -1.291      0.197
+    FAM_ENVIRO         0.016      0.016      1.011      0.312
+    FAM_ENVIRO         0.085      0.018      4.745      0.000
+    KSADS_PTSD         0.010      0.030      0.326      0.745
+    KSADS_PTSD         0.066      0.029      2.298      0.022
+    KSADS_PTSD         0.050      0.034      1.466      0.143
+    KSADS_PTSD         0.016      0.030      0.546      0.585
+    KSADS_PTSD         0.011      0.021      0.543      0.587
+    KSADS_PTSD         0.098      0.020      4.795      0.000
+    PARENT_MON         0.009      0.007      1.418      0.156
+    PARENT_MON         0.013      0.010      1.377      0.168
+    PARENT_MON        -0.009      0.012     -0.750      0.453
+    PARENT_MON        -0.044      0.016     -2.686      0.007
+    PARENT_MON         0.049      0.013      3.729      0.000
+    NSC_P_SS_M         0.087      0.012      7.188      0.000
+    NEIGHBORHO         0.038      0.014      2.705      0.007
+    RESHIST_AD         0.657      0.284      2.316      0.021
+    DEMO_PRIM_        -0.088      0.035     -2.519      0.012
+    DEMO_PAREN        -0.054      0.017     -3.235      0.001
+    KSADS_PTSD        -0.047      0.031     -1.485      0.138
+    KSADS_PTSD        -0.044      0.032     -1.368      0.171
+    KSADS_PTSD         0.075      0.033      2.286      0.022
+    DEMO_FAM_E         0.124      0.019      6.424      0.000
+    DEMO_FAM_E         0.230      0.022     10.499      0.000
+    FAMHX_SS_M         0.043      0.021      2.010      0.044
+
+ F2       BY
+    FAMHX_SS_F         0.042      0.027      1.537      0.124
+    FAMHX_SS_F         0.119      0.031      3.805      0.000
+    ASR_SCR_AN         0.143      0.026      5.455      0.000
+    ASR_SCR_SO         0.232      0.029      7.856      0.000
+    ASR_SCR_DE        -0.003      0.026     -0.118      0.906
+    ASR_SCR_AV        -0.048      0.020     -2.413      0.016
+    ASR_SCR_AD        -0.148      0.033     -4.434      0.000
+    ASR_SCR_AN         0.064      0.025      2.614      0.009
+    DEMO_PRNT_         0.736      0.011     66.480      0.000
+    DEMO_COMB_         0.947      0.010     96.553      0.000
+    CRPBI_PARE        -0.040      0.017     -2.339      0.019
+    CRPBI_CARE        -0.031      0.014     -2.248      0.025
+    CRPBI_PARE         0.093      0.019      4.801      0.000
+    CRPBI_CARE         0.035      0.016      2.215      0.027
+    CRPBI_PARE         0.002      0.015      0.102      0.919
+    CRPBI_CARE         0.001      0.013      0.064      0.949
+    CRPBI_PARE         0.000      0.020      0.009      0.993
+    CRPBI_CARE         0.013      0.018      0.739      0.460
+    CRPBI_PARE         0.000      0.016     -0.027      0.978
+    CRPBI_CARE        -0.027      0.015     -1.805      0.071
+    FES_YOUTH_        -0.014      0.016     -0.901      0.368
+    FES_YOUTH_         0.035      0.018      2.025      0.043
+    FES_YOUTH_         0.071      0.023      3.144      0.002
+    FES_YOUTH_        -0.055      0.018     -3.060      0.002
+    FES_YOUTH_         0.012      0.019      0.630      0.529
+    FES_YOUTH_        -0.019      0.016     -1.213      0.225
+    FES_YOUTH_         0.059      0.026      2.315      0.021
+    FES_YOUTH_         0.007      0.019      0.367      0.714
+    FES_YOUTH_        -0.046      0.021     -2.241      0.025
+    FAM_ENVIRO        -0.119      0.020     -5.824      0.000
+    FAM_ENVIRO         0.057      0.017      3.308      0.001
+    FAM_ENVIRO        -0.042      0.018     -2.318      0.020
+    FAM_ENVIRO         0.029      0.014      2.130      0.033
+    FAM_ENVIRO         0.005      0.016      0.298      0.765
+    FAM_ENVIRO         0.029      0.016      1.864      0.062
+    FAM_ENVIRO         0.003      0.023      0.112      0.911
+    FAM_ENVIRO         0.096      0.022      4.307      0.000
+    FAM_ENVIRO        -0.243      0.018    -13.161      0.000
+    KSADS_PTSD         0.078      0.038      2.042      0.041
+    KSADS_PTSD        -0.145      0.036     -4.020      0.000
+    KSADS_PTSD         0.060      0.040      1.507      0.132
+    KSADS_PTSD        -0.068      0.044     -1.550      0.121
+    KSADS_PTSD         0.114      0.031      3.724      0.000
+    KSADS_PTSD         0.104      0.024      4.264      0.000
+    PARENT_MON        -0.005      0.007     -0.769      0.442
+    PARENT_MON         0.041      0.012      3.278      0.001
+    PARENT_MON         0.019      0.013      1.508      0.132
+    PARENT_MON         0.116      0.018      6.303      0.000
+    PARENT_MON         0.109      0.015      7.410      0.000
+    NSC_P_SS_M         0.356      0.014     26.333      0.000
+    NEIGHBORHO         0.284      0.016     17.638      0.000
+    RESHIST_AD        11.158      0.261     42.702      0.000
+    DEMO_PRIM_        -0.010      0.029     -0.332      0.740
+    DEMO_PAREN         0.608      0.017     35.573      0.000
+    KSADS_PTSD         0.265      0.050      5.339      0.000
+    KSADS_PTSD        -0.029      0.029     -1.015      0.310
+    KSADS_PTSD        -0.057      0.044     -1.296      0.195
+    DEMO_FAM_E         0.600      0.018     33.480      0.000
+    DEMO_FAM_E         0.473      0.022     21.957      0.000
+    FAMHX_SS_M         0.011      0.024      0.456      0.649
+
+ F3       BY
+    FAMHX_SS_F        -0.044      0.034     -1.307      0.191
+    FAMHX_SS_F        -0.017      0.028     -0.599      0.549
+    ASR_SCR_AN        -0.119      0.040     -3.014      0.003
+    ASR_SCR_SO        -0.024      0.036     -0.682      0.495
+    ASR_SCR_DE        -0.140      0.043     -3.263      0.001
+    ASR_SCR_AV         0.091      0.032      2.797      0.005
+    ASR_SCR_AD         0.088      0.051      1.714      0.087
+    ASR_SCR_AN         0.224      0.044      5.092      0.000
+    DEMO_PRNT_         0.005      0.017      0.288      0.773
+    DEMO_COMB_         0.018      0.016      1.113      0.266
+    CRPBI_PARE         0.758      0.022     35.083      0.000
+    CRPBI_CARE        -0.013      0.018     -0.698      0.485
+    CRPBI_PARE         0.597      0.025     23.936      0.000
+    CRPBI_CARE         0.142      0.028      5.040      0.000
+    CRPBI_PARE         0.772      0.021     36.176      0.000
+    CRPBI_CARE         0.092      0.025      3.659      0.000
+    CRPBI_PARE         0.793      0.029     27.115      0.000
+    CRPBI_CARE         0.213      0.035      6.024      0.000
+    CRPBI_PARE         0.596      0.021     28.663      0.000
+    CRPBI_CARE         0.006      0.019      0.326      0.745
+    FES_YOUTH_         0.047      0.024      1.984      0.047
+    FES_YOUTH_         0.112      0.030      3.721      0.000
+    FES_YOUTH_        -0.104      0.034     -3.034      0.002
+    FES_YOUTH_         0.069      0.027      2.569      0.010
+    FES_YOUTH_         0.069      0.029      2.393      0.017
+    FES_YOUTH_        -0.072      0.027     -2.703      0.007
+    FES_YOUTH_         0.332      0.037      9.070      0.000
+    FES_YOUTH_        -0.002      0.024     -0.088      0.930
+    FES_YOUTH_         0.153      0.031      4.987      0.000
+    FAM_ENVIRO        -0.006      0.023     -0.264      0.792
+    FAM_ENVIRO        -0.023      0.020     -1.187      0.235
+    FAM_ENVIRO        -0.011      0.026     -0.413      0.680
+    FAM_ENVIRO        -0.025      0.020     -1.265      0.206
+    FAM_ENVIRO         0.081      0.028      2.900      0.004
+    FAM_ENVIRO        -0.004      0.022     -0.191      0.848
+    FAM_ENVIRO        -0.009      0.035     -0.270      0.787
+    FAM_ENVIRO         0.047      0.030      1.543      0.123
+    FAM_ENVIRO         0.030      0.025      1.191      0.234
+    KSADS_PTSD        -0.022      0.052     -0.430      0.667
+    KSADS_PTSD         0.013      0.048      0.260      0.795
+    KSADS_PTSD        -0.036      0.058     -0.622      0.534
+    KSADS_PTSD         0.028      0.055      0.509      0.611
+    KSADS_PTSD         0.001      0.035      0.031      0.975
+    KSADS_PTSD        -0.036      0.031     -1.174      0.241
+    PARENT_MON         0.037      0.012      3.203      0.001
+    PARENT_MON        -0.015      0.014     -1.103      0.270
+    PARENT_MON         0.034      0.018      1.880      0.060
+    PARENT_MON        -0.244      0.026     -9.336      0.000
+    PARENT_MON         0.156      0.020      7.836      0.000
+    NSC_P_SS_M         0.033      0.019      1.689      0.091
+    NEIGHBORHO         0.099      0.023      4.348      0.000
+    RESHIST_AD        -0.424      0.416     -1.019      0.308
+    DEMO_PRIM_         0.076      0.058      1.322      0.186
+    DEMO_PAREN         0.074      0.028      2.654      0.008
+    KSADS_PTSD        -0.005      0.060     -0.089      0.929
+    KSADS_PTSD        -0.020      0.051     -0.389      0.697
+    KSADS_PTSD         0.038      0.060      0.638      0.523
+    DEMO_FAM_E        -0.031      0.025     -1.244      0.214
+    DEMO_FAM_E        -0.025      0.031     -0.805      0.421
+    FAMHX_SS_M        -0.013      0.032     -0.411      0.681
+
+ F4       BY
+    FAMHX_SS_F         0.058      0.028      2.058      0.040
+    FAMHX_SS_F         0.061      0.028      2.156      0.031
+    ASR_SCR_AN         0.024      0.031      0.757      0.449
+    ASR_SCR_SO         0.035      0.033      1.056      0.291
+    ASR_SCR_DE         0.067      0.033      2.001      0.045
+    ASR_SCR_AV        -0.064      0.028     -2.256      0.024
+    ASR_SCR_AD        -0.017      0.045     -0.379      0.705
+    ASR_SCR_AN        -0.160      0.037     -4.354      0.000
+    DEMO_PRNT_         0.012      0.015      0.797      0.425
+    DEMO_COMB_        -0.015      0.013     -1.171      0.242
+    CRPBI_PARE         0.012      0.018      0.695      0.487
+    CRPBI_CARE         0.842      0.016     53.941      0.000
+    CRPBI_PARE         0.061      0.022      2.801      0.005
+    CRPBI_CARE         0.581      0.021     27.459      0.000
+    CRPBI_PARE         0.053      0.020      2.660      0.008
+    CRPBI_CARE         0.775      0.018     43.870      0.000
+    CRPBI_PARE         0.017      0.025      0.668      0.504
+    CRPBI_CARE         0.650      0.026     24.786      0.000
+    CRPBI_PARE         0.041      0.019      2.136      0.033
+    CRPBI_CARE         0.682      0.017     41.207      0.000
+    FES_YOUTH_         0.013      0.020      0.660      0.509
+    FES_YOUTH_        -0.080      0.024     -3.341      0.001
+    FES_YOUTH_         0.032      0.024      1.304      0.192
+    FES_YOUTH_        -0.043      0.021     -2.016      0.044
+    FES_YOUTH_         0.039      0.024      1.600      0.110
+    FES_YOUTH_         0.050      0.021      2.354      0.019
+    FES_YOUTH_        -0.016      0.029     -0.537      0.591
+    FES_YOUTH_         0.022      0.023      0.952      0.341
+    FES_YOUTH_        -0.001      0.025     -0.024      0.981
+    FAM_ENVIRO         0.006      0.021      0.302      0.762
+    FAM_ENVIRO         0.013      0.016      0.801      0.423
+    FAM_ENVIRO         0.003      0.023      0.146      0.884
+    FAM_ENVIRO         0.005      0.016      0.284      0.776
+    FAM_ENVIRO        -0.033      0.021     -1.545      0.122
+    FAM_ENVIRO        -0.024      0.022     -1.067      0.286
+    FAM_ENVIRO         0.037      0.032      1.172      0.241
+    FAM_ENVIRO        -0.001      0.023     -0.055      0.956
+    FAM_ENVIRO         0.019      0.022      0.856      0.392
+    KSADS_PTSD         0.105      0.047      2.244      0.025
+    KSADS_PTSD         0.018      0.041      0.426      0.670
+    KSADS_PTSD         0.040      0.046      0.855      0.393
+    KSADS_PTSD         0.102      0.053      1.915      0.055
+    KSADS_PTSD         0.008      0.030      0.276      0.783
+    KSADS_PTSD         0.059      0.027      2.176      0.030
+    PARENT_MON        -0.003      0.008     -0.425      0.671
+    PARENT_MON         0.011      0.011      0.968      0.333
+    PARENT_MON         0.049      0.017      2.932      0.003
+    PARENT_MON        -0.117      0.022     -5.214      0.000
+    PARENT_MON         0.032      0.017      1.844      0.065
+    NSC_P_SS_M        -0.002      0.017     -0.123      0.902
+    NEIGHBORHO         0.039      0.020      1.977      0.048
+    RESHIST_AD        -0.514      0.351     -1.467      0.142
+    DEMO_PRIM_        -0.188      0.061     -3.106      0.002
+    DEMO_PAREN        -0.034      0.022     -1.497      0.134
+    KSADS_PTSD        -0.070      0.063     -1.106      0.269
+    KSADS_PTSD        -0.044      0.045     -0.982      0.326
+    KSADS_PTSD        -0.018      0.044     -0.414      0.679
+    DEMO_FAM_E         0.025      0.021      1.188      0.235
+    DEMO_FAM_E         0.038      0.028      1.356      0.175
+    FAMHX_SS_M        -0.046      0.031     -1.486      0.137
+
+ F5       BY
+    FAMHX_SS_F        -0.050      0.029     -1.717      0.086
+    FAMHX_SS_F        -0.015      0.025     -0.611      0.541
+    ASR_SCR_AN         0.024      0.029      0.822      0.411
+    ASR_SCR_SO         0.001      0.030      0.027      0.979
+    ASR_SCR_DE         0.031      0.031      0.996      0.319
+    ASR_SCR_AV        -0.003      0.025     -0.137      0.891
+    ASR_SCR_AD         0.021      0.041      0.510      0.610
+    ASR_SCR_AN        -0.081      0.029     -2.766      0.006
+    DEMO_PRNT_         0.005      0.014      0.398      0.691
+    DEMO_COMB_         0.000      0.011     -0.034      0.973
+    CRPBI_PARE         0.014      0.018      0.783      0.434
+    CRPBI_CARE         0.005      0.015      0.324      0.746
+    CRPBI_PARE         0.042      0.021      1.992      0.046
+    CRPBI_CARE         0.012      0.017      0.690      0.490
+    CRPBI_PARE         0.002      0.017      0.101      0.920
+    CRPBI_CARE         0.006      0.016      0.377      0.706
+    CRPBI_PARE        -0.012      0.023     -0.533      0.594
+    CRPBI_CARE        -0.026      0.021     -1.257      0.209
+    CRPBI_PARE         0.113      0.021      5.305      0.000
+    CRPBI_CARE         0.066      0.019      3.466      0.001
+    FES_YOUTH_         0.723      0.018     40.295      0.000
+    FES_YOUTH_         0.563      0.022     25.891      0.000
+    FES_YOUTH_         0.635      0.025     25.667      0.000
+    FES_YOUTH_         0.663      0.019     34.370      0.000
+    FES_YOUTH_         0.541      0.022     24.217      0.000
+    FES_YOUTH_         0.676      0.021     32.242      0.000
+    FES_YOUTH_         0.364      0.029     12.612      0.000
+    FES_YOUTH_         0.499      0.022     22.596      0.000
+    FES_YOUTH_         0.315      0.024     13.164      0.000
+    FAM_ENVIRO         0.041      0.020      2.078      0.038
+    FAM_ENVIRO         0.012      0.014      0.850      0.395
+    FAM_ENVIRO         0.024      0.021      1.161      0.245
+    FAM_ENVIRO         0.026      0.015      1.702      0.089
+    FAM_ENVIRO        -0.055      0.020     -2.708      0.007
+    FAM_ENVIRO         0.083      0.027      3.028      0.002
+    FAM_ENVIRO        -0.083      0.030     -2.783      0.005
+    FAM_ENVIRO        -0.038      0.022     -1.741      0.082
+    FAM_ENVIRO        -0.003      0.020     -0.127      0.899
+    KSADS_PTSD         0.030      0.038      0.770      0.442
+    KSADS_PTSD         0.008      0.035      0.226      0.821
+    KSADS_PTSD         0.019      0.047      0.402      0.688
+    KSADS_PTSD        -0.052      0.045     -1.154      0.249
+    KSADS_PTSD         0.036      0.030      1.197      0.231
+    KSADS_PTSD         0.016      0.024      0.668      0.504
+    PARENT_MON         0.017      0.009      2.007      0.045
+    PARENT_MON        -0.006      0.010     -0.583      0.560
+    PARENT_MON         0.017      0.014      1.266      0.205
+    PARENT_MON        -0.008      0.019     -0.402      0.688
+    PARENT_MON         0.044      0.016      2.734      0.006
+    NSC_P_SS_M         0.000      0.015      0.024      0.980
+    NEIGHBORHO         0.088      0.018      5.044      0.000
+    RESHIST_AD         1.158      0.344      3.364      0.001
+    DEMO_PRIM_         0.000      0.035      0.008      0.993
+    DEMO_PAREN        -0.066      0.022     -3.004      0.003
+    KSADS_PTSD        -0.011      0.037     -0.306      0.759
+    KSADS_PTSD         0.065      0.048      1.340      0.180
+    KSADS_PTSD        -0.065      0.051     -1.273      0.203
+    DEMO_FAM_E         0.043      0.020      2.075      0.038
+    DEMO_FAM_E         0.002      0.025      0.075      0.940
+    FAMHX_SS_M         0.020      0.027      0.732      0.464
+
+ F6       BY
+    FAMHX_SS_F         0.703      0.025     27.918      0.000
+    FAMHX_SS_F         0.796      0.024     32.895      0.000
+    ASR_SCR_AN        -0.129      0.032     -3.963      0.000
+    ASR_SCR_SO         0.012      0.030      0.388      0.698
+    ASR_SCR_DE        -0.085      0.032     -2.647      0.008
+    ASR_SCR_AV        -0.044      0.026     -1.652      0.099
+    ASR_SCR_AD         0.183      0.043      4.262      0.000
+    ASR_SCR_AN         0.122      0.032      3.821      0.000
+    DEMO_PRNT_         0.047      0.020      2.412      0.016
+    DEMO_COMB_        -0.008      0.015     -0.548      0.584
+    CRPBI_PARE         0.091      0.025      3.700      0.000
+    CRPBI_CARE         0.079      0.023      3.474      0.001
+    CRPBI_PARE        -0.083      0.026     -3.155      0.002
+    CRPBI_CARE        -0.056      0.021     -2.647      0.008
+    CRPBI_PARE         0.015      0.017      0.875      0.381
+    CRPBI_CARE        -0.024      0.016     -1.469      0.142
+    CRPBI_PARE        -0.070      0.036     -1.957      0.050
+    CRPBI_CARE        -0.049      0.025     -1.972      0.049
+    CRPBI_PARE         0.049      0.022      2.247      0.025
+    CRPBI_CARE         0.073      0.023      3.211      0.001
+    FES_YOUTH_         0.059      0.024      2.429      0.015
+    FES_YOUTH_         0.057      0.026      2.210      0.027
+    FES_YOUTH_        -0.025      0.025     -1.002      0.317
+    FES_YOUTH_        -0.018      0.020     -0.910      0.363
+    FES_YOUTH_         0.036      0.027      1.364      0.173
+    FES_YOUTH_        -0.095      0.029     -3.290      0.001
+    FES_YOUTH_        -0.042      0.032     -1.298      0.194
+    FES_YOUTH_         0.024      0.025      0.967      0.334
+    FES_YOUTH_        -0.023      0.027     -0.849      0.396
+    FAM_ENVIRO         0.072      0.024      2.945      0.003
+    FAM_ENVIRO        -0.043      0.018     -2.380      0.017
+    FAM_ENVIRO         0.083      0.027      3.049      0.002
+    FAM_ENVIRO        -0.041      0.017     -2.418      0.016
+    FAM_ENVIRO        -0.042      0.023     -1.866      0.062
+    FAM_ENVIRO         0.024      0.020      1.203      0.229
+    FAM_ENVIRO         0.063      0.035      1.824      0.068
+    FAM_ENVIRO        -0.074      0.029     -2.582      0.010
+    FAM_ENVIRO         0.036      0.023      1.564      0.118
+    KSADS_PTSD         0.093      0.050      1.857      0.063
+    KSADS_PTSD         0.124      0.048      2.555      0.011
+    KSADS_PTSD        -0.038      0.050     -0.748      0.454
+    KSADS_PTSD         0.010      0.044      0.224      0.823
+    KSADS_PTSD         0.422      0.037     11.390      0.000
+    KSADS_PTSD         0.099      0.031      3.229      0.001
+    PARENT_MON         0.021      0.010      2.155      0.031
+    PARENT_MON        -0.003      0.012     -0.221      0.825
+    PARENT_MON         0.001      0.017      0.064      0.949
+    PARENT_MON        -0.046      0.022     -2.049      0.040
+    PARENT_MON         0.072      0.019      3.886      0.000
+    NSC_P_SS_M        -0.022      0.016     -1.338      0.181
+    NEIGHBORHO         0.020      0.019      1.054      0.292
+    RESHIST_AD         1.421      0.436      3.259      0.001
+    DEMO_PRIM_         0.668      0.042     15.977      0.000
+    DEMO_PAREN         0.191      0.027      7.042      0.000
+    KSADS_PTSD        -0.053      0.051     -1.029      0.303
+    KSADS_PTSD         0.230      0.069      3.339      0.001
+    KSADS_PTSD         0.131      0.068      1.921      0.055
+    DEMO_FAM_E         0.055      0.023      2.417      0.016
+    DEMO_FAM_E         0.021      0.027      0.783      0.433
+    FAMHX_SS_M         0.747      0.025     29.510      0.000
+
+ F7       BY
+    FAMHX_SS_F         0.025      0.023      1.060      0.289
+    FAMHX_SS_F         0.013      0.021      0.618      0.536
+    ASR_SCR_AN         0.009      0.027      0.313      0.755
+    ASR_SCR_SO        -0.085      0.031     -2.731      0.006
+    ASR_SCR_DE        -0.035      0.030     -1.156      0.248
+    ASR_SCR_AV        -0.075      0.026     -2.860      0.004
+    ASR_SCR_AD         0.195      0.048      4.055      0.000
+    ASR_SCR_AN         0.348      0.036      9.644      0.000
+    DEMO_PRNT_         0.006      0.015      0.420      0.674
+    DEMO_COMB_         0.032      0.014      2.284      0.022
+    CRPBI_PARE        -0.033      0.020     -1.658      0.097
+    CRPBI_CARE        -0.017      0.015     -1.136      0.256
+    CRPBI_PARE        -0.003      0.020     -0.161      0.872
+    CRPBI_CARE         0.011      0.017      0.650      0.516
+    CRPBI_PARE        -0.021      0.019     -1.139      0.254
+    CRPBI_CARE        -0.026      0.016     -1.605      0.108
+    CRPBI_PARE         0.010      0.025      0.380      0.704
+    CRPBI_CARE         0.050      0.023      2.176      0.030
+    CRPBI_PARE         0.001      0.019      0.033      0.973
+    CRPBI_CARE         0.006      0.016      0.383      0.702
+    FES_YOUTH_         0.053      0.021      2.518      0.012
+    FES_YOUTH_         0.110      0.025      4.466      0.000
+    FES_YOUTH_        -0.083      0.028     -2.981      0.003
+    FES_YOUTH_         0.109      0.025      4.418      0.000
+    FES_YOUTH_         0.003      0.020      0.173      0.863
+    FES_YOUTH_        -0.101      0.026     -3.913      0.000
+    FES_YOUTH_         0.041      0.028      1.458      0.145
+    FES_YOUTH_        -0.022      0.020     -1.097      0.273
+    FES_YOUTH_         0.037      0.023      1.589      0.112
+    FAM_ENVIRO         0.500      0.026     19.316      0.000
+    FAM_ENVIRO         0.822      0.019     42.220      0.000
+    FAM_ENVIRO         0.195      0.030      6.427      0.000
+    FAM_ENVIRO         0.805      0.024     33.830      0.000
+    FAM_ENVIRO         0.234      0.026      9.063      0.000
+    FAM_ENVIRO         0.023      0.019      1.198      0.231
+    FAM_ENVIRO         0.404      0.030     13.385      0.000
+    FAM_ENVIRO         0.011      0.020      0.549      0.583
+    FAM_ENVIRO         0.355      0.021     16.586      0.000
+    KSADS_PTSD        -0.022      0.040     -0.549      0.583
+    KSADS_PTSD         0.012      0.039      0.300      0.764
+    KSADS_PTSD        -0.046      0.047     -0.988      0.323
+    KSADS_PTSD         0.016      0.045      0.357      0.721
+    KSADS_PTSD         0.010      0.027      0.395      0.693
+    KSADS_PTSD        -0.022      0.024     -0.915      0.360
+    PARENT_MON         0.008      0.008      0.915      0.360
+    PARENT_MON        -0.002      0.011     -0.162      0.871
+    PARENT_MON         0.000      0.014     -0.011      0.991
+    PARENT_MON         0.035      0.020      1.773      0.076
+    PARENT_MON         0.002      0.016      0.113      0.910
+    NSC_P_SS_M         0.000      0.015      0.008      0.993
+    NEIGHBORHO         0.005      0.018      0.307      0.759
+    RESHIST_AD        -1.531      0.370     -4.137      0.000
+    DEMO_PRIM_        -0.084      0.048     -1.753      0.080
+    DEMO_PAREN        -0.011      0.019     -0.566      0.571
+    KSADS_PTSD        -0.008      0.042     -0.188      0.851
+    KSADS_PTSD         0.001      0.042      0.027      0.978
+    KSADS_PTSD         0.016      0.043      0.370      0.711
+    DEMO_FAM_E         0.006      0.019      0.305      0.761
+    DEMO_FAM_E         0.035      0.025      1.400      0.162
+    FAMHX_SS_M         0.040      0.028      1.424      0.155
+
+ F8       BY
+    FAMHX_SS_F         0.017      0.026      0.632      0.527
+    FAMHX_SS_F         0.013      0.025      0.513      0.608
+    ASR_SCR_AN        -0.022      0.032     -0.683      0.495
+    ASR_SCR_SO         0.015      0.034      0.441      0.659
+    ASR_SCR_DE        -0.160      0.038     -4.242      0.000
+    ASR_SCR_AV         0.028      0.028      0.993      0.321
+    ASR_SCR_AD         0.114      0.050      2.290      0.022
+    ASR_SCR_AN         0.284      0.041      6.882      0.000
+    DEMO_PRNT_        -0.021      0.016     -1.295      0.195
+    DEMO_COMB_        -0.042      0.015     -2.797      0.005
+    CRPBI_PARE         0.022      0.023      0.955      0.340
+    CRPBI_CARE        -0.005      0.019     -0.282      0.778
+    CRPBI_PARE        -0.001      0.023     -0.024      0.981
+    CRPBI_CARE        -0.010      0.021     -0.473      0.636
+    CRPBI_PARE         0.054      0.026      2.100      0.036
+    CRPBI_CARE         0.014      0.020      0.729      0.466
+    CRPBI_PARE        -0.006      0.029     -0.194      0.846
+    CRPBI_CARE        -0.007      0.025     -0.274      0.784
+    CRPBI_PARE        -0.018      0.023     -0.785      0.432
+    CRPBI_CARE        -0.023      0.022     -1.074      0.283
+    FES_YOUTH_         0.018      0.020      0.904      0.366
+    FES_YOUTH_        -0.122      0.030     -4.054      0.000
+    FES_YOUTH_         0.183      0.038      4.761      0.000
+    FES_YOUTH_        -0.058      0.026     -2.208      0.027
+    FES_YOUTH_         0.068      0.030      2.283      0.022
+    FES_YOUTH_         0.210      0.034      6.102      0.000
+    FES_YOUTH_        -0.031      0.033     -0.932      0.351
+    FES_YOUTH_         0.127      0.032      4.005      0.000
+    FES_YOUTH_        -0.069      0.030     -2.333      0.020
+    FAM_ENVIRO         0.365      0.030     11.999      0.000
+    FAM_ENVIRO        -0.024      0.020     -1.194      0.233
+    FAM_ENVIRO         0.601      0.029     20.827      0.000
+    FAM_ENVIRO         0.102      0.032      3.198      0.001
+    FAM_ENVIRO         0.517      0.028     18.713      0.000
+    FAM_ENVIRO         0.798      0.026     30.937      0.000
+    FAM_ENVIRO         0.015      0.033      0.456      0.648
+    FAM_ENVIRO         0.625      0.027     23.319      0.000
+    FAM_ENVIRO         0.020      0.024      0.815      0.415
+    KSADS_PTSD         0.009      0.049      0.190      0.849
+    KSADS_PTSD        -0.025      0.046     -0.552      0.581
+    KSADS_PTSD         0.041      0.051      0.798      0.425
+    KSADS_PTSD        -0.028      0.052     -0.548      0.583
+    KSADS_PTSD         0.148      0.040      3.734      0.000
+    KSADS_PTSD        -0.017      0.030     -0.575      0.566
+    PARENT_MON         0.007      0.010      0.753      0.451
+    PARENT_MON         0.012      0.013      0.901      0.367
+    PARENT_MON        -0.019      0.017     -1.097      0.273
+    PARENT_MON        -0.012      0.023     -0.527      0.599
+    PARENT_MON        -0.025      0.020     -1.261      0.207
+    NSC_P_SS_M         0.029      0.017      1.673      0.094
+    NEIGHBORHO        -0.037      0.021     -1.756      0.079
+    RESHIST_AD        -0.050      0.375     -0.133      0.894
+    DEMO_PRIM_        -0.078      0.060     -1.289      0.198
+    DEMO_PAREN         0.049      0.025      1.985      0.047
+    KSADS_PTSD        -0.027      0.054     -0.493      0.622
+    KSADS_PTSD         0.013      0.045      0.282      0.778
+    KSADS_PTSD         0.049      0.055      0.892      0.372
+    DEMO_FAM_E         0.138      0.029      4.722      0.000
+    DEMO_FAM_E         0.067      0.034      1.986      0.047
+    FAMHX_SS_M         0.004      0.029      0.145      0.884
+
+ F9       BY
+    FAMHX_SS_F        -0.017      0.024     -0.701      0.483
+    FAMHX_SS_F        -0.012      0.022     -0.552      0.581
+    ASR_SCR_AN         0.015      0.033      0.442      0.659
+    ASR_SCR_SO         0.107      0.037      2.925      0.003
+    ASR_SCR_DE         0.017      0.035      0.478      0.632
+    ASR_SCR_AV         0.016      0.029      0.546      0.585
+    ASR_SCR_AD        -0.098      0.050     -1.966      0.049
+    ASR_SCR_AN        -0.049      0.032     -1.538      0.124
+    DEMO_PRNT_        -0.046      0.022     -2.100      0.036
+    DEMO_COMB_        -0.065      0.019     -3.420      0.001
+    CRPBI_PARE        -0.188      0.040     -4.747      0.000
+    CRPBI_CARE        -0.047      0.018     -2.620      0.009
+    CRPBI_PARE         0.048      0.027      1.794      0.073
+    CRPBI_CARE         0.129      0.024      5.503      0.000
+    CRPBI_PARE        -0.167      0.041     -4.094      0.000
+    CRPBI_CARE        -0.003      0.018     -0.167      0.867
+    CRPBI_PARE         0.077      0.043      1.761      0.078
+    CRPBI_CARE         0.179      0.035      5.177      0.000
+    CRPBI_PARE        -0.076      0.032     -2.419      0.016
+    CRPBI_CARE        -0.051      0.022     -2.358      0.018
+    FES_YOUTH_         0.002      0.023      0.081      0.936
+    FES_YOUTH_        -0.009      0.023     -0.396      0.692
+    FES_YOUTH_        -0.030      0.026     -1.147      0.251
+    FES_YOUTH_         0.009      0.022      0.389      0.697
+    FES_YOUTH_         0.050      0.028      1.788      0.074
+    FES_YOUTH_        -0.028      0.023     -1.191      0.234
+    FES_YOUTH_         0.065      0.038      1.719      0.086
+    FES_YOUTH_         0.009      0.028      0.310      0.757
+    FES_YOUTH_         0.060      0.031      1.927      0.054
+    FAM_ENVIRO         0.071      0.028      2.569      0.010
+    FAM_ENVIRO         0.027      0.019      1.448      0.148
+    FAM_ENVIRO        -0.042      0.023     -1.838      0.066
+    FAM_ENVIRO        -0.032      0.019     -1.683      0.092
+    FAM_ENVIRO         0.093      0.029      3.230      0.001
+    FAM_ENVIRO        -0.055      0.028     -1.935      0.053
+    FAM_ENVIRO        -0.064      0.033     -1.947      0.052
+    FAM_ENVIRO         0.085      0.036      2.381      0.017
+    FAM_ENVIRO        -0.050      0.024     -2.082      0.037
+    KSADS_PTSD         0.448      0.043     10.411      0.000
+    KSADS_PTSD         0.416      0.043      9.759      0.000
+    KSADS_PTSD         0.524      0.039     13.310      0.000
+    KSADS_PTSD         0.597      0.039     15.311      0.000
+    KSADS_PTSD         0.378      0.036     10.427      0.000
+    KSADS_PTSD         0.281      0.030      9.424      0.000
+    PARENT_MON        -0.004      0.010     -0.463      0.644
+    PARENT_MON        -0.011      0.013     -0.856      0.392
+    PARENT_MON        -0.007      0.017     -0.428      0.668
+    PARENT_MON         0.049      0.023      2.101      0.036
+    PARENT_MON        -0.021      0.019     -1.146      0.252
+    NSC_P_SS_M         0.013      0.017      0.744      0.457
+    NEIGHBORHO         0.029      0.019      1.513      0.130
+    RESHIST_AD         0.931      0.396      2.349      0.019
+    DEMO_PRIM_         0.055      0.041      1.352      0.176
+    DEMO_PAREN        -0.014      0.021     -0.658      0.511
+    KSADS_PTSD         0.841      0.031     27.047      0.000
+    KSADS_PTSD         0.772      0.030     26.141      0.000
+    KSADS_PTSD         0.673      0.035     19.460      0.000
+    DEMO_FAM_E         0.138      0.031      4.402      0.000
+    DEMO_FAM_E         0.123      0.035      3.477      0.001
+    FAMHX_SS_M         0.049      0.032      1.497      0.134
+
+ F10      BY
+    FAMHX_SS_F        -0.031      0.025     -1.274      0.203
+    FAMHX_SS_F        -0.046      0.024     -1.913      0.056
+    ASR_SCR_AN        -0.028      0.030     -0.933      0.351
+    ASR_SCR_SO        -0.011      0.031     -0.359      0.720
+    ASR_SCR_DE         0.041      0.031      1.342      0.180
+    ASR_SCR_AV         0.017      0.024      0.727      0.467
+    ASR_SCR_AD         0.022      0.039      0.580      0.562
+    ASR_SCR_AN         0.000      0.028      0.013      0.989
+    DEMO_PRNT_         0.024      0.013      1.754      0.079
+    DEMO_COMB_         0.009      0.012      0.734      0.463
+    CRPBI_PARE        -0.026      0.015     -1.720      0.085
+    CRPBI_CARE        -0.022      0.014     -1.574      0.116
+    CRPBI_PARE         0.087      0.022      4.045      0.000
+    CRPBI_CARE         0.088      0.019      4.769      0.000
+    CRPBI_PARE        -0.045      0.017     -2.680      0.007
+    CRPBI_CARE         0.005      0.013      0.383      0.702
+    CRPBI_PARE         0.074      0.026      2.908      0.004
+    CRPBI_CARE         0.042      0.020      2.140      0.032
+    CRPBI_PARE         0.017      0.016      1.093      0.274
+    CRPBI_CARE        -0.025      0.016     -1.529      0.126
+    FES_YOUTH_        -0.004      0.018     -0.222      0.824
+    FES_YOUTH_        -0.058      0.021     -2.724      0.006
+    FES_YOUTH_         0.075      0.025      3.012      0.003
+    FES_YOUTH_        -0.013      0.019     -0.700      0.484
+    FES_YOUTH_        -0.002      0.021     -0.100      0.920
+    FES_YOUTH_         0.066      0.021      3.062      0.002
+    FES_YOUTH_        -0.009      0.026     -0.333      0.739
+    FES_YOUTH_        -0.033      0.022     -1.514      0.130
+    FES_YOUTH_         0.022      0.023      0.959      0.338
+    FAM_ENVIRO        -0.019      0.020     -0.981      0.326
+    FAM_ENVIRO         0.001      0.015      0.062      0.951
+    FAM_ENVIRO        -0.004      0.021     -0.194      0.846
+    FAM_ENVIRO         0.005      0.015      0.308      0.758
+    FAM_ENVIRO         0.014      0.019      0.704      0.481
+    FAM_ENVIRO        -0.028      0.020     -1.360      0.174
+    FAM_ENVIRO         0.057      0.030      1.907      0.057
+    FAM_ENVIRO         0.023      0.022      1.045      0.296
+    FAM_ENVIRO         0.006      0.020      0.284      0.777
+    KSADS_PTSD        -0.018      0.037     -0.490      0.624
+    KSADS_PTSD        -0.010      0.040     -0.256      0.798
+    KSADS_PTSD        -0.150      0.056     -2.688      0.007
+    KSADS_PTSD        -0.091      0.055     -1.634      0.102
+    KSADS_PTSD         0.000      0.026      0.011      0.991
+    KSADS_PTSD        -0.080      0.026     -3.092      0.002
+    PARENT_MON         0.264      0.010     26.829      0.000
+    PARENT_MON         0.478      0.016     30.723      0.000
+    PARENT_MON         0.292      0.013     22.492      0.000
+    PARENT_MON        -0.238      0.020    -11.876      0.000
+    PARENT_MON         0.063      0.015      4.115      0.000
+    NSC_P_SS_M        -0.029      0.015     -1.975      0.048
+    NEIGHBORHO         0.064      0.017      3.737      0.000
+    RESHIST_AD         0.683      0.371      1.841      0.066
+    DEMO_PRIM_         0.057      0.043      1.316      0.188
+    DEMO_PAREN        -0.064      0.022     -2.939      0.003
+    KSADS_PTSD        -0.019      0.035     -0.536      0.592
+    KSADS_PTSD         0.085      0.053      1.625      0.104
+    KSADS_PTSD         0.009      0.042      0.210      0.834
+    DEMO_FAM_E         0.018      0.019      0.960      0.337
+    DEMO_FAM_E         0.023      0.024      0.937      0.349
+    FAMHX_SS_M         0.064      0.031      2.071      0.038
+
+ F2       WITH
+    F1                 0.187      0.014     12.962      0.000
+
+ F3       WITH
+    F1                 0.043      0.021      2.056      0.040
+    F2                 0.041      0.019      2.134      0.033
+
+ F4       WITH
+    F1                 0.053      0.016      3.239      0.001
+    F2                 0.021      0.017      1.245      0.213
+    F3                 0.509      0.023     22.460      0.000
+
+ F5       WITH
+    F1                 0.089      0.018      4.853      0.000
+    F2                 0.171      0.017      9.952      0.000
+    F3                 0.329      0.023     14.340      0.000
+    F4                 0.265      0.021     12.572      0.000
+
+ F6       WITH
+    F1                 0.250      0.019     13.124      0.000
+    F2                 0.294      0.026     11.451      0.000
+    F3                 0.057      0.029      1.924      0.054
+    F4                 0.000      0.026     -0.006      0.995
+    F5                 0.062      0.027      2.271      0.023
+
+ F7       WITH
+    F1                 0.280      0.018     15.351      0.000
+    F2                 0.029      0.020      1.436      0.151
+    F3                 0.095      0.020      4.778      0.000
+    F4                 0.039      0.019      2.128      0.033
+    F5                 0.145      0.024      6.136      0.000
+    F6                 0.133      0.023      5.761      0.000
+
+ F8       WITH
+    F1                 0.359      0.018     19.401      0.000
+    F2                 0.199      0.021      9.509      0.000
+    F3                 0.021      0.026      0.800      0.424
+    F4                 0.028      0.022      1.284      0.199
+    F5                 0.205      0.028      7.306      0.000
+    F6                 0.159      0.026      6.061      0.000
+    F7                 0.369      0.025     14.661      0.000
+
+ F9       WITH
+    F1                 0.219      0.025      8.573      0.000
+    F2                 0.195      0.031      6.264      0.000
+    F3                 0.031      0.033      0.966      0.334
+    F4                -0.045      0.029     -1.562      0.118
+    F5                 0.063      0.029      2.206      0.027
+    F6                 0.175      0.042      4.154      0.000
+    F7                 0.074      0.026      2.910      0.004
+    F8                 0.116      0.029      4.001      0.000
+
+ F10      WITH
+    F1                 0.016      0.021      0.730      0.465
+    F2                 0.135      0.022      6.035      0.000
+    F3                 0.294      0.026     11.175      0.000
+    F4                 0.204      0.024      8.333      0.000
+    F5                 0.250      0.023     10.815      0.000
+    F6                -0.009      0.025     -0.370      0.712
+    F7                -0.011      0.022     -0.498      0.619
+    F8                 0.052      0.025      2.046      0.041
+    F9                -0.025      0.027     -0.920      0.358
+
+ Intercepts
+    ASR_SCR_AN         3.695      0.034    109.235      0.000
+    ASR_SCR_SO         1.862      0.040     47.111      0.000
+    ASR_SCR_DE         3.920      0.058     67.878      0.000
+    ASR_SCR_AV         1.999      0.034     58.059      0.000
+    ASR_SCR_AD         3.738      0.059     63.354      0.000
+    ASR_SCR_AN         2.076      0.042     49.450      0.000
+    PARENT_MON         1.264      0.011    114.626      0.000
+    PARENT_MON         1.387      0.017     79.932      0.000
+    PARENT_MON         1.439      0.020     72.377      0.000
+    PARENT_MON         3.744      0.017    223.122      0.000
+    PARENT_MON         1.637      0.018     92.314      0.000
+    NSC_P_SS_M        -3.927      0.013   -291.793      0.000
+    NEIGHBORHO         1.930      0.017    115.559      0.000
+    RESHIST_AD        93.603      0.367    255.160      0.000
+
+ Thresholds
+    FAMHX_SS$1         1.176      0.019     61.024      0.000
+    FAMHX_SS$1         1.378      0.021     64.656      0.000
+    DEMO_PRN$1        -0.316      0.015    -20.913      0.000
+    DEMO_PRN$2         0.366      0.015     24.023      0.000
+    DEMO_PRN$3         1.192      0.019     61.410      0.000
+    DEMO_PRN$4         1.805      0.028     64.349      0.000
+    DEMO_COM$1        -1.165      0.019    -60.768      0.000
+    DEMO_COM$2        -0.145      0.015     -9.730      0.000
+    DEMO_COM$3         0.235      0.015     15.671      0.000
+    DEMO_COM$4         0.613      0.016     38.499      0.000
+    DEMO_COM$5         0.886      0.017     51.562      0.000
+    DEMO_COM$6         1.115      0.019     59.456      0.000
+    DEMO_COM$7         1.337      0.021     64.117      0.000
+    DEMO_COM$8         1.508      0.023     65.664      0.000
+    DEMO_COM$9         1.854      0.029     63.694      0.000
+    CRPBI_PA$1         0.820      0.017     48.749      0.000
+    CRPBI_PA$2         2.052      0.034     59.958      0.000
+    CRPBI_CA$1         0.409      0.015     26.726      0.000
+    CRPBI_CA$2         1.646      0.025     65.652      0.000
+    CRPBI_PA$1         0.721      0.016     44.079      0.000
+    CRPBI_PA$2         2.104      0.036     58.732      0.000
+    CRPBI_CA$1         0.563      0.016     35.753      0.000
+    CRPBI_CA$2         1.703      0.026     65.335      0.000
+    CRPBI_PA$1         0.892      0.017     51.818      0.000
+    CRPBI_PA$2         2.180      0.038     56.756      0.000
+    CRPBI_CA$1         0.595      0.016     37.509      0.000
+    CRPBI_CA$2         1.789      0.028     64.538      0.000
+    CRPBI_PA$1         1.551      0.024     65.778      0.000
+    CRPBI_PA$2         2.623      0.061     42.961      0.000
+    CRPBI_CA$1         1.201      0.019     61.624      0.000
+    CRPBI_CA$2         2.268      0.042     54.299      0.000
+    CRPBI_PA$1         0.525      0.016     33.596      0.000
+    CRPBI_PA$2         1.918      0.031     62.657      0.000
+    CRPBI_CA$1         0.395      0.015     25.857      0.000
+    CRPBI_CA$2         1.573      0.024     65.794      0.000
+    FES_YOUT$1         0.739      0.016     44.978      0.000
+    FES_YOUT$1         0.481      0.015     31.010      0.000
+    FES_YOUT$1         1.190      0.019     61.377      0.000
+    FES_YOUT$1         0.372      0.015     24.423      0.000
+    FES_YOUT$1         0.896      0.017     51.946      0.000
+    FES_YOUT$1         0.820      0.017     48.749      0.000
+    FES_YOUT$1         1.370      0.021     64.559      0.000
+    FES_YOUT$1         0.776      0.017     46.741      0.000
+    FES_YOUT$1         0.719      0.016     43.989      0.000
+    FAM_ENVI$1         0.998      0.018     55.781      0.000
+    FAM_ENVI$1         0.002      0.015      0.130      0.896
+    FAM_ENVI$1         1.162      0.019     60.699      0.000
+    FAM_ENVI$1        -0.034      0.015     -2.312      0.021
+    FAM_ENVI$1         0.477      0.015     30.800      0.000
+    FAM_ENVI$1         1.235      0.020     62.341      0.000
+    FAM_ENVI$1         1.249      0.020     62.631      0.000
+    FAM_ENVI$1         1.007      0.018     56.102      0.000
+    FAM_ENVI$1         0.002      0.015      0.130      0.896
+    KSADS_PT$1         1.782      0.028     64.616      0.000
+    KSADS_PT$1         1.691      0.026     65.416      0.000
+    KSADS_PT$1         2.008      0.033     60.929      0.000
+    KSADS_PT$1         1.977      0.032     61.560      0.000
+    KSADS_PT$1         1.464      0.022     65.438      0.000
+    KSADS_PT$1         0.714      0.016     43.763      0.000
+    DEMO_PRI$1         1.945      0.031     62.164      0.000
+    DEMO_PAR$1         0.780      0.017     46.941      0.000
+    KSADS_PT$1         2.263      0.042     54.432      0.000
+    KSADS_PT$2         2.988      0.097     30.932      0.000
+    KSADS_PT$1         2.177      0.038     56.858      0.000
+    KSADS_PT$2         2.988      0.097     30.932      0.000
+    KSADS_PT$1         2.107      0.036     58.653      0.000
+    KSADS_PT$2         2.932      0.090     32.722      0.000
+    DEMO_FAM$1         1.042      0.018     57.266      0.000
+    DEMO_FAM$2         1.792      0.028     64.497      0.000
+    DEMO_FAM$3         2.682      0.065     40.967      0.000
+    DEMO_FAM$1         1.282      0.020     63.245      0.000
+    DEMO_FAM$2         1.819      0.028     64.165      0.000
+    FAMHX_SS$1         1.626      0.025     65.721      0.000
+    FAMHX_SS$2         2.216      0.040     55.785      0.000
+
+ Variances
+    F1                 1.000      0.000    999.000    999.000
+    F2                 1.000      0.000    999.000    999.000
+    F3                 1.000      0.000    999.000    999.000
+    F4                 1.000      0.000    999.000    999.000
+    F5                 1.000      0.000    999.000    999.000
+    F6                 1.000      0.000    999.000    999.000
+    F7                 1.000      0.000    999.000    999.000
+    F8                 1.000      0.000    999.000    999.000
+    F9                 1.000      0.000    999.000    999.000
+    F10                1.000      0.000    999.000    999.000
+
+ Residual Variances
+    ASR_SCR_AN         3.052      0.056     54.845      0.000
+    ASR_SCR_SO         3.414      0.050     68.554      0.000
+    ASR_SCR_DE         2.711      0.073     37.345      0.000
+    ASR_SCR_AV         2.347      0.037     62.773      0.000
+    ASR_SCR_AD         5.686      0.100     57.085      0.000
+    ASR_SCR_AN         3.246      0.047     69.424      0.000
+    PARENT_MON         0.221      0.004     50.891      0.000
+    PARENT_MON         0.390      0.012     33.164      0.000
+    PARENT_MON         0.645      0.011     59.606      0.000
+    PARENT_MON         1.184      0.025     47.271      0.000
+    PARENT_MON         0.802      0.016     49.384      0.000
+    NSC_P_SS_M         0.719      0.013     54.990      0.000
+    NEIGHBORHO         0.958      0.019     50.554      0.000
+    RESHIST_AD       304.639      4.933     61.757      0.000
+
+
+QUALITY OF NUMERICAL RESULTS
+
+     Condition Number for the Information Matrix              0.418E-06
+       (ratio of smallest to largest eigenvalue)
+
+
+R-SQUARE
+
+    Observed                   Residual
+    Variable        Estimate   Variance
+
+    FAMHX_SS           0.518      0.482
+    FAMHX_SS           0.727      0.273
+    ASR_SCR_           0.530
+    ASR_SCR_           0.351
+    ASR_SCR_           0.790
+    ASR_SCR_           0.482
+    ASR_SCR_           0.567
+    ASR_SCR_           0.463
+    DEMO_PRN           0.552      0.448
+    DEMO_COM           0.868      0.132
+    CRPBI_PA           0.613      0.387
+    CRPBI_CA           0.704      0.296
+    CRPBI_PA           0.478      0.522
+    CRPBI_CA           0.495      0.505
+    CRPBI_PA           0.642      0.358
+    CRPBI_CA           0.688      0.312
+    CRPBI_PA           0.683      0.317
+    CRPBI_CA           0.637      0.363
+    CRPBI_PA           0.456      0.544
+    CRPBI_CA           0.502      0.498
+    FES_YOUT           0.586      0.414
+    FES_YOUT           0.355      0.645
+    FES_YOUT           0.488      0.512
+    FES_YOUT           0.465      0.535
+    FES_YOUT           0.370      0.630
+    FES_YOUT           0.541      0.459
+    FES_YOUT           0.333      0.667
+    FES_YOUT           0.285      0.715
+    FES_YOUT           0.162      0.838
+    FAM_ENVI           0.636      0.364
+    FAM_ENVI           0.641      0.359
+    FAM_ENVI           0.526      0.474
+    FAM_ENVI           0.710      0.290
+    FAM_ENVI           0.465      0.535
+    FAM_ENVI           0.660      0.340
+    FAM_ENVI           0.171      0.829
+    FAM_ENVI           0.439      0.561
+    FAM_ENVI           0.208      0.792
+    KSADS_PT           0.259      0.741
+    KSADS_PT           0.210      0.790
+    KSADS_PT           0.325      0.675
+    KSADS_PT           0.366      0.634
+    KSADS_PT           0.515      0.485
+    KSADS_PT           0.158      0.842
+    PARENT_M           0.266
+    PARENT_M           0.375
+    PARENT_M           0.143
+    PARENT_M           0.154
+    PARENT_M           0.092
+    NSC_P_SS           0.172
+    NEIGHBOR           0.135
+    RESHIST_           0.334
+    DEMO_PRI           0.464      0.536
+    DEMO_PAR           0.460      0.540
+    KSADS_PT           0.828      0.172
+    KSADS_PT           0.702      0.298
+    KSADS_PT           0.532      0.468
+    DEMO_FAM           0.581      0.419
+    DEMO_FAM           0.422      0.578
+    FAMHX_SS           0.616      0.384
+
+
+SAMPLE STATISTICS FOR ESTIMATED FACTOR SCORES
+
+
+     SAMPLE STATISTICS
+
+
+           Means
+              F1            F1_SE         F2            F2_SE         F3
+              ________      ________      ________      ________      ________
+                0.007         0.324         0.022         0.351         0.082
+
+
+           Means
+              F3_SE         F4            F4_SE         F5            F5_SE
+              ________      ________      ________      ________      ________
+                0.564         0.077         0.521         0.062         0.565
+
+
+           Means
+              F6            F6_SE         F7            F7_SE         F8
+              ________      ________      ________      ________      ________
+                0.105         0.731         0.028         0.553         0.082
+
+
+           Means
+              F8_SE         F9            F9_SE         F10           F10_SE
+              ________      ________      ________      ________      ________
+                0.650         0.075         0.803         0.004         0.662
+
+
+           Covariances
+              F1            F1_SE         F2            F2_SE         F3
+              ________      ________      ________      ________      ________
+ F1             0.892
+ F1_SE         -0.001         0.000
+ F2             0.183        -0.001         0.813
+ F2_SE         -0.011         0.000        -0.036         0.002
+ F3             0.041         0.000         0.041        -0.003         0.600
+ F3_SE         -0.005         0.000        -0.006         0.000        -0.083
+ F4             0.046         0.000         0.016        -0.002         0.408
+ F4_SE         -0.008         0.000        -0.002         0.000        -0.064
+ F5             0.084         0.000         0.150        -0.007         0.278
+ F5_SE         -0.012         0.000        -0.017         0.001        -0.030
+ F6             0.227        -0.001         0.271        -0.015         0.051
+ F6_SE         -0.048         0.000        -0.060         0.003        -0.012
+ F7             0.251         0.000         0.025        -0.002         0.068
+ F7_SE         -0.001         0.000        -0.004         0.000        -0.001
+ F8             0.320        -0.001         0.157        -0.008         0.035
+ F8_SE         -0.038         0.000        -0.022         0.001        -0.009
+ F9             0.216         0.000         0.167        -0.009        -0.007
+ F9_SE         -0.036         0.000        -0.032         0.002        -0.015
+ F10            0.020         0.000         0.129        -0.006         0.267
+ F10_SE        -0.001         0.000        -0.001         0.000        -0.002
+
+
+           Covariances
+              F3_SE         F4            F4_SE         F5            F5_SE
+              ________      ________      ________      ________      ________
+ F3_SE          0.013
+ F4            -0.062         0.606
+ F4_SE          0.010        -0.081         0.014
+ F5            -0.042         0.215        -0.034         0.581
+ F5_SE          0.005        -0.023         0.004        -0.057         0.007
+ F6            -0.007         0.013        -0.004         0.059        -0.008
+ F6_SE          0.002        -0.006         0.001        -0.015         0.002
+ F7            -0.008         0.029        -0.004         0.115        -0.015
+ F7_SE          0.000        -0.002         0.000        -0.004         0.001
+ F8            -0.006         0.021        -0.004         0.162        -0.021
+ F8_SE          0.001        -0.006         0.001        -0.027         0.004
+ F9             0.004        -0.025         0.003         0.052        -0.006
+ F9_SE          0.002        -0.011         0.002        -0.016         0.002
+ F10           -0.038         0.190        -0.030         0.216        -0.023
+ F10_SE         0.000        -0.002         0.000        -0.002         0.000
+
+
+           Covariances
+              F6            F6_SE         F7            F7_SE         F8
+              ________      ________      ________      ________      ________
+ F6             0.439
+ F6_SE         -0.085         0.018
+ F7             0.103        -0.022         0.544
+ F7_SE         -0.001         0.000        -0.004         0.004
+ F8             0.136        -0.031         0.299        -0.004         0.496
+ F8_SE         -0.018         0.004        -0.043         0.001        -0.063
+ F9             0.148        -0.034         0.063        -0.001         0.110
+ F9_SE         -0.032         0.007        -0.014         0.000        -0.022
+ F10            0.007        -0.003        -0.001        -0.001         0.047
+ F10_SE        -0.001         0.000        -0.001         0.000        -0.001
+
+
+           Covariances
+              F8_SE         F9            F9_SE         F10           F10_SE
+              ________      ________      ________      ________      ________
+ F8_SE          0.009
+ F9            -0.015         0.373
+ F9_SE          0.003        -0.052         0.009
+ F10           -0.008        -0.018        -0.005         0.558
+ F10_SE         0.000        -0.001         0.000        -0.001         0.000
+
+
+           Correlations
+              F1            F1_SE         F2            F2_SE         F3
+              ________      ________      ________      ________      ________
+ F1             1.000
+ F1_SE         -0.592         1.000
+ F2             0.215        -0.620         1.000
+ F2_SE         -0.233         0.548        -0.809         1.000
+ F3             0.057        -0.149         0.058        -0.078         1.000
+ F3_SE         -0.051         0.143        -0.063         0.086        -0.953
+ F4             0.062        -0.112         0.023        -0.052         0.676
+ F4_SE         -0.072         0.121        -0.022         0.053        -0.701
+ F5             0.117        -0.313         0.219        -0.195         0.472
+ F5_SE         -0.151         0.351        -0.225         0.204        -0.451
+ F6             0.362        -0.654         0.453        -0.450         0.099
+ F6_SE         -0.384         0.714        -0.502         0.468        -0.116
+ F7             0.360        -0.516         0.038        -0.045         0.119
+ F7_SE         -0.011         0.225        -0.083         0.060        -0.031
+ F8             0.482        -0.689         0.248        -0.227         0.064
+ F8_SE         -0.420         0.736        -0.255         0.240        -0.122
+ F9             0.374        -0.571         0.303        -0.291        -0.015
+ F9_SE         -0.395         0.649        -0.375         0.340        -0.203
+ F10            0.029        -0.121         0.191        -0.157         0.462
+ F10_SE        -0.297         0.594        -0.410         0.392        -0.730
+
+
+           Correlations
+              F3_SE         F4            F4_SE         F5            F5_SE
+              ________      ________      ________      ________      ________
+ F3_SE          1.000
+ F4            -0.714         1.000
+ F4_SE          0.791        -0.886         1.000
+ F5            -0.494         0.362        -0.380         1.000
+ F5_SE          0.504        -0.350         0.402        -0.878         1.000
+ F6            -0.089         0.026        -0.058         0.116        -0.134
+ F6_SE          0.109        -0.057         0.085        -0.145         0.166
+ F7            -0.101         0.051        -0.050         0.205        -0.237
+ F7_SE          0.043        -0.034         0.036        -0.080         0.123
+ F8            -0.076         0.038        -0.044         0.302        -0.354
+ F8_SE          0.133        -0.076         0.084        -0.373         0.436
+ F9             0.060        -0.052         0.039         0.111        -0.116
+ F9_SE          0.166        -0.150         0.164        -0.219         0.229
+ F10           -0.456         0.327        -0.341         0.379        -0.357
+ F10_SE         0.747        -0.609         0.658        -0.682         0.707
+
+
+           Correlations
+              F6            F6_SE         F7            F7_SE         F8
+              ________      ________      ________      ________      ________
+ F6             1.000
+ F6_SE         -0.963         1.000
+ F7             0.210        -0.229         1.000
+ F7_SE         -0.031         0.049        -0.083         1.000
+ F8             0.292        -0.333         0.576        -0.083         1.000
+ F8_SE         -0.289         0.333        -0.610         0.242        -0.927
+ F9             0.366        -0.421         0.139        -0.026         0.256
+ F9_SE         -0.500         0.549        -0.202         0.046        -0.320
+ F10            0.013        -0.033        -0.002        -0.029         0.090
+ F10_SE        -0.425         0.488        -0.231         0.094        -0.365
+
+
+           Correlations
+              F8_SE         F9            F9_SE         F10           F10_SE
+              ________      ________      ________      ________      ________
+ F8_SE          1.000
+ F9            -0.258         1.000
+ F9_SE          0.328        -0.895         1.000
+ F10           -0.112        -0.038        -0.065         1.000
+ F10_SE         0.425        -0.437         0.629        -0.420         1.000
+
+
+SAVEDATA INFORMATION
+
+
+  Save file
+    10factors_fscores.dat
+
+  Order and format of variables
+
+    FAMHX_SS       F10.3
+    FAMHX_SS       F10.3
+    ASR_SCR_       F10.3
+    ASR_SCR_       F10.3
+    ASR_SCR_       F10.3
+    ASR_SCR_       F10.3
+    ASR_SCR_       F10.3
+    ASR_SCR_       F10.3
+    DEMO_PRN       F10.3
+    DEMO_COM       F10.3
+    CRPBI_PA       F10.3
+    CRPBI_CA       F10.3
+    CRPBI_PA       F10.3
+    CRPBI_CA       F10.3
+    CRPBI_PA       F10.3
+    CRPBI_CA       F10.3
+    CRPBI_PA       F10.3
+    CRPBI_CA       F10.3
+    CRPBI_PA       F10.3
+    CRPBI_CA       F10.3
+    FES_YOUT       F10.3
+    FES_YOUT       F10.3
+    FES_YOUT       F10.3
+    FES_YOUT       F10.3
+    FES_YOUT       F10.3
+    FES_YOUT       F10.3
+    FES_YOUT       F10.3
+    FES_YOUT       F10.3
+    FES_YOUT       F10.3
+    FAM_ENVI       F10.3
+    FAM_ENVI       F10.3
+    FAM_ENVI       F10.3
+    FAM_ENVI       F10.3
+    FAM_ENVI       F10.3
+    FAM_ENVI       F10.3
+    FAM_ENVI       F10.3
+    FAM_ENVI       F10.3
+    FAM_ENVI       F10.3
+    KSADS_PT       F10.3
+    KSADS_PT       F10.3
+    KSADS_PT       F10.3
+    KSADS_PT       F10.3
+    KSADS_PT       F10.3
+    KSADS_PT       F10.3
+    PARENT_M       F10.3
+    PARENT_M       F10.3
+    PARENT_M       F10.3
+    PARENT_M       F10.3
+    PARENT_M       F10.3
+    NSC_P_SS       F10.3
+    NEIGHBOR       F10.3
+    RESHIST_       F10.3
+    DEMO_PRI       F10.3
+    DEMO_PAR       F10.3
+    KSADS_PT       F10.3
+    KSADS_PT       F10.3
+    KSADS_PT       F10.3
+    DEMO_FAM       F10.3
+    DEMO_FAM       F10.3
+    FAMHX_SS       F10.3
+    F1             F10.3
+    F1_SE          F10.3
+    F2             F10.3
+    F2_SE          F10.3
+    F3             F10.3
+    F3_SE          F10.3
+    F4             F10.3
+    F4_SE          F10.3
+    F5             F10.3
+    F5_SE          F10.3
+    F6             F10.3
+    F6_SE          F10.3
+    F7             F10.3
+    F7_SE          F10.3
+    F8             F10.3
+    F8_SE          F10.3
+    F9             F10.3
+    F9_SE          F10.3
+    F10            F10.3
+    F10_SE         F10.3
+    ALTID          I5
+
+  Save file format
+    80F10.3 I5
+
+  Save file record length    10000
+
+  Save missing symbol        *
+
+
+     Beginning Time:  14:40:40
+        Ending Time:  14:41:33
+       Elapsed Time:  00:00:53
+
+
+
+MUTHEN & MUTHEN
+3463 Stoner Ave.
+Los Angeles, CA  90066
+
+Tel: (310) 391-9971
+Fax: (310) 391-8971
+Web: www.StatModel.com
+Support: Support@StatModel.com
+
+Copyright (c) 1998-2021 Muthen & Muthen

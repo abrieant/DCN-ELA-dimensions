@@ -1,0 +1,341 @@
+---
+title: "Regression Model: "
+author: "Anna Vannucci"
+date: "6/3/2022"
+output: html_document
+---
+
+resources: 
+https://cran.r-project.org/web/packages/brms/vignettes/brms_multivariate.html
+http://mjskay.github.io/tidybayes/articles/tidy-brms.html
+
+Load libraries:
+```{r}
+library(tidyverse)
+library(psych)
+library(viridis)
+library(brms)
+library(loo)
+library(tidybayes)
+library(bayesplot)
+library(posterior)
+library(cowplot)
+library(purrr)
+library(modelr)
+library(caret)
+library(ggmcmc)
+library(ggthemes)
+library(ggridges)
+
+# help stan run faster
+#rstan_options(auto_write = T)
+#options(mc.cores = parallel::detectCores())
+
+set.seed(122) # for reproducibility
+```
+
+Load dataframes:
+```{r}
+# read in cleaned dataframe
+df <- read.csv("../data_clean/df_wide.csv", stringsAsFactors = F)
+
+# read in dataframe with site labels
+dfsite <- read.csv("../data_raw/abcd_lt01.csv", stringsAsFactors = F) %>% 
+  filter(eventname == "baseline_year_1_arm_1") %>% 
+  dplyr::select(subjectkey, site_id_l)
+
+# add site variable to cleaned dataframe
+df <- df %>% 
+  left_join(dfsite, by = "subjectkey") %>% 
+  drop_na()
+```
+
+Data cleaning:
+```{r}
+df_clean <- df %>% 
+  dplyr::select(altID, subjectkey, site_id_l, age, sex, f1_parpsych, f2_ses_adi_ncrime, 
+                f3_p2lacksupp, f4_p1lacksupp, f5_famconf_cr, f6_parsu_biosep, f7_angarg_pr, 
+                f8_physemoagg_pr, f9_trauma, f10_neglos, cbcl_int_t, cbcl_ext_t, cardsort_uc, 
+                flanker_uc) %>% 
+  dplyr::rename(site = site_id_l) %>% 
+  dplyr::mutate(site = as.factor(site),
+                age_c = age - mean(age),
+                sex_d = as.factor(ifelse(sex == "M", -0.5, 0.5)),
+                f1_parpsych_c = f1_parpsych - mean(f1_parpsych), 
+                f2_ses_adi_ncrime_c = f2_ses_adi_ncrime - mean(f2_ses_adi_ncrime), 
+                f3_p2lacksupp_c = f3_p2lacksupp - mean(f3_p2lacksupp), 
+                f4_p1lacksupp_c = f4_p1lacksupp - mean(f4_p1lacksupp), 
+                f5_famconf_cr_c = f5_famconf_cr - mean(f5_famconf_cr), 
+                f6_parsu_biosep_c = f6_parsu_biosep - mean(f6_parsu_biosep), 
+                f7_angarg_pr_c = f7_angarg_pr - mean(f7_angarg_pr), 
+                f8_physemoagg_pr_c = f8_physemoagg_pr - mean(f8_physemoagg_pr), 
+                f9_trauma_c = f9_trauma - mean(f9_trauma), 
+                f10_neglos_c = f10_neglos - mean(f10_neglos),
+                cbclint_std = scale(cbcl_int_t),
+                cbclext_std = scale(cbcl_ext_t),
+                cardsort_std = scale(cardsort_uc),
+                flanker_std = scale(flanker_uc))
+
+write.csv(df_clean, "../data_clean/df_mvmlm.csv", row.names = F)
+```
+
+Split dataframe into train and validation (test) sets:
+```{r}
+trainIndex <- createDataPartition(df_clean$site, 
+                                  p = .7,
+                                  list = FALSE,
+                                  times = 1)
+train <- df_clean[ trainIndex,]
+valid <- df_clean[-trainIndex,]
+```
+
+Sample characteristics of train and test sets:
+```{r}
+describe(train)
+describe(valid)
+```
+
+
+***********************
+***********************
+**** TRAINING SET *****
+***********************
+***********************
+
+# Data cleaning
+```{r}
+df_train <- train %>% 
+  dplyr::mutate(site = as.factor(site),
+                age_c = age - mean(age),
+                sex_d = as.factor(ifelse(sex == "M", -0.5, 0.5)),
+                f1_parpsych_c = f1_parpsych - mean(f1_parpsych), 
+                f2_ses_adi_ncrime_c = f2_ses_adi_ncrime - mean(f2_ses_adi_ncrime), 
+                f3_p2lacksupp_c = f3_p2lacksupp - mean(f3_p2lacksupp), 
+                f4_p1lacksupp_c = f4_p1lacksupp - mean(f4_p1lacksupp), 
+                f5_famconf_cr_c = f5_famconf_cr - mean(f5_famconf_cr), 
+                f6_parsu_biosep_c = f6_parsu_biosep - mean(f6_parsu_biosep), 
+                f7_angarg_pr_c = f7_angarg_pr - mean(f7_angarg_pr), 
+                f8_physemoagg_pr_c = f8_physemoagg_pr - mean(f8_physemoagg_pr), 
+                f9_trauma_c = f9_trauma - mean(f9_trauma), 
+                f10_neglos_c = f10_neglos - mean(f10_neglos),
+                cbclint_std = scale(cbcl_int_t),
+                cbclext_std = scale(cbcl_ext_t),
+                cardsort_std = scale(cardsort_uc),
+                flanker_std = scale(flanker_uc))
+
+write.csv(df_train, "../data_clean/df_train.csv", row.names = F)
+```
+
+```{r}
+df_valid <- valid %>% 
+  dplyr::mutate(site = as.factor(site),
+                age_c = age - mean(age),
+                sex_d = as.factor(ifelse(sex == "M", -0.5, 0.5)),
+                f1_parpsych_c = f1_parpsych - mean(f1_parpsych), 
+                f2_ses_adi_ncrime_c = f2_ses_adi_ncrime - mean(f2_ses_adi_ncrime), 
+                f3_p2lacksupp_c = f3_p2lacksupp - mean(f3_p2lacksupp), 
+                f4_p1lacksupp_c = f4_p1lacksupp - mean(f4_p1lacksupp), 
+                f5_famconf_cr_c = f5_famconf_cr - mean(f5_famconf_cr), 
+                f6_parsu_biosep_c = f6_parsu_biosep - mean(f6_parsu_biosep), 
+                f7_angarg_pr_c = f7_angarg_pr - mean(f7_angarg_pr), 
+                f8_physemoagg_pr_c = f8_physemoagg_pr - mean(f8_physemoagg_pr), 
+                f9_trauma_c = f9_trauma - mean(f9_trauma), 
+                f10_neglos_c = f10_neglos - mean(f10_neglos),
+                cbclint_std = scale(cbcl_int_t),
+                cbclext_std = scale(cbcl_ext_t),
+                cardsort_std = scale(cardsort_uc),
+                flanker_std = scale(flanker_uc))
+
+write.csv(df_valid, "../data_clean/df_valid.csv", row.names = F)
+```
+
+
+
+# Multivariate multilevel models - TRAINING SET
+
+*Internalizing and Externalizing Problems*
+
+`Standardized  (beta) Estimates`
+```{r}
+# multivariate multilevel model equation
+bform2_tr <- bf(mvbind(cbclint_std, cbclext_std) ~ scale(age_c) + sex_d + scale(f1_parpsych_c) +
+               scale(f2_ses_adi_ncrime_c) + scale(f3_p2lacksupp_c) + scale(f4_p1lacksupp_c) + 
+               scale(f5_famconf_cr_c) + scale(f6_parsu_biosep_c) + scale(f7_angarg_pr_c) + 
+               scale(f8_physemoagg_pr_c) + scale(f9_trauma_c) + scale(f10_neglos_c) + 
+               (1|a|site)) + # specify random intercepts
+            set_rescor(TRUE) # specify a multivariate model; model residual correlations
+
+# run mvmlm
+fit2_tr <- brm(bform2_tr, data = df_train, chains = 2, cores = 2)
+saveRDS(fit2_tr, "../results/mvmlm_train_cbcl_std.rds")
+summary(fit2_tr)
+```
+
+`model fit`
+- How much variation in the dependent variables can be explained by our model
+- Use a Bayesian generalization of the R2 coefficient.
+```{r}
+fit2_tr_r2 <- bayes_R2(fit2_tr)
+fit2_tr_r2
+```
+
+`prediction`
+https://www.geeksforgeeks.org/the-validation-set-approach-in-r-programming/
+
+*internalizing*
+```{r}
+fit2_tr <- readRDS("../results/mvmlm_train_cbcl_std.rds")
+df_valid <- read.csv("../data_clean/df_valid.csv", stringsAsFactors = F)
+
+# make predictions of new data based on model
+predictions_int <- predict(fit2_tr, resp = "cbclintstd", newdata = df_valid)
+saveRDS(predictions_int, file = "../results/mvmlm_predict_int.rds")
+head(predictions_int)
+
+
+# computing model performance metrics 
+data.frame(R2 = R2(predictions_int, df_valid$cbclint_std), 
+           RMSE = RMSE(predictions_int, df_valid$cbclint_std), 
+           MAE = MAE(predictions_int, df_valid$cbclint_std))
+
+# spearman correlation
+rho_int = cor.test(predictions_int[,1], df_valid$cbclint_std)
+rho_int
+```
+
+*externalizing*
+```{r}
+# make predictions of new data based on model
+predictions_ext <- predict(fit2_tr, resp = "cbclextstd", newdata = df_valid)
+saveRDS(predictions_ext, file = "../results/mvmlm_predict_ext.rds")
+head(predictions_ext)
+
+# computing model performance metrics 
+data.frame(R2 = R2(predictions_ext, df_valid$cbclext_std), 
+           RMSE = RMSE(predictions_ext, df_valid$cbclext_std), 
+           MAE = MAE(predictions_ext, df_valid$cbclext_std))
+
+rho_ext = cor.test(predictions_ext[,1], df_valid$cbclext_std)
+rho_ext
+```
+
+
+
+*Cognitive Control*
+
+`Standardized (beta) Estimates`
+```{r}
+# multivariate multilevel model equation
+bform4_tr <- bf(mvbind(cardsort_std, flanker_std) ~ scale(age_c) + sex_d + scale(f1_parpsych_c) +
+               scale(f2_ses_adi_ncrime_c) + scale(f3_p2lacksupp_c) + scale(f4_p1lacksupp_c) + 
+               scale(f5_famconf_cr_c) + scale(f6_parsu_biosep_c) + scale(f7_angarg_pr_c) + 
+               scale(f8_physemoagg_pr_c) + scale(f9_trauma_c) + scale(f10_neglos_c) + 
+               (1|a|site)) + # specify random intercepts
+            set_rescor(TRUE) # specify a multivariate model; model residual correlations
+
+# run mvmlm
+fit4_tr <- brm(bform4_tr, data = df_train, chains = 2, cores = 2)
+saveRDS(fit4_tr, "../results/mvmlm_train_cogctrl_std.rds")
+summary(fit4_tr)
+```
+`model fit`
+- How much variation in the dependent variables can be explained by our model
+- Use a Bayesian generalization of the R2 coefficient.
+```{r}
+fit4_tr_r2 <- bayes_R2(fit4_tr)
+fit4_tr_r2
+```
+
+`prediction`
+https://www.geeksforgeeks.org/the-validation-set-approach-in-r-programming/
+
+*cognitive flexibility*
+```{r}
+fit4_tr <- readRDS("../results/mvmlm_train_cogctrl_std.rds")
+
+# make predictions of new data based on model
+predictions_cf <- predict(fit4_tr, resp = "cardsortstd", newdata = df_valid)
+saveRDS(predictions_cf, "../results/mvmlm_predict_cogflx.rds")
+head(predictions_cf)
+
+# computing model performance metrics 
+data.frame(R2 = R2(predictions_cf, df_valid$cardsort_std), 
+           RMSE = RMSE(predictions_cf, df_valid$cardsort_std), 
+           MAE = MAE(predictions_cf, df_valid$cardsort_std))
+
+rho_cf = cor.test(predictions_cf[,1], df_valid$cardsort_std)
+rho_cf
+```
+
+*inhibitory control*
+```{r}
+
+# make predictions of new data based on model
+predictions_ic <- predict(fit4_tr, resp = "flankerstd", newdata = df_valid)
+saveRDS(predictions_ic, "../results/mvmlm_predict_inhctrl.rds")
+head(predictions_ic)
+
+# computing model performance metrics 
+data.frame(R2 = R2(predictions_ic, df_valid$flanker_std), 
+           RMSE = RMSE(predictions_ic, df_valid$flanker_std), 
+           MAE = MAE(predictions_ic, df_valid$flanker_std),
+           r = cor(predictions_ic, df_valid$flanker_std))
+
+rho_ic = cor.test(predictions_ic[,1], df_valid$flanker_std)
+rho_ic
+```
+
+
+
+
+# Multivariate multilevel models - VALIDATION SET (for characterization of what effects replicated only)
+
+*Internalizing and Externalizing Problems*
+
+`Standardized  (beta) Estimates`
+```{r}
+# multivariate multilevel model equation
+bform_cbcl_val <- bf(mvbind(cbclint_std, cbclext_std) ~ scale(age_c) + sex_d + scale(f1_parpsych_c) +
+                       scale(f2_ses_adi_ncrime_c) + scale(f3_p2lacksupp_c) + scale(f4_p1lacksupp_c) +
+                       scale(f5_famconf_cr_c) + scale(f6_parsu_biosep_c) + scale(f7_angarg_pr_c) +
+                       scale(f8_physemoagg_pr_c) + scale(f9_trauma_c) + scale(f10_neglos_c) + 
+                       (1|a|site)) + # specify random intercepts
+                       set_rescor(TRUE) # specify a multivariate model; model residual correlations
+
+# run mvmlm
+fit_cbcl_val <- brm(bform_cbcl_val, data = df_valid, chains = 2, cores = 2)
+saveRDS(fit_cbcl_val, "../results/mvmlm_valid_cbcl_std.rds")
+summary(fit_cbcl_val)
+```
+
+*Cognitive Control*
+
+`Standardized (beta) Estimates`
+```{r}
+# multivariate multilevel model equation
+bform_cc_val <- bf(mvbind(cardsort_std, flanker_std) ~ scale(age_c) + sex_d + scale(f1_parpsych_c) +
+                     scale(f2_ses_adi_ncrime_c) + scale(f3_p2lacksupp_c) + scale(f4_p1lacksupp_c) + 
+                     scale(f5_famconf_cr_c) + scale(f6_parsu_biosep_c) + scale(f7_angarg_pr_c) + 
+                     scale(f8_physemoagg_pr_c) + scale(f9_trauma_c) + scale(f10_neglos_c) + 
+                     (1|a|site)) + # specify random intercepts
+                    set_rescor(TRUE) # specify a multivariate model; model residual correlations
+
+# run mvmlm
+fit_cc_val <- brm(bform_cc_val, data = df_valid, chains = 2, cores = 2)
+saveRDS(fit_cc_val, "../results/mvmlm_valid_cogctrl_std.rds")
+summary(fit_cc_val)
+```
+
+
+
+**plots**
+
+```{r}
+ic_pred <- as.numeric(predictions_ic[,1])
+df_valid$pred_ic <- ic_pred
+
+df_valid %>% 
+  ggplot(aes(x = pred_ic, y = flanker_std)) +
+  geom_jitter()
+```
+

@@ -1,0 +1,187 @@
+---
+title: "ELA_data_cleaning_script"
+author: "Alexis Brieant"
+date: "4/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+require(tidyverse)
+require(psych)
+require(car)
+
+```
+
+```{r read in csv file}
+##Need to add script showing how we created this csv file (adapt from our jupyterhub script)
+ELAdata = read.csv(file = "ELAdata_v2.csv")
+
+```
+
+
+```{r exclude relatives}
+#merge with file excluding relatives
+ELA_norelative_IDs <- read_tsv('ELAdata_norel_ID.tsv', col_names=TRUE)
+
+ELAdata_norelatives <- merge(ELAdata, ELA_norelative_IDs[, c('subjectkey')], by = "subjectkey")
+
+##removing the relative family ID because we don't need it for any other part of the script
+ELAdata_norelatives <- ELAdata_norelatives %>%
+  dplyr::select(-rel_family_id)
+
+#create .csv file
+write.csv(ELAdata_norelatives, file = "ELAdata_norel.csv", row.names = FALSE)
+
+```
+
+```{r code missing values}
+#Replace 777 and 999 as na (none of our variables have 555 or 88 values)
+ELAdata_norelatives <- ELAdata_norelatives %>% dplyr::na_if(999)
+ELAdata_norelatives <- ELAdata_norelatives %>% dplyr::na_if(777)
+
+##summing the NAs for each variable to know which variables to exclude (variables excluded if #NAs > 50%)
+ELA_var_sum_of_NA <- as.data.frame(sapply(ELAdata_norelatives, function(x) sum(is.na(x))))
+ELA_var_sum_of_NA
+```
+
+```{r recoding}
+#recode demo prim, 1=bio separation from parent, 0=lives with bio parents
+ELAdata_norelatives$demo_prim_biosep <- ifelse(ELAdata_norelatives$demo_prim >= 3,1,0)
+table(ELAdata_norelatives$demo_prim_biosep)
+
+#recode parent marital status, coding 1 and 6 are now = 0 (no parental separation) otherwise 1 (parental separation)s
+ELAdata_norelatives$demo_parent_sep <- ifelse(ELAdata_norelatives$demo_prnt_marital_v2 == 1 | ELAdata_norelatives$demo_prnt_marital_v2 == 6, 0, 1)
+
+table(ELAdata_norelatives$demo_parent_sep)
+
+#droping variables we don't need for the factor analysis
+ELAdata_touse_forFA <- ELAdata_norelatives %>%
+  dplyr::select(-demo_prim, -demo_prnt_marital_v2, -starts_with("kbi_p"), -starts_with("live"))
+```
+
+```{r ecode education variable so that it is polytomous w/fewer categories}
+#NDA coding: 0 = Never attended/Kindergarten only; 1 = 1st grade; 2 = 2nd grade; 3 = 3rd grade; 4 = 4th grade; 5 = 5th grade; 6 = 6th grade; 7 = 7th grade; 8 = 8th grade; 9 = 9th grade; 10 = 10th grade; 11 = 11th grade; 12 = 12th grade; 13 = High school graduate; 14 = GED or equivalent; 15 = Some college; 16 = Associate degree: Occupational; 17 = Associate degree: Academic Program; 18 = Bachelor's degree (ex. BA); 19 = Master's degree (ex. MA); 20 = Professional School degree (ex. MD); 21 = Doctoral degree
+
+#DEAP coding: 1: < HS Diploma | 2:HS Diploma/GED | 3: some college | 4: Bachelor |5: Post Graduate Degree
+
+ELAdata_touse_forFA <- ELAdata_touse_forFA %>%
+  mutate(demo_prnt_ed_v2 = case_when(demo_prnt_ed_v2 == 0 ~ 1,
+                          demo_prnt_ed_v2 == 1 ~ 1,
+                          demo_prnt_ed_v2 == 2 ~ 1,
+                          demo_prnt_ed_v2 == 3 ~ 1,
+                          demo_prnt_ed_v2 == 4 ~ 1,
+                          demo_prnt_ed_v2 == 5 ~ 1,
+                          demo_prnt_ed_v2 == 6 ~ 1,
+                          demo_prnt_ed_v2 == 7 ~ 1,
+                          demo_prnt_ed_v2 == 8 ~ 1,
+                          demo_prnt_ed_v2 == 9 ~ 1,
+                          demo_prnt_ed_v2 == 10 ~ 1,
+                          demo_prnt_ed_v2 == 11 ~ 1,
+                          demo_prnt_ed_v2 == 12 ~ 1,
+                          demo_prnt_ed_v2 == 13 ~ 2,
+                          demo_prnt_ed_v2 == 14 ~ 2,
+                          demo_prnt_ed_v2 == 15 ~ 3,
+                          demo_prnt_ed_v2 == 16 ~ 3,
+                          demo_prnt_ed_v2 == 17 ~ 3,
+                          demo_prnt_ed_v2 == 18 ~ 4,
+                          demo_prnt_ed_v2 == 19 ~ 5,
+                          demo_prnt_ed_v2 == 20 ~ 5,
+                          demo_prnt_ed_v2 == 21 ~ 5,
+                          TRUE ~ NA_real_))
+
+ELAdata_touse_forFA <- ELAdata_touse_forFA %>%
+  mutate(demo_prtnr_ed_v2 = case_when(demo_prtnr_ed_v2 == 0 ~ 1,
+                          demo_prtnr_ed_v2 == 1 ~ 1,
+                          demo_prtnr_ed_v2 == 2 ~ 1,
+                          demo_prtnr_ed_v2 == 3 ~ 1,
+                          demo_prtnr_ed_v2 == 4 ~ 1,
+                          demo_prtnr_ed_v2 == 5 ~ 1,
+                          demo_prtnr_ed_v2 == 6 ~ 1,
+                          demo_prtnr_ed_v2 == 7 ~ 1,
+                          demo_prtnr_ed_v2 == 8 ~ 1,
+                          demo_prtnr_ed_v2 == 9 ~ 1,
+                          demo_prtnr_ed_v2 == 10 ~ 1,
+                          demo_prtnr_ed_v2 == 11 ~ 1,
+                          demo_prtnr_ed_v2 == 12 ~ 1,
+                          demo_prtnr_ed_v2 == 13 ~ 2,
+                          demo_prtnr_ed_v2 == 14 ~ 2,
+                          demo_prtnr_ed_v2 == 15 ~ 3,
+                          demo_prtnr_ed_v2 == 16 ~ 3,
+                          demo_prtnr_ed_v2 == 17 ~ 3,
+                          demo_prtnr_ed_v2 == 18 ~ 4,
+                          demo_prtnr_ed_v2 == 19 ~ 5,
+                          demo_prtnr_ed_v2 == 20 ~ 5,
+                          demo_prtnr_ed_v2 == 21 ~ 5,
+                          TRUE ~ NA_real_))
+
+#take max value between caregivers
+ELAdata_touse_forFA$demo_prnt_ed_v2 <- pmax(ELAdata_touse_forFA$demo_prnt_ed_v2, ELAdata_touse_forFA$demo_prtnr_ed_v2,na.rm = TRUE)
+
+#remove partner ed variable
+ELAdata_touse_forFA <- ELAdata_touse_forFA %>% 
+  dplyr::select(-demo_prtnr_ed_v2)
+
+```
+
+
+```{r reverse code variables}
+##recoding variables so that higher values reflect greater adversity for all variables
+
+##crpbi variables
+ELAdata_touse_forFA$crpbi_parent1_y = recode(ELAdata_touse_forFA$crpbi_parent1_y, "1=3; 2=2; 3=1")
+ELAdata_touse_forFA$crpbi_parent2_y = recode(ELAdata_touse_forFA$crpbi_parent2_y, "1=3; 2=2; 3=1")
+ELAdata_touse_forFA$crpbi_parent3_y = recode(ELAdata_touse_forFA$crpbi_parent3_y, "1=3; 2=2; 3=1")
+ELAdata_touse_forFA$crpbi_parent4_y = recode(ELAdata_touse_forFA$crpbi_parent4_y, "1=3; 2=2; 3=1")
+ELAdata_touse_forFA$crpbi_parent5_y = recode(ELAdata_touse_forFA$crpbi_parent5_y, "1=3; 2=2; 3=1")
+
+ELAdata_touse_forFA$crpbi_caregiver12_y = recode(ELAdata_touse_forFA$crpbi_caregiver12_y, "1=3; 2=2; 3=1")
+ELAdata_touse_forFA$crpbi_caregiver13_y = recode(ELAdata_touse_forFA$crpbi_caregiver13_y, "1=3; 2=2; 3=1")
+ELAdata_touse_forFA$crpbi_caregiver14_y = recode(ELAdata_touse_forFA$crpbi_caregiver14_y, "1=3; 2=2; 3=1")
+ELAdata_touse_forFA$crpbi_caregiver15_y = recode(ELAdata_touse_forFA$crpbi_caregiver15_y, "1=3; 2=2; 3=1")
+ELAdata_touse_forFA$crpbi_caregiver16_y = recode(ELAdata_touse_forFA$crpbi_caregiver16_y, "1=3; 2=2; 3=1")
+
+##income and education variables
+
+#demo_comb_income_v2 ranges from 1 to 10, 1 is lowest income category and 10 is highest
+ELAdata_touse_forFA$demo_comb_income_v2 = recode(ELAdata_touse_forFA$demo_comb_income_v2, "1=10; 2=9; 3=8; 4=7; 5=6; 6=5; 7=4; 8=3; 9=2; 10=1")
+
+#reverse code polytomous version of parent education variable
+ELAdata_touse_forFA$demo_prnt_ed_v2 = recode(ELAdata_touse_forFA$demo_prnt_ed_v2, "1=5; 2=4; 3=3; 4=2; 5=1")
+
+##parental monitoring variables, original coding is 1 = Never; 2 = Almost Never; 3 = Sometimes; 4 = Often; 5 = Always or Almost Always (higher values = less adversity)
+
+ELAdata_touse_forFA$parent_monitor_q1_y = recode(ELAdata_touse_forFA$parent_monitor_q1_y, "1=5; 2=4; 3=3; 4=2; 5=1")
+ELAdata_touse_forFA$parent_monitor_q2_y = recode(ELAdata_touse_forFA$parent_monitor_q2_y, "1=5; 2=4; 3=3; 4=2; 5=1")
+ELAdata_touse_forFA$parent_monitor_q3_y = recode(ELAdata_touse_forFA$parent_monitor_q3_y, "1=5; 2=4; 3=3; 4=2; 5=1")
+ELAdata_touse_forFAparent_monitor_q4_y = recode(ELAdata_touse_forFA$parent_monitor_q4_y, "1=5; 2=4; 3=3; 4=2; 5=1")
+ELAdata_touse_forFA$parent_monitor_q5_y = recode(ELAdata_touse_forFA$parent_monitor_q5_y, "1=5; 2=4; 3=3; 4=2; 5=1")
+
+##neighborhood variables
+
+#neighborhood_crime_y ranges 1-5
+ELAdata_touse_forFA$neighborhood_crime_y = recode(ELAdata_touse_forFA$neighborhood_crime_y, "1=5; 2=4; 3=3; 4=2; 5=1")
+
+#nsc_p_ss_mean_3_items is continuous, multiply by -1 to reverse code
+ELAdata_touse_forFA$nsc_p_ss_mean_3_items = (ELAdata_touse_forFA$nsc_p_ss_mean_3_items) * -1
+
+```
+
+```{r drop NAs}
+ELAdata_touse_forFA_noNAs <- ELAdata_touse_forFA %>% drop_na()
+
+#write to csv
+write.csv(ELAdata_touse_forFA_noNAs, file = "ELAdata_with_subjectIDs.csv", row.names = FALSE)
+```
+
+```{r drop subject key}
+
+drop <- c("subjectkey")
+ELAdata_touse_forFA_noNAs_noIDs <- ELAdata_touse_forFA_noNAs[,!(names(ELAdata_touse_forFA_noNAs) %in% drop)]
+
+#write final data to csv
+write.csv(ELAdata_touse_forFA_noNAs_noIDs, file = "ELAdata_noNAs_no_subjectIDs.csv", row.names = FALSE)
+
+```
+

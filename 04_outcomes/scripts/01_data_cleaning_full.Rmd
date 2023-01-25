@@ -1,0 +1,108 @@
+---
+title: "Full Sample - Data Cleaning"
+author: "Anna Vannucci"
+date: "11/5/2021"
+output: html_document
+---
+
+Load libraries:
+```{r}
+library(tidyverse)
+library(psych)
+```
+
+Load dataframes:
+```{r}
+df_factors <- read.csv("../data_raw/10factors_fscores.csv", stringsAsFactors = F)
+df_cbcl <- read.csv("../data_raw/abcd_cbcls01.csv", stringsAsFactors = F)
+df_cog <- read.csv("../data_raw/abcd_tbss01.csv", stringsAsFactors = F)
+```
+
+Select variables of interest:
+```{r}
+# factor scores
+df_fscore <- df_factors %>% 
+  dplyr::select(altID, subjectkey, F1, F1_SE, F2, F2_SE, F3, F3_SE, F4, F4_SE, F5, F5_SE,
+         F6, F6_SE, F7, F7_SE, F8, F8_SE, F9, F9_SE, F10, F10_SE)
+
+# cbcl internalizing and externalizing scores
+df_cbclscore <- df_cbcl %>% 
+  filter(eventname == "baseline_year_1_arm_1") %>% 
+  dplyr::select(subjectkey, dataset_id, interview_age, sex, eventname, cbcl_scr_syn_internal_t, 
+         cbcl_scr_syn_internal_r, cbcl_scr_syn_external_t, cbcl_scr_syn_external_r)
+
+# cognitive control tasks from NIH Toolbox
+df_cogscore <- df_cog %>% 
+  filter(eventname == "baseline_year_1_arm_1") %>% 
+  # did not select dataset_id, interview_age, sex, eventname because confirmed identical to cbcl values
+  dplyr::select(subjectkey, nihtbx_cardsort_uncorrected, 
+         nihtbx_cardsort_agecorrected, nihtbx_cardsort_fc, nihtbx_cardsort_rawscore, 
+         nihtbx_flanker_uncorrected, nihtbx_flanker_agecorrected, nihtbx_flanker_fc, 
+         nihtbx_flanker_rawscore)
+```
+
+Merge dataframes:
+```{r}
+df <- df_fscore %>% 
+  left_join(df_cbclscore, by = "subjectkey") %>% 
+  left_join(df_cogscore, by = "subjectkey") %>% 
+  dplyr::select(altID, subjectkey, dataset_id, eventname, interview_age, sex, everything()) %>% 
+  arrange(subjectkey) %>% 
+  # rename factor scores to reflect meaning
+  rename(f1_parpsych = F1,
+         f2_ses_adi_ncrime = F2,
+         f3_p2lacksupp = F3,
+         f4_p1lacksupp = F4,
+         f5_famconf_cr = F5,
+         f6_parsu_biosep = F6,
+         f7_angarg_pr = F7,
+         f8_physemoagg_pr = F8,
+         f9_trauma = F9,
+         f10_neglos = F10) %>% 
+  # rename variables, and change to factor and numeric scores (instead of characters)
+  mutate(subjectkey = as.factor(subjectkey),
+         dataset_id = as.numeric(dataset_id),
+         age = as.numeric(interview_age),
+         sex = as.factor(sex),
+         cbcl_int_t = as.numeric(cbcl_scr_syn_internal_t),
+         cbcl_int_r = as.numeric(cbcl_scr_syn_internal_r),
+         cbcl_ext_t = as.numeric(cbcl_scr_syn_external_t),
+         cbcl_ext_r = as.numeric(cbcl_scr_syn_external_r),
+         cardsort_uc = as.numeric(nihtbx_cardsort_uncorrected),
+         cardsort_ac = as.numeric(nihtbx_cardsort_agecorrected),
+         cardsort_fc = as.numeric(nihtbx_cardsort_fc),
+         cardsort_raw = as.numeric(nihtbx_cardsort_rawscore),
+         flanker_uc = as.numeric(nihtbx_flanker_uncorrected),
+         flanker_ac = as.numeric(nihtbx_flanker_agecorrected),
+         flanker_fc = as.numeric(nihtbx_flanker_fc),
+         flanker_raw = as.numeric(nihtbx_flanker_rawscore)) %>% 
+  dplyr::select(altID, subjectkey, dataset_id, eventname, age, everything(), -interview_age, 
+         -starts_with("nihtbx_"), -contains("scr_syn"))
+```
+
+Descriptives:
+```{r}
+describe(df)
+# raw scores for cbcl, card sort, and flanker highly skewed and kurtotic
+```
+
+Pivot from wide to long by factors:
+```{r}
+df_long <- df %>% 
+  pivot_longer(cols = c("f1_parpsych", "f2_ses_adi_ncrime", "f3_p2lacksupp",
+                        "f4_p1lacksupp", "f5_famconf_cr", "f6_parsu_biosep",
+                        "f7_angarg_pr", "f8_physemoagg_pr", "f9_trauma", "f10_neglos"),
+               names_to = "factor",
+               values_to = "fscore") %>% 
+  dplyr::select(altID, subjectkey, dataset_id, eventname, age, sex, factor, fscore, everything(), 
+         -ends_with("_SE")) %>% 
+  mutate(factor = as.factor(factor))
+
+```
+
+Save cleaned csv files:
+```{r}
+write.csv(df, "../data_clean/df_wide.csv", row.names = F)
+write.csv(df_long, "../data_clean/df_long.csv", row.names = F)
+```
+

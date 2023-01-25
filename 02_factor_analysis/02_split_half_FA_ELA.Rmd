@@ -1,0 +1,336 @@
+---
+title: "02_bootstrap_FA_ELA"
+author: "Jenny Harris"
+date: "4/23/2021"
+output: html_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+require("corpcor")
+require("REdaS")
+require("GPArotation")
+require(tidyverse)
+require(ggplot2)
+require(readxl)
+require(REdaS) # for diagnostic data checks before FA
+require(psych)# need for factor analysis
+require(GPArotation) # need for factor analysis
+library(corpcor) # need for factor analysis
+require(polycor)
+
+```
+
+```{r}
+#read in data 
+Final_ELAData <- read.csv('ELAdata_touse_forFA_noNAs_noOriginalVar.csv')
+```
+
+```{r}
+Final_ELAData_nosubjectIDs <- Final_ELAData %>% 
+    dplyr::select(-subjectkey)
+```
+
+# Test assumptions 
+
+### getting the Bartlett's test of sphericity - if this is not significant than we shouldnt proceed
+
+```{r}
+bart_spher(Final_ELAData_nosubjectIDs)
+```
+
+
+```{r}
+###Getting correlation matrix for parallel analysis NB. Had to remove demo_comb_income_v2 from p as too many categories
+mixcor <-mixedCor(Final_ELAData_nosubjectIDs, ncat = 6, smooth=TRUE,global=TRUE, correct=FALSE, c = c(3:8,10,50,52), p= c(9,11:20,45:49,51,55:60), d=c(1:2,21:44,53,54))
+mixcor_df <- mixcor$rho
+cor.plot(mixcor_df)
+```
+```{r}
+#Test withoud biosep due to incorrect scores errors. N.B. demo_prim_biosep or ksads_ptsd_raw_756_p does not get rid of error
+#Final_ELAData_nosubjectIDs <- Final_ELAData %>% 
+   #dplyr::select(-subjectkey, -ksads_ptsd_raw_756_p)
+```
+
+
+###check sphericity for correlation matrix
+
+```{r}
+bart_spher(mixcor_df)
+
+```
+
+### vss Very Simple Structure for number of factors to use
+
+```{r}
+#Revelle and Rocklin (1979) applies a goodness of fit test to
+#determine the optimal number of factors to extract. It can be thought of as a quasiconfirmatory model, in that it fits the very simple structure (all except the biggest loadings per item are set to zero where c is the level of complexity of the item) of a factor pattern matrix to the original correlation matrix. 
+
+vss(mixcor_df, n.obs = nrow(Final_ELAData_nosubjectIDs))
+```
+
+## Run factor analysis with ??? rotation 
+
+```{r}
+
+# this function requires correlations of data variables
+# maximum likelihood intitially; changed to "minres" to deal with non-positive definite matrix
+FAFullSample <- psych::fa(r = mixcor_df, nfactors = 7, fm="ols", 
+                          SMC = FALSE, scores = "Bartlett", rotate = 'varimax')
+```
+
+
+## get the eigenvalues 
+
+```{r}
+# e.values are eigenvalues 
+FAFullSample_eigen <- data.frame(FAFullSample$e.values)
+names(FAFullSample_eigen) <- "eigenvalues"
+# assigning Factor number in numeric order 
+FAFullSample_eigen$factors <- as.numeric(as.character(rownames(FAFullSample_eigen)))
+
+save(FAFullSample_eigen, file = 'FAFullSample_eigenvalues.Rdata')
+write.csv(FAFullSample_eigen, 'FAFullSample_eigenvalues.csv', row.names = F)
+```
+
+## variance accounted for
+
+```{r}
+ FAFullSample_variance <- data.frame(FAFullSample$Vaccounted)
+# changing the names to be in numeric order, based on amount of variance explained.
+names(FAFullSample_variance) <- c(1:ncol(FAFullSample_variance))
+
+# adding labels for the different values provided in this dataset 
+FAFullSample_variance <- FAFullSample_variance %>%
+  mutate(value = rownames(data.frame(FAFullSample$Vaccounted)))
+
+
+save(FAFullSample_variance, file = 'FAFullSample_variance_accounted.Rdata')
+write.csv(FAFullSample_variance, 'FAFullSample_variance_accounted.csv', row.names = F)
+```
+
+## An item by factor (pattern) loading matrix of class loadings.
+
+```{r}
+ 
+#note: the factors are numbered BEFORE rotation, so they're actually not in the order we want them to be in! 
+# show factor loadings in pretty format with model output 
+#print(FABoot, cutoff = 0, sort  = T, digits = 3)
+# h2 = communality - total amount of variance it shares with all factors 
+# u2 = uniqueness = 1-h2. greater value means lower relevance in factor model 
+
+print(FAFullSample, cuttoff = 0, sort = T, digits = 3)
+#AFullSample$loadings
+```
+
+
+
+## get Sample loadings
+
+```{r}
+ 
+numFactors <- 7
+# get loadings
+FAFullSample_loadings <- data.frame(matrix(FAFullSample$loadings, ncol = numFactors))
+# rename them based on numeric order, of variance explained, not original (un-rotated) labels 
+names(FAFullSample_loadings) <- c(1:numFactors)
+
+# get variable names & weights for later. 
+FAFullSample_weights <- data.frame(FAFullSample$weights)# rename weights based on numeric order, of variance explained, not original (un-rotated) labels 
+names(FAFullSample_weights) <- c(1:numFactors)
+
+FAFullSample_weights <- FAFullSample_weights %>%
+  # pull out variable labels
+  mutate(variables = rownames(data.frame(FAFullSample$weights))) 
+# add thse labels to the loadings too 
+FAFullSample_loadings$variables <- FAFullSample_weights$variables
+save(FAFullSample_loadings, file = 'FAFullSample_loadings_wide.Rdata')
+write.csv(FAFullSample_loadings, file = 'FAFullSample_loadings_wide.csv')
+# convert to long format 
+FAFullSample_loadings_df_long <- FAFullSample_loadings %>%
+  gather(key = factor, value = loading, 1:numFactors)
+
+save(FAFullSample_loadings_df_long, file = 'FAFullSample_loadings_df_long.Rdata')
+write.csv(FAFullSample_loadings_df_long, file = 'FAFullSample_loadings_df_long.csv')
+```
+
+## get scores for each subjects 
+```{r}
+
+# The beta weights to find the factor score estimates. These are also used by the predict.psych function to find predicted factor scores for new cases. These weights will depend upon the scoring method requested.
+
+# get raw data into matrix format 
+data_matrix <- (Final_ELAData_nosubjectIDs) %>%
+  data.matrix(.)
+
+# scale data.matrix
+scaled_data_matrix <- scale(data_matrix,scale=TRUE)
+
+## FULL SAMPLE VERSION with labels! 
+weights_matrix <- (FAFullSample_weights) %>%
+  dplyr::select(-variables) %>%
+  data.matrix(.)
+
+# get labels to add to predictions,
+data_labels <- Final_ELAData %>% 
+  drop_na() %>% 
+  dplyr::select(subjectkey)
+data_labels <- data_labels %>% 
+  mutate(subject = as.numeric(rownames(data_labels)))
+
+FAFullSample_subject_scores <- cbind(data_labels, scaled_data_matrix%*%weights_matrix)
+#FAFullSample_subject_scores <- cbind(data_labels, FAFullSample$scores)
+save(FAFullSample_subject_scores, file = 'FAFullSample_subject_factor_scores.Rdata')
+write.csv(FAFullSample_subject_scores, file = 'FAFullSample_subject_factor_scores.csv', row.names = F)
+```
+
+## Change format of subjectkey?
+
+```{r}
+#In case problem is with format of subject key
+Final_ELAData$subjectkey <- trimws(Final_ELAData$subjectkey, which = c("both"))
+Final_ELAData$subjectkey <- gsub("NDAR_","sub-NDAR",Final_ELAData$subjectkey)
+head(Final_ELAData)
+```
+
+```{r}
+##Change format of IDs to match imaging data IDs
+
+## get scores for each subjects 
+# The beta weights to find the factor score estimates. These are also used by the predict.psych function to find predicted factor scores for new cases. These weights will depend upon the scoring method requested.
+
+# get raw data into matrix format 
+data_matrix <- (Final_ELAData_nosubjectIDs) %>%
+  data.matrix(.)
+
+# scale data.matrix
+scaled_data_matrix <- scale(data_matrix,scale=TRUE)
+
+## FULL SAMPLE VERSION with labels! 
+weights_matrix <- (FAFullSample_weights) %>%
+  dplyr::select(-variables) %>%
+    data.matrix(.)
+
+# get labels to add to predictions,
+data_labels <- Final_ELAData %>% 
+  drop_na() %>% 
+  dplyr::select(subjectkey)
+data_labels <- data_labels %>% 
+  mutate(subject = as.numeric(rownames(data_labels)))
+nrow(data_labels)
+
+
+FAFullSample_subject_scores <- cbind(data_labels, scaled_data_matrix%*%weights_matrix)
+
+#FAFullSample_subject_scores <- cbind(data_labels,FAFullSample$scores)
+                                     
+save(FAFullSample_subject_scores, file = 'FAFullSample_subject_factor_scores_imagingID.Rdata')
+write.csv(FAFullSample_subject_scores, file = 'FAFullSample_subject_factor_scores_imagingID.csv', row.names = F)
+```
+
+
+```{r}
+###this script will perform the split-half analysis in R for the CCA analysis
+set.seed(1312206748) ##setting this for reproducibility
+CCA_split_half <- function(X, numboot, nsub, bootsize){
+  library(dplyr)
+
+  X <- X ##X matrix
+  numboot <- numboot # number of permutations can up to 1000 later
+  nsub <- nsub #number of subjects
+  bootsize <- bootsize #what percentage of participants per permutation
+  bn <- round(nsub*bootsize) #number of participants in each bootstrap
+
+
+  # Initialize empty list of length numboot for the different outputs we want
+  FA1 <- vector("list", numboot)
+  FA2 <- vector("list", numboot)
+  FA3 <- vector("list", numboot)
+  FA4 <- vector("list", numboot)
+  FA5 <- vector("list", numboot)
+  FA6 <- vector("list", numboot)
+  FA7 <- vector("list", numboot)
+  FA8 <- vector("list", numboot)
+  FA9 <- vector("list", numboot)
+  FA10 <- vector("list", numboot)
+
+
+  for(idx in 1:numboot) {
+    print(idx) # permutation number
+
+    split_half1 <- sort(sample(nrow(X), floor(nrow(X)/2), replace=F))
+    split_half2 <- setdiff(1:nrow(X),split_half1)
+
+    ##splitting the X matrices based on the indices of the previous steps
+    #This made multiples of columns.....
+    #split1 <- lapply(1:numboot, function(i) X[split_half1,])
+    #split2 <- lapply(1:numboot, function(i) X[split_half2,])
+    split1 <- X[split_half1, ]
+    split2 <- X[split_half2, ]
+    
+    ##getting the mixed correlation matrix for each split half
+    mixCor_split1 <- mixedCor(split1, ncat = 6, smooth=TRUE,global=TRUE, correct=FALSE, c = c(3:8,10,50,52), p= c(9,11:20,45:49,51,55:60), d=c(1:2,21:44,53,54))
+    cor_split1 <- mixCor_split1$rho
+    mixCor_split2 <- mixedCor(split2, ncat = 6, smooth=TRUE,global=TRUE, correct=FALSE, c = c(3:8,10,50,52), p= c(9,11:20,45:49,51,55:60), d=c(1:2,21:44,53,54))
+    cor_split2 <- mixCor_split2$rho
+
+    numFactors <- 7
+
+    ##running the FA analysis on each split half
+    FABoot1 <- fa(r = cor_split1, nfactors = numFactors, fm="ols", SMC = FALSE, scores = "Bartlett", rotate = 'varimax', delta = .5)
+
+    FABoot2 <- fa(r = cor_split2, nfactors = numFactors, fm="ols", SMC = FALSE, scores = "Bartlett", rotate = 'varimax', delta = .5)
+
+    ##getting the correlation matrices for the FA eigenvalues between the two split-halves
+    FA_eigen_cor <- cor(FABoot1$e.values, FABoot2$e.values)
+
+
+    ##getting each of the LVs from the diagonal of each analysis (this will result in a 10,000 by 1 matrix with each
+    ##value being the the first row and column from the correlation table
+    ##first, getting the diagonal matrices that will be used for the subsequent steps
+
+    ####LATENT VARIABLES
+    FA_eigen_cor_diag <- as.data.frame(diag(abs(FA_eigen_cor)))
+
+    ##only extract the LV1
+    FA1_cor <- rbind(FA_eigen_cor_diag[1,])
+    FA2_cor <- rbind(FA_eigen_cor_diag[2,])
+    FA3_cor <- rbind(FA_eigen_cor_diag[3,])
+    FA4_cor <- rbind(FA_eigen_cor_diag[4,])
+    FA5_cor <- rbind(FA_eigen_cor_diag[5,])
+    FA6_cor <- rbind(FA_eigen_cor_diag[6,])
+    FA7_cor <- rbind(FA_eigen_cor_diag[7,])
+    FA8_cor <- rbind(FA_eigen_cor_diag[8,])
+    FA9_cor <- rbind(FA_eigen_cor_diag[9,])
+    FA10_cor <- rbind(FA_eigen_cor_diag[10,])
+
+
+    # Write into index `idx` of all the correlation matrices (`x`)
+    FA1[[idx]] <- FA1_cor
+    FA2[[idx]] <- FA2_cor
+    FA3[[idx]] <- FA3_cor
+    FA4[[idx]] <- FA4_cor
+    FA5[[idx]] <- FA5_cor
+    FA6[[idx]] <- FA6_cor
+    FA7[[idx]] <- FA7_cor
+    FA8[[idx]] <- FA8_cor
+    FA9[[idx]] <- FA9_cor
+    FA10[[idx]] <- FA10_cor
+
+  }
+  ##this will return a data container with 8 different lists
+  ##the corr_x list will have all the corr_x results etc.
+  return(list("FA1"=FA1, "FA2"=FA2, "FA3"=FA3,"FA4"=FA4, "FA5"=FA5, "FA6"=FA6, "FA7"=FA7, "FA8"=FA8,
+         "FA9"=FA9, "FA10"=FA10))
+}
+
+```
+
+
+```{r}
+#Same errors as bootstrapping.....
+#Split half anaysis
+CCA_split_half(Final_ELAData_nosubjectIDs, 100, 6929, 80)
+```
+
+

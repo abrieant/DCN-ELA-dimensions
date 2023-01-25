@@ -1,0 +1,299 @@
+---
+title: "Plots of Results from Multivariate Multilevel Models"
+author: "Anna Vannucci"
+date: "6/5/2022"
+output: html_document
+---
+
+Load libraries:
+```{r}
+library(tidyverse)
+library(psych)
+library(viridis)
+library(brms)
+library(loo)
+library(tidybayes)
+library(bayesplot)
+library(posterior)
+library(cowplot)
+library(purrr)
+library(modelr)
+library(caret)
+library(ggmcmc)
+library(ggthemes)
+library(ggridges)
+library(rstan)
+library(gghalves)
+
+# help stan run faster
+#rstan_options(auto_write = T)
+#options(mc.cores = parallel::detectCores())
+
+set.seed(122) # for reproducibility
+```
+
+
+Upload dataframes and model results:
+```{r}
+# dataframes
+df_train <- read.csv("../data_clean/df_train.csv", stringsAsFactors = F)
+df_valid <- read.csv("../data_clean/df_valid.csv", stringsAsFactors = F)
+
+# mvmlm model training in the discovery set
+m_cbcl_tr <- readRDS("../results/mvmlm_train_cbcl_std.rds")
+m_cc_tr <- readRDS("../results/mvmlm_train_cogctrl_std.rds")
+
+# prediction models
+m_pred_int <- readRDS("../results/mvmlm_predict_int.rds")
+m_pred_ext <- readRDS("../results/mvmlm_predict_ext.rds")
+m_pred_cf <- readRDS("../results/mvmlm_predict_cogflx.rds")
+m_pred_ic <- readRDS("../results/mvmlm_predict_inhctrl.rds")
+
+# mvmlm models in the replication/validation set
+m_cbcl_val <- readRDS("../results/mvmlm_valid_cbcl_std.rds")
+m_cc_val <- readRDS("../results/mvmlm_valid_cogctrl_std.rds")
+```
+
+
+Data cleaning:
+```{r}
+# create numeric vectors of child behavior predicted scores
+pred_int <- as.numeric(m_pred_int[,1]) # internalizing problems
+pred_ext <- as.numeric(m_pred_ext[,1]) # externalizing problems
+pred_cf <- as.numeric(m_pred_cf[,1]) # cognitive flexibility
+pred_ic <- as.numeric(m_pred_ic[,1]) # inhibitory control
+
+# predicted scores to validation dataset
+df_valid$pred_int <- pred_int
+df_valid$pred_ext <- pred_ext
+df_valid$pred_cf <- pred_cf
+df_valid$pred_ic <- pred_ic
+```
+
+
+# Results of MVMLM: posterior estimates of association between ELA and child behavior 
+
+a) view a list of variables that can be extracted
+```{r}
+get_variables(m_cbcl_tr)
+```
+`internalizing/externalizing problems`
+
+a) prepare data for plotting
+```{r}
+# extract posteriors from mvmlm model for int/ext problems
+post_cbcl_long <- m_cbcl_tr %>% 
+  spread_draws(b_cbclintstd_Intercept, b_cbclintstd_scalef1_parpsych_c,
+               b_cbclintstd_scalef2_ses_adi_ncrime_c, b_cbclintstd_scalef3_p2lacksupp_c, 
+               b_cbclintstd_scalef4_p1lacksupp_c, b_cbclintstd_scalef5_famconf_cr_c,
+               b_cbclintstd_scalef6_parsu_biosep_c, b_cbclintstd_scalef7_angarg_pr_c, 
+               b_cbclintstd_scalef8_physemoagg_pr_c, b_cbclintstd_scalef9_trauma_c,
+               b_cbclintstd_scalef10_neglos_c,
+               b_cbclextstd_Intercept, b_cbclextstd_scalef1_parpsych_c,
+               b_cbclextstd_scalef2_ses_adi_ncrime_c, b_cbclextstd_scalef3_p2lacksupp_c, 
+               b_cbclextstd_scalef4_p1lacksupp_c, b_cbclextstd_scalef5_famconf_cr_c,
+               b_cbclextstd_scalef6_parsu_biosep_c, b_cbclextstd_scalef7_angarg_pr_c, 
+               b_cbclextstd_scalef8_physemoagg_pr_c, b_cbclextstd_scalef9_trauma_c,
+               b_cbclextstd_scalef10_neglos_c) %>% 
+  mutate(f1parpsych_int = b_cbclintstd_Intercept + b_cbclintstd_scalef1_parpsych_c,
+         f2ses_int = b_cbclintstd_Intercept + b_cbclintstd_scalef2_ses_adi_ncrime_c,
+         f3p2nosupp_int = b_cbclintstd_Intercept + b_cbclintstd_scalef3_p2lacksupp_c,
+         f4p1nosupp_int = b_cbclintstd_Intercept + b_cbclintstd_scalef4_p1lacksupp_c,
+         f5famconf_int = b_cbclintstd_Intercept + b_cbclintstd_scalef5_famconf_cr_c,
+         f6psusep_int = b_cbclintstd_Intercept + b_cbclintstd_scalef6_parsu_biosep_c,
+         f7angarg_int = b_cbclintstd_Intercept + b_cbclintstd_scalef7_angarg_pr_c,
+         f8famagg_int = b_cbclintstd_Intercept + b_cbclintstd_scalef8_physemoagg_pr_c,
+         f9trauma_int = b_cbclintstd_Intercept + b_cbclintstd_scalef9_trauma_c,
+         f10parlos_int = b_cbclintstd_Intercept + b_cbclintstd_scalef10_neglos_c,
+         f1parpsych_ext = b_cbclextstd_Intercept + b_cbclextstd_scalef1_parpsych_c,
+         f2ses_ext = b_cbclextstd_Intercept + b_cbclextstd_scalef2_ses_adi_ncrime_c,
+         f3p2nosupp_ext = b_cbclextstd_Intercept + b_cbclextstd_scalef3_p2lacksupp_c,
+         f4p1nosupp_ext = b_cbclextstd_Intercept + b_cbclextstd_scalef4_p1lacksupp_c,
+         f5famconf_ext = b_cbclextstd_Intercept + b_cbclextstd_scalef5_famconf_cr_c,
+         f6psusep_ext = b_cbclextstd_Intercept + b_cbclextstd_scalef6_parsu_biosep_c,
+         f7angarg_ext = b_cbclextstd_Intercept + b_cbclextstd_scalef7_angarg_pr_c,
+         f8famagg_ext = b_cbclextstd_Intercept + b_cbclextstd_scalef8_physemoagg_pr_c,
+         f9trauma_ext = b_cbclextstd_Intercept + b_cbclextstd_scalef9_trauma_c,
+         f10parlos_ext = b_cbclextstd_Intercept + b_cbclextstd_scalef10_neglos_c) %>% 
+  pivot_longer(cols = f1parpsych_int:f10parlos_ext,
+               names_to = c("ela", "behav"),
+               names_sep = "_",
+               values_to = "zscore",
+               names_transform = list(ela = as.factor,
+                                      behav = as.factor)) %>% 
+  mutate(ela = case_when(
+    ela == "f1parpsych" ~ "caregiver psychopathology",
+    ela == "f2ses" ~ "socioeconomic disadvantage / lack of neighborhood safety",
+    ela == "f3p2nosupp" ~ "lack of caregiver support (secondary)",
+    ela == "f4p1nosupp" ~ "lack of caregiver support (primary)",
+    ela == "f5famconf" ~ "family conflict (child report)",
+    ela == "f6psusep" ~ "caregiver substance use / biological separation",
+    ela == "f7angarg" ~ "family anger/arguments (caregiver report)",
+    ela == "f8famagg" ~ "family verbal/physical aggression (caregiver report)",
+    ela == "f9trauma" ~ "physical trauma",
+    ela == "f10parlos" ~ "caregiver lack of supervision"
+  ),
+    behav = case_when(
+      behav == "int" ~ "A. internalizing problems",
+      behav == "ext" ~ "B. externalizing problems",
+      behav == "cf" ~ "C. cognitive flexibility",
+      behav == "ic" ~ "D. inhibitory control"
+    )) %>% 
+  as.data.frame()
+
+post_cbcl_long
+```
+b) plot data
+```{r}
+png(file = "../plots/child-behav-cbcl_mvmlm-post_train.png", width = 1100, height = 550)
+
+ggplot(data = post_cbcl_long, aes(x = ela, y = zscore, fill = ela)) +
+  stat_halfeye(.width = c(.95, .80), position = "dodge") +
+  facet_grid(~behav, scales = "free") +
+  geom_hline(aes(yintercept = 0), linetype = "dashed", color = "darkgray") +
+  labs(y = "\nassociations between early-life adversity and child behavior\n(standardized estimates)",
+       x = "") +
+  theme_classic() +
+  coord_flip() +
+  theme(axis.title = element_text(size = 22),
+        axis.text = element_text(size = 18, color = "black"),
+        strip.text = element_text(size = 20), # facet title text  
+        legend.position = "none")
+
+dev.off()
+```
+
+`Cognitive Control`
+
+Get variable names:
+```{r}
+get_variables(m_cc_tr)
+```
+ 
+
+a) prepare data for plotting
+```{r}
+# extract posteriors from mvmlm model for int/ext problems
+post_cc_long <- m_cc_tr %>% 
+  spread_draws(b_cardsortstd_Intercept, b_cardsortstd_scalef1_parpsych_c,
+               b_cardsortstd_scalef2_ses_adi_ncrime_c, b_cardsortstd_scalef3_p2lacksupp_c, 
+               b_cardsortstd_scalef4_p1lacksupp_c, b_cardsortstd_scalef5_famconf_cr_c,
+               b_cardsortstd_scalef6_parsu_biosep_c, b_cardsortstd_scalef7_angarg_pr_c, 
+               b_cardsortstd_scalef8_physemoagg_pr_c, b_cardsortstd_scalef9_trauma_c,
+               b_cardsortstd_scalef10_neglos_c,
+               b_flankerstd_Intercept, b_flankerstd_scalef1_parpsych_c,
+               b_flankerstd_scalef2_ses_adi_ncrime_c, b_flankerstd_scalef3_p2lacksupp_c, 
+               b_flankerstd_scalef4_p1lacksupp_c, b_flankerstd_scalef5_famconf_cr_c,
+               b_flankerstd_scalef6_parsu_biosep_c, b_flankerstd_scalef7_angarg_pr_c, 
+               b_flankerstd_scalef8_physemoagg_pr_c, b_flankerstd_scalef9_trauma_c,
+               b_flankerstd_scalef10_neglos_c) %>% 
+  mutate(f1parpsych_cf = b_cardsortstd_Intercept + b_cardsortstd_scalef1_parpsych_c,
+         f2ses_cf = b_cardsortstd_Intercept + b_cardsortstd_scalef2_ses_adi_ncrime_c,
+         f3p2nosupp_cf = b_cardsortstd_Intercept + b_cardsortstd_scalef3_p2lacksupp_c,
+         f4p1nosupp_cf = b_cardsortstd_Intercept + b_cardsortstd_scalef4_p1lacksupp_c,
+         f5famconf_cf = b_cardsortstd_Intercept + b_cardsortstd_scalef5_famconf_cr_c,
+         f6psusep_cf = b_cardsortstd_Intercept + b_cardsortstd_scalef6_parsu_biosep_c,
+         f7angarg_cf = b_cardsortstd_Intercept + b_cardsortstd_scalef7_angarg_pr_c,
+         f8famagg_cf = b_cardsortstd_Intercept + b_cardsortstd_scalef8_physemoagg_pr_c,
+         f9trauma_cf = b_cardsortstd_Intercept + b_cardsortstd_scalef9_trauma_c,
+         f10parlos_cf = b_cardsortstd_Intercept + b_cardsortstd_scalef10_neglos_c,
+         f1parpsych_ic = b_flankerstd_Intercept + b_flankerstd_scalef1_parpsych_c,
+         f2ses_ic = b_flankerstd_Intercept + b_flankerstd_scalef2_ses_adi_ncrime_c,
+         f3p2nosupp_ic = b_flankerstd_Intercept + b_flankerstd_scalef3_p2lacksupp_c,
+         f4p1nosupp_ic = b_flankerstd_Intercept + b_flankerstd_scalef4_p1lacksupp_c,
+         f5famconf_ic = b_flankerstd_Intercept + b_flankerstd_scalef5_famconf_cr_c,
+         f6psusep_ic = b_flankerstd_Intercept + b_flankerstd_scalef6_parsu_biosep_c,
+         f7angarg_ic = b_flankerstd_Intercept + b_flankerstd_scalef7_angarg_pr_c,
+         f8famagg_ic = b_flankerstd_Intercept + b_flankerstd_scalef8_physemoagg_pr_c,
+         f9trauma_ic = b_flankerstd_Intercept + b_flankerstd_scalef9_trauma_c,
+         f10parlos_ic = b_flankerstd_Intercept + b_flankerstd_scalef10_neglos_c) %>% 
+  pivot_longer(cols = f1parpsych_cf:f10parlos_ic,
+               names_to = c("ela", "behav"),
+               names_sep = "_",
+               values_to = "zscore",
+               names_transform = list(ela = as.factor,
+                                      behav = as.factor)) %>% 
+  mutate(ela = case_when(
+    ela == "f1parpsych" ~ "caregiver psychopathology",
+    ela == "f2ses" ~ "socioeconomic disadvantage / lack of neighborhood safety",
+    ela == "f3p2nosupp" ~ "lack of caregiver support (secondary)",
+    ela == "f4p1nosupp" ~ "lack of caregiver support (primary)",
+    ela == "f5famconf" ~ "family conflict (caregiver report)",
+    ela == "f6psusep" ~ "caregiver substance use / biological separation",
+    ela == "f7angarg" ~ "family anger/arguments (caregiver report)",
+    ela == "f8famagg" ~ "family verbal/physical aggression (caregiver report)",
+    ela == "f9trauma" ~ "physical trauma",
+    ela == "f10parlos" ~ "caregiver lack of supervision"
+  ),
+    behav = case_when(
+      behav == "int" ~ "A. internalizing problems",
+      behav == "ext" ~ "B. externalizing problems",
+      behav == "cf" ~ "C. cognitive flexibility",
+      behav == "ic" ~ "D. inhibitory control"
+    )) %>% 
+  as.data.frame()
+
+post_cc_long
+```
+
+b) plot data
+```{r}
+png(file = "../plots/child-behav-cogctrl_mvmlm-post_train.png", width = 1100, height = 550)
+
+ggplot(data = post_cc_long, aes(x = ela, y = zscore, fill = ela)) +
+  stat_halfeye(.width = c(.95, .80), position = "dodge") +
+  facet_grid(~behav, scales = "free") +
+  geom_hline(aes(yintercept = 0), linetype = "dashed", color = "gray30") +
+  labs(y = "\nassociations between early-life adversity and child behavior\n(standardized estimates)",
+       x = "") +
+  theme_classic() +
+  coord_flip() +
+  theme(axis.title = element_text(size = 22),
+        axis.text = element_text(size = 18, color = "black"),
+        strip.text = element_text(size = 20), # facet title text 
+        legend.position = "none")
+
+dev.off()
+```
+
+
+# Scatterplot: spearman correlations between actual and predicted child behavior scores
+
+a) prepare data for plotting
+```{r}
+df_p <- df_valid %>% 
+  select(subjectkey, ends_with("_std"), starts_with("pred_")) %>% 
+  rename(actual_int = cbclint_std,
+         actual_ext = cbclext_std,
+         actual_cf = cardsort_std,
+         actual_ic = flanker_std) %>% 
+  pivot_longer(cols = !subjectkey,
+               names_to = c(".value", "behav"),
+               names_pattern = "(.*)_(.*)") %>% 
+  mutate(behav = as.factor(case_when(
+    behav == "int" ~ "A. internalizing problems",
+    behav == "ext" ~ "B. externalizing problems",
+    behav == "cf" ~ "C. cognitive flexibility",
+    behav == "ic" ~ "D. inhibitory control"
+  )))
+```
+
+b) plot data
+```{r}
+png(file = "../plots/child-behav_pred-actual-corr.png", width = 700, height = 500)
+
+ggplot(data = df_p, aes(x = pred, y = actual)) +
+  geom_jitter(aes(color = behav, fill = behav), height = 0.25, alpha = 0.25, size = 2) +
+  geom_smooth(method = "lm", color = "gray45", fill = "darkgray") +
+  facet_wrap(~behav, scales = "free") +
+  labs(x = "\npredicted child behavior (z-scores)",
+       y = "actual child behavior (z-scores)\n") +
+  theme_classic() +
+  theme(axis.title = element_text(size = 22),
+        axis.text = element_text(size = 18, color = "black"),
+        strip.text = element_text(size = 20), # facet title text 
+        legend.position = "none")
+
+dev.off()
+```
+

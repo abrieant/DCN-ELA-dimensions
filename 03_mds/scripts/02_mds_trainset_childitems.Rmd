@@ -1,0 +1,575 @@
+---
+title: "Full Sample - Multidimensional Scaling of all Child Report and Interview Items"
+author: "Anna Vannucci"
+date: "05/24/2022"
+output: html_document
+---
+
+Resource: http://www.sthda.com/english/articles/31-principal-component-methods-in-r-practical-guide/122-multidimensional-scaling-essentials-algorithms-and-r-code/
+
+Mathematically and conceptually, there are close correspondences between MDS and other methods used to reduce the dimensionality of complex data, such as Principal components analysis (PCA) and factor analysis.
+
+PCA is more focused on the dimensions themselves, and seek to maximize explained variance, whereas MDS is more focused on relations among the scaled objects.
+
+MDS projects n-dimensional data points to a (commonly) 2-dimensional space such that similar objects in the n-dimensional space will be close together on the two dimensional plot, while PCA projects a multidimensional space to the directions of maximum variability using covariance/correlation matrix to analyze the correlation between data points and variables.
+
+
+https://www.statisticshowto.com/multidimensional-scaling/
+https://rpubs.com/CPEL/NMDS
+https://rstudio-pubs-static.s3.amazonaws.com/545184_87dac405e4b145f8adff2c4a99e938fc.html#ploting_ordinations 
+
+Load libraries:
+```{r}
+library(tidyverse)
+library(psych)
+library(stats) # multidimensional scaling 
+library(viridis)
+library(magrittr)
+library(ggpubr)
+library(MASS)
+library(scatterplot3d)
+library(ggrepel)
+library(caret)
+library(vegan)
+library(patchwork)
+library(BiodiversityR) # also loads vegan
+library(ggsci)
+library(ggrepel)
+library(ggforce)
+
+set.seed(122)
+```
+
+Load dataframes:
+```{r}
+df_wide <- read.csv("../data/ela_child_report.csv", stringsAsFactors = F, header = T)
+df_train <- read.csv("../data/df_train.csv", stringsAsFactors = F)
+df_valid <- read.csv("../data/df_valid.csv", stringsAsFactors = F)
+```
+
+Data preparation:
+```{r}
+# transfer subjectkey column to row names
+df_tr <- df_wide %>% filter(subjectkey %in% df_train$subjectkey) %>% column_to_rownames(var = "subjectkey")
+df_val <- df_wide %>% filter(subjectkey %in% df_valid$subjectkey) %>% column_to_rownames(var = "subjectkey")
+
+# scale and center all variables
+df_tr_scaled <- as.data.frame(scale(df_tr, center = T, scale = T))
+df_val_scaled <- as.data.frame(scale(df_val, center = T, scale = T))
+
+# transposed dataframe with variables as rows and observations as columns
+ela_tr <- df_tr_scaled %>%  t()
+ela_val <- df_val_scaled %>%  t()
+```
+
+Descriptives:
+```{r}
+describe(df_tr_scaled)
+describe(df_val_scaled)
+```
+
+
+************************
+************************
+***** TRAINING SET *****
+************************
+************************
+
+# `Calculate correlation matrix`
+```{r}
+cor_m <- cor(df_tr_scaled, method = "spearman")
+head(cor_m)
+```
+
+# `Calculate Distance Matrix`
+```{r}
+ela_dist <- dist(1 - cor_m)
+saveRDS(ela_dist, "../results/ela_childitems_distance_matrix.RDS")
+```
+
+```{r}
+ela_vegdist <- vegdist(df_tr_scaled, method="gower", 
+                       binary=FALSE, diag=FALSE, upper=FALSE, na.rm = FALSE)
+```
+
+
+# `ALL ITEMS`
+
+# `Test goodness of fit`
+
+Compare the similarity matrix with the original input matrix by evaluating the stress function. Stress is a goodness-of-fit measure, based on differences between predicted and actual distances. In his original 1964 MDS paper, Kruskal wrote that fits close to zero are excellent, while anything over .2 should be considered “poor”. More recent authors suggest evaluating stress based on the quality of the distance matrix and how many objects are in that matrix.
+
+As a rule of thumb literature has identified the following cut-off values for stress-level:
+
+* Higher than 0.2 is poor (risks for false interpretation).
+* 0.1 - 0.2 is fair (some distances can be misleading for interpretation).
+* 0.05 - 0.1 is good (can be confident in inferences from plot).
+* Less than 0.05 is excellent (this can be rare).
+
+## 1 dimension
+`stress = .20 ~ poor (risks for false interpretation) across both methods`
+```{r}
+mds1 <- isoMDS(ela_dist, y = cmdscale(ela_dist, 1), k = 1, maxit = 50, trace = TRUE,
+       tol = 1e-3, p = 2)
+mds1
+saveRDS(mds1, "../results/ela_childitems_mds1.RDS")
+
+r2_mds1 = 1-((mds1$stress/100)*(mds1$stress/100))
+r2_mds1
+```
+
+## `monoMDS package from vegan`
+```{r}
+mds1_mono <- monoMDS(ela_dist, y = cmdscale(ela_dist, 1), k = 1, 
+        model = c("global"),
+        threshold = 0.8, 
+        maxit = 100, 
+        weakties = TRUE, 
+        stress = 1, 
+        scaling = TRUE, 
+        pc = TRUE, 
+        smin = 1e-4, 
+        sfgrmin = 1e-7,
+        sratmax=0.99999) 
+mds1_mono
+```
+
+# `Goodness of Fit and Plotting Shepards Diagram`
+One other way to check how well the ordination plots represent real data is by using the goodness function. You can produce goodness of fit statistics for each observation (points). You can also use the function stessplot to create a Shepard diagram displaying two correlation-like statistics for goodness of fit between ordination distances and observed dissimilarity. This shows how closely our ordination fits real world plot dissimilarities and how well we can interpret the ordination
+
+This is an example of a Shepard diagram with correlation statistics indicating the fit between ordiantion distances and observed dissimilarities
+```{r}
+goodness(mds1_mono)
+stressplot(mds1_mono, 
+           p.col = "deepskyblue",
+           l.col = "deeppink3",
+           lwd = 3,
+           size = 10)
+```
+
+# 2 dimensions
+`stress = .10 ~ fair (some distances can be misleading) from both packages`
+
+## `isoMDS package`
+```{r}
+mds2 <- isoMDS(ela_dist, y = cmdscale(ela_dist, 2), k = 2, maxit = 50, trace = TRUE,
+       tol = 1e-3, p = 2)
+mds2
+saveRDS(mds2, "../results/ela_childitems_mds2.RDS")
+
+r2_mds2 = 100-((mds2$stress/100)*(mds2$stress/100))
+r2_mds2
+```
+
+## `monoMDS package from vegan`
+```{r}
+mds2_mono <- monoMDS(ela_dist, y = cmdscale(ela_dist, 2), k = 2, 
+        model = c("global"),
+        threshold = 0.8, 
+        maxit = 100, 
+        weakties = TRUE, 
+        stress = 1, 
+        scaling = TRUE, 
+        pc = TRUE, 
+        smin = 1e-4, 
+        sfgrmin = 1e-7,
+        sratmax=0.99999) 
+mds2_mono
+```
+
+# `Goodness of Fit and Plotting Shepards Diagram`
+One other way to check how well the ordination plots represent real data is by using the goodness function. You can produce goodness of fit statistics for each observation (points). You can also use the function stessplot to create a Shepard diagram displaying two correlation-like statistics for goodness of fit between ordination distances and observed dissimilarity. This shows how closely our ordination fits real world plot dissimilarities and how well we can interpret the ordination
+
+This is an example of a Shepard diagram with correlation statistics indicating the fit between ordiantion distances and observed dissimilarities
+```{r}
+goodness(mds2_mono)
+stressplot(mds2_mono,
+           p.col = "deepskyblue",
+           l.col = "deeppink3",
+           lwd = 3,
+           size = 3)
+```
+
+# 3 dimensions
+`stress = .07 ~ good (can be confident in inferences from the plot)`
+```{r}
+mds3 <- isoMDS(ela_dist, y = cmdscale(ela_dist, 3), k = 3, maxit = 50, trace = TRUE,
+       tol = 1e-3, p = 2)
+mds3
+saveRDS(mds3, "../results/ela_childitems_mds3.RDS")
+
+r2_mds3 = 100-((mds3$stress/100)*(mds3$stress/100))
+r2_mds3
+```
+
+## `monoMDS package from vegan`
+```{r}
+mds3_mono <- monoMDS(ela_dist, y = cmdscale(ela_dist, 3), k = 3, 
+        model = c("global"),
+        threshold = 0.8, 
+        maxit = 100, 
+        weakties = TRUE, 
+        stress = 1, 
+        scaling = TRUE, 
+        pc = TRUE, 
+        smin = 1e-4, 
+        sfgrmin = 1e-7,
+        sratmax=0.99999) 
+mds3_mono
+mds3_mono$points
+```
+
+
+# `Goodness of Fit and Plotting Shepards Diagram`
+One other way to check how well the ordination plots represent real data is by using the goodness function. You can produce goodness of fit statistics for each observation (points). You can also use the function stessplot to create a Shepard diagram displaying two correlation-like statistics for goodness of fit between ordination distances and observed dissimilarity. This shows how closely our ordination fits real world plot dissimilarities and how well we can interpret the ordination
+
+This is an example of a Shepard diagram with correlation statistics indicating the fit between ordiantion distances and observed dissimilarities
+```{r}
+goodness(mds3_mono)
+stressplot(mds3_mono,
+           p.col = "deepskyblue",
+           l.col = "deeppink3",
+           lwd = 3,
+           size = 3)
+```
+
+# 4 dimensions
+`stress = .06 ~ good (can be confident in inferences from the plot)`
+```{r}
+mds4 <- isoMDS(ela_dist, y = cmdscale(ela_dist, 4), k = 4, maxit = 50, trace = TRUE,
+       tol = 1e-3, p = 2)
+mds4
+saveRDS(mds4, "../results/ela_childitems_mds4.RDS")
+
+r2_mds4 = 100-((mds4$stress/100)*(mds4$stress/100))
+r2_mds4
+```
+
+## `monoMDS package from vegan`
+```{r}
+mds4_mono <- monoMDS(ela_dist, y = cmdscale(ela_dist, 4), k = 4, 
+        model = c("global"),
+        threshold = 0.8, 
+        maxit = 100, 
+        weakties = TRUE, 
+        stress = 1, 
+        scaling = TRUE, 
+        pc = TRUE, 
+        smin = 1e-4, 
+        sfgrmin = 1e-7,
+        sratmax=0.99999) 
+mds4_mono
+mds4_mono$points
+```
+
+# `Goodness of Fit and Plotting Shepards Diagram`
+One other way to check how well the ordination plots represent real data is by using the goodness function. You can produce goodness of fit statistics for each observation (points). You can also use the function stessplot to create a Shepard diagram displaying two correlation-like statistics for goodness of fit between ordination distances and observed dissimilarity. This shows how closely our ordination fits real world plot dissimilarities and how well we can interpret the ordination
+
+This is an example of a Shepard diagram with correlation statistics indicating the fit between ordiantion distances and observed dissimilarities
+```{r}
+goodness(mds4_mono)
+stressplot(mds4_mono,
+           p.col = "deepskyblue",
+           l.col = "deeppink3",
+           lwd = 3,
+           size = 3)
+```
+
+
+
+
+# SELECTED 3-DIMENSIONAL MODEL - follow-up analyses
+
+# `Investigate which ELA items may be driving the distribution patterns of each dimension (intrinsic variables)`
+
+https://jkzorz.github.io/2020/04/04/NMDS-extras.html
+```{r}
+mds3_fit <- envfit(mds3_mono$points, ela_dist, permutations = 10000)
+
+fl <- read.csv("../data/factor_loadings_childitems.csv")
+
+mds3_mono$points[,2:3]
+
+envfit(mds3_mono$points[,1:2], fl, permutations = 10000)
+envfit(mds3_mono$points[,2:3], fl, permutations = 10000)
+
+envfit(mds3_mono$points[,1:2], ela_dist, permutations = 10000)
+envfit(mds3_mono$points[,2:3], ela_dist, permutations = 10000)
+
+mds3_mono$points
+```
+
+# Plotting ordinations
+
+```{r}
+#mds3_mono <- readRDS("../results/ela_parentitems_mds3.RDS")
+mds3_mono
+mds3_mono$points
+```
+
+
+`Prepare data.`
+```{r}
+mds3_scores <- as.data.frame(scores(mds3_mono)) %>% 
+dplyr::rename(gradient.1 = MDS1, 
+                gradient.2 = MDS2,
+                gradient.3 = MDS3) %>% 
+  rownames_to_column(var = "ela") %>% 
+  dplyr::mutate(ela.item = as.factor(case_when(
+    ela == "famhx_ss_fath_prob_alc_p" ~ "alcohol problems (father)",
+    ela == "famhx_ss_fath_prob_dg_p" ~ "drug problems (father)",
+    ela == "asr_scr_anxdisord_r" ~ "caregiver anxiety sx",
+    ela == "asr_scr_somaticpr_r" ~ "caregiver somatic sx",
+    ela == "asr_scr_depress_r" ~ "caregiver depressive sx",
+    ela == "asr_scr_avoidant_r" ~ "caregiver avoidant beh",
+    ela == "asr_scr_adhd_r" ~ "caregiver adhd sx",
+    ela == "asr_scr_antisocial_r" ~ "caregiver antisocial beh",
+    ela == "demo_prnt_ed_v2" ~ "parental education",
+    ela == "demo_comb_income_v2" ~ "household income",
+    ela == "crpbi_parent1_y" ~ "talking no feel better (par1)",
+    ela == "crpbi_caregiver12_y" ~ "talking no feel better  (par2)",
+    ela == "crpbi_parent2_y" ~ "no smiles (par1)",
+    ela == "crpbi_caregiver13_y" ~ "no smiles (par2)",
+    ela == "crpbi_parent3_y" ~ "does not make feel better (par1)",
+    ela == "crpbi_caregiver14_y" ~ "does not feel better (par2)",
+    ela == "crpbi_parent4_y" ~ "shows no love (par1)",
+    ela == "crpbi_caregiver15_y" ~ "shows no love (par2)",
+    ela == "crpbi_parent5_y" ~ "hard to talk (par1)",
+    ela == "crpbi_caregiver16_y" ~ "hard to talk (par1)",
+    ela == "fes_youth_q1" ~ "fight a lot (c)",
+    ela == "fes_youth_q2" ~ "openly angry (c)",
+    ela == "fes_youth_q3" ~ "throw things (c)",
+    ela == "fes_youth_q4" ~ "lose temper (c)",
+    ela == "fes_youth_q5" ~ "criticize (c)",
+    ela == "fes_youth_q6" ~ "hit each other (c)",
+    ela == "fes_youth_q7" ~ "don't keep peace (c)",
+    ela == "fes_youth_q8" ~ "outdo each other (c)",
+    ela == "fes_youth_q9"~ "raise voice (c)",
+    ela == "fam_enviro1_p" ~ "fight a lot (p)",
+    ela == "fam_enviro2r_p" ~ "openly angry (p)",
+    ela == "fam_enviro3_p" ~ "throw things (p)",
+    ela == "fam_enviro4r_p" ~ "lose temper (p)",
+    ela == "fam_enviro5_p" ~ "criticize (p)",
+    ela == "fam_enviro6_p" ~ "hit each other (p)",
+    ela == "fam_enviro7r_p" ~ "don't keep peace (p)",
+    ela == "fam_enviro8_p" ~ "outdo each other (p)",
+    ela == "fam_enviro9r_p" ~ "raise voice (p)",
+    ela == "ksads_ptsd_raw_754_p" ~ "car accident",
+    ela == "ksads_ptsd_raw_755_p" ~ "other accident",
+    ela == "ksads_ptsd_raw_756_p"~ "serious fire",
+    ela == "ksads_ptsd_raw_757_p" ~ "natural disaster",
+    ela == "ksads_ptsd_raw_758_759_760" ~ "community violence",
+    ela == "ksads_ptsd_raw_761_to_765" ~ "physical abuse",
+    ela == "ksads_ptsd_raw_766_p" ~ "domestic violence",
+    ela == "ksads_ptsd_raw_767_768_769" ~ "sexual abuse",
+    ela == "ksads_ptsd_raw_770_p" ~ "unexpected death",
+    ela == "parent_monitor_q1_y" ~ "parents don't know where child is",
+    ela == "parent_monitor_q2_y" ~ "parents don't know who child is with",
+    ela == "parent_monitor_q3_y"~ "can't get in touch with parents",
+    ela == "parent_monitor_q4_y" ~ "parents don't talk about daily plans",
+    ela == "parent_monitor_q5_y" ~ "don't eat famiy dinners",
+    ela == "nsc_p_ss_mean_3_items" ~ "lack of neighborhood safety",
+    ela == "neighborhood_crime_y" ~ "neighborhood violent crime",
+    ela == "reshist_addr1_adi_wsum" ~ "area deprivation index",
+    ela == "demo_prim_biosep" ~ "biological caregiver separation",
+    ela == "demo_parent_sep" ~ "parents are separated",
+    ela == "demo_fam_exp1_5_v2" ~ "household indices of low SES",
+    ela == "demo_fam_exp6_7_v2" ~ "medical indices of low SES",
+    ela == "famhx_ss_moth_prob_alc_dg" ~ "alcohol or drug problems (mother)"
+  )),
+  ela.factor = as.factor(case_when(
+    ela == "famhx_ss_fath_prob_alc_p" ~ "caregiver substance use / biological separation",
+    ela == "famhx_ss_fath_prob_dg_p" ~ "caregiver substance use / biological separation",
+    ela == "asr_scr_anxdisord_r" ~ "caregiver psychopathology",
+    ela == "asr_scr_somaticpr_r" ~ "caregiver psychopathology",
+    ela == "asr_scr_depress_r" ~ "caregiver psychopathology",
+    ela == "asr_scr_avoidant_r" ~ "caregiver psychopathology",
+    ela == "asr_scr_adhd_r" ~ "caregiver psychopathology",
+    ela == "asr_scr_antisocial_r" ~ "caregiver psychopathology",
+    ela == "demo_prnt_ed_v2" ~ "socioeconomic disadvantage / lack of neighborhood safety",
+    ela == "demo_comb_income_v2" ~ "socioeconomic disadvantage / lack of neighborhood safety",
+    ela == "crpbi_parent1_y" ~ "caregiver lack of support",
+    ela == "crpbi_caregiver12_y" ~ "caregiver lack of support",
+    ela == "crpbi_parent2_y" ~ "caregiver lack of support",
+    ela == "crpbi_caregiver13_y" ~ "caregiver lack of support",
+    ela == "crpbi_parent3_y" ~ "caregiver lack of support",
+    ela == "crpbi_caregiver14_y" ~ "caregiver lack of support",
+    ela == "crpbi_parent4_y" ~ "caregiver lack of support",
+    ela == "crpbi_caregiver15_y" ~ "caregiver lack of support",
+    ela == "crpbi_parent5_y" ~ "caregiver lack of support",
+    ela == "crpbi_caregiver16_y" ~ "caregiver lack of support",
+    ela == "fes_youth_q1" ~ "family anger/arguments",
+    ela == "fes_youth_q2" ~ "family anger/arguments",
+    ela == "fes_youth_q3" ~ "family verbal/physical aggression",
+    ela == "fes_youth_q4" ~ "family anger/arguments",
+    ela == "fes_youth_q5" ~ "family verbal/physical aggression",
+    ela == "fes_youth_q6" ~ "family verbal/physical aggression",
+    ela == "fes_youth_q7" ~ "family anger/arguments",
+    ela == "fes_youth_q8" ~ "family verbal/physical aggression",
+    ela == "fes_youth_q9"~ "family anger/arguments",
+    ela == "fam_enviro1_p" ~ "family anger/arguments",
+    ela == "fam_enviro2r_p" ~ "family anger/arguments",
+    ela == "fam_enviro3_p" ~ "family verbal/physical aggression",
+    ela == "fam_enviro4r_p" ~ "family anger/arguments",
+    ela == "fam_enviro5_p" ~ "family verbal/physical aggression",
+    ela == "fam_enviro6_p" ~ "family verbal/physical aggression",
+    ela == "fam_enviro7r_p" ~ "family anger/arguments",
+    ela == "fam_enviro8_p" ~ "family verbal/physical aggression",
+    ela == "fam_enviro9r_p" ~ "family anger/arguments",
+    ela == "ksads_ptsd_raw_754_p" ~ "physical trauma",
+    ela == "ksads_ptsd_raw_755_p" ~ "physical trauma",
+    ela == "ksads_ptsd_raw_756_p"~ "physical trauma",
+    ela == "ksads_ptsd_raw_757_p" ~ "physical trauma",
+    ela == "ksads_ptsd_raw_758_759_760" ~ "physical trauma",
+    ela == "ksads_ptsd_raw_761_to_765" ~ "physical trauma",
+    ela == "ksads_ptsd_raw_766_p" ~ "caregiver substance use / biological separation",
+    ela == "ksads_ptsd_raw_767_768_769" ~ "physical trauma",
+    ela == "ksads_ptsd_raw_770_p" ~ "physical trauma",
+    ela == "parent_monitor_q1_y" ~ "caregiver lack of supervision",
+    ela == "parent_monitor_q2_y" ~ "caregiver lack of supervision",
+    ela == "parent_monitor_q3_y"~ "caregiver lack of supervision",
+    ela == "parent_monitor_q4_y" ~ "caregiver lack of supervision",
+    ela == "parent_monitor_q5_y" ~ "caregiver lack of supervision",
+    ela == "nsc_p_ss_mean_3_items" ~ "socioeconomic disadvantage / lack of neighborhood safety",
+    ela == "neighborhood_crime_y" ~ "socioeconomic disadvantage / lack of neighborhood safety",
+    ela == "reshist_addr1_adi_wsum" ~ "socioeconomic disadvantage / lack of neighborhood safety",
+    ela == "demo_prim_biosep" ~ "caregiver substance use / biological separation",
+    ela == "demo_parent_sep" ~ "socioeconomic disadvantage / lack of neighborhood safety",
+    ela == "demo_fam_exp1_5_v2" ~ "socioeconomic disadvantage / lack of neighborhood safety",
+    ela == "demo_fam_exp6_7_v2" ~ "socioeconomic disadvantage / lack of neighborhood safety",
+    ela == "famhx_ss_moth_prob_alc_dg" ~ "caregiver substance use / biological separation"
+  )),
+  dim1_sig = ifelse(gradient.1 <= -0.6 | gradient.1 >= 0.6, 1, 0),
+  dim2_sig = ifelse(gradient.2 <= -0.6 | gradient.2 >= 0.6, 1, 0),
+  dim3_sig = ifelse(gradient.3 <= -0.6 | gradient.3 >= 0.6, 1, 0))
+
+# save dataframe
+write.csv(mds3_scores, "../results/mds3_childitems_scores.csv", row.names = F)
+
+mds3_scores
+```
+
+**POSSIBLY** - do the 2-D plots with the points (color/size) showing the correlation between each item and child behav (int, ext, cf, ic)
+https://jkzorz.github.io/2019/07/09/scatter-plots.html 
+https://r-graph-gallery.com/201-levelplot-with-latticeextra.html
+
+Plot: Dimension 1 and Dimension 2
+```{r}
+jpeg(file = "../plots/child_only/mds3_childitems_dim1_dim2.jpeg", 
+     width = 12, height = 6, units = "in", res = 1080)
+
+ggplot(mds3_scores, aes(x = gradient.1, y = gradient.2, color = ela.factor, 
+                          fill = ela.factor, label = ela.item)) +
+  geom_point(size = 2) +
+  geom_text_repel(size = 2.7) +
+  theme_classic() +
+  theme(text = element_text(size = 14))
+
+dev.off()
+```
+
+
+Plot: Dimension 1 and Dimension 3
+```{r}
+jpeg(file = "../plots/child_only/mds3_childitems_dim1_dim3.jpeg", 
+     width = 12, height = 6, units = "in", res = 1080)
+
+ggplot(mds3_scores, aes(x = gradient.1, y = gradient.3, color = ela.factor, 
+                          fill = ela.factor, label = ela.item)) +
+  geom_point(size = 2) +
+  geom_text_repel(size = 2.7) +
+  theme_classic() +
+  theme(text = element_text(size = 14))
+
+dev.off()
+```
+
+
+Plot: Dimension 2 and Dimension 3
+```{r}
+jpeg(file = "../plots/child_only/mds3_childitems_dim2_dim3.jpeg", 
+     width = 12, height = 6, units = "in", res = 1080)
+
+ggplot(mds3_scores, aes(x = gradient.2, y = gradient.3, color = ela.factor, 
+                          fill = ela.factor, label = ela.item)) +
+  geom_point(size = 2) +
+  geom_text_repel(size = 2.7) +
+  theme_classic() +
+  theme(text = element_text(size = 14))
+
+dev.off()
+```
+
+
+# ordisurf diagram
+
+Where the previous example examined patterns for a categorical explanatory variable, here we will explore patterns for the continuous variable A1, documenting the thickness of the A1 horizon.
+
+The vegan package includes a method of adding a smooth surface to an ordination diagram. This method is implemented in function ordisurf.
+
+https://rstudio-pubs-static.s3.amazonaws.com/694016_e2d53d65858d4a1985616fa3855d237f.html
+
+```{r}
+# fit a 10 basis function isotropic surface
+surf <- ordisurf(mds3_mono ~ X2,
+                 data = fl,
+                 knots = 10,
+                 isotropic = TRUE,
+                 main = NULL)
+# summarize model
+summary(surf)
+# extract data to be plotted
+grid <- BiodiversityR::ordisurfgrid.long(surf)
+# plot
+ggplot() + 
+    geom_contour_filled(data=grid, 
+                        aes(x=x, y=y, z=z)) +
+    geom_vline(xintercept = c(0), color = "grey70", linetype = 2) +
+    geom_hline(yintercept = c(0), color = "grey70", linetype = 2) +  
+    xlab(axis.long2[1, "label"]) +
+    ylab(axis.long2[2, "label"]) +  
+    scale_x_continuous(sec.axis = dup_axis(labels=NULL, name=NULL)) +
+    scale_y_continuous(sec.axis = dup_axis(labels=NULL, name=NULL)) +
+    geom_point(data=mds3_scores, 
+               aes(x=dimension.1, y=dimension.2, shape=ela.factor), 
+               colour="red", size=4) +
+    scale_fill_viridis_d() +
+    labs(fill="X2") +
+    coord_fixed(ratio=1)
+```
+
+
+
+
+Plot: all 3 dimensions at once:
+
+```{r}
+library(scales)
+show_col(hue_pal()(8))
+```
+
+
+```{r}
+colors <- c("#F8766D","#CD9600","#7CAE00","#00BE67","#00BFC4","#00A9FF","#C77CFF","#FF61CC")
+colors <- colors[as.numeric(mds3_scores$ela.factor)]
+
+# plotting function
+with(mds3_scores, {
+   s3d <- scatterplot3d(mds3_scores[,2:4], # x, y, and z axis
+              color = colors, # color of points
+              pch = 16,
+              type = "h", # adds lines to plot
+              lty.hplot = 3,
+             size = 7,
+            main="3-D Scatterplot",
+            xlab="ela perspective\n(gradient.1)",
+            ylab="environmental uncertainty\n(gradient.2)",
+            zlab="acts of commission/omission\n(gradient.3)")
+    s3d.coords <- s3d$xyz.convert(gradient.1, gradient.2, gradient.3) # convert 3D coords to 2D projection
+  #  legend("top", legend = levels(mds3_scores$ela.factor),
+   #   col =  c("#F8766D","#CD9600","#7CAE00","#00BE67","#00BFC4","#00A9FF","#C77CFF","#FF61CC", "#FF61C3"), 
+    #  pch = 16,
+     # xpd = T)
+})
+```
+

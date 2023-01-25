@@ -1,0 +1,175 @@
+---
+title: "Full Sample - Correlations between Factor Scores and Outcomes"
+author: "Anna Vannucci"
+date: "11/5/2021"
+output: html_document
+---
+
+Load libraries:
+```{r}
+library(tidyverse)
+library(psych)
+library(reshape) # melt correlation matrix for heatmap
+library(viridis)
+```
+
+Load dataframes:
+```{r}
+df_wide <- read.csv("../data_clean/df_wide.csv", stringsAsFactors = F)
+```
+
+
+
+# `Correlations among Factors`
+
+## 1) *prepare data*:
+```{r}
+df_factor <- df_wide %>% 
+  dplyr::select(subjectkey, f1_parpsych, f2_ses_adi_ncrime, f3_p2lacksupp, f4_p1lacksupp, 
+                f5_famconf_cr, f6_parsu_biosep, f7_angarg_pr, f8_physemoagg_pr, 
+                f9_trauma, f10_neglos) %>% 
+  dplyr::rename("F1: caregiver psychopathology" = f1_parpsych,
+                "F2: socioeconomic disadvantage and lack of neighborhood safety" = f2_ses_adi_ncrime,
+                "F3: primary caregiver lack of support" = f3_p2lacksupp,
+                "F4: secondary caregiver lack of support" = f4_p1lacksupp,
+                "F5: family conflict (child report)" = f5_famconf_cr,
+                "F6: caregiver substance use / biological separation" = f6_parsu_biosep,
+                "F7: family anger/arguments (caregiver report)" = f7_angarg_pr,
+                "F8: family physical/emotional aggression (caregiver report)" = f8_physemoagg_pr,
+                "F9: physical trauma exposure" = f9_trauma,
+                "F10: caregiver lack of supervision" = f10_neglos) %>%
+  column_to_rownames(var = "subjectkey")
+```
+
+## 2) *compute* the correlation matrix:
+```{r}
+cormat <- round(cor(df_factor), 2)
+```
+
+
+## 3) *melt* the correlation matrix for heatmap:
+```{r}
+melted_cormat <- melt(cormat)
+head(melted_cormat)
+```
+
+## 4) *visualize* the correlation matrix as a *heatmap*:
+```{r}
+jpeg(file = "../plots/factors_heatmap.jpeg", width = 12, height = 6, units = "in", res = 1080)
+
+ggplot(data = melted_cormat, aes(x=X1, y=X2, fill=value)) + 
+  geom_tile() +
+  theme_bw() +
+  labs(x = "",
+       y = "",
+       fill = "correlation (r)") +
+  scale_fill_viridis() +
+  theme(text = element_text(size = 16, face = "bold")) +
+  scale_x_discrete(labels = c("F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10"))
+
+dev.off()
+```
+
+
+
+# `Correlations between Factors and Outcomes`
+
+## 1) *prepare* data:
+```{r}
+df_corr <- df_wide %>% 
+  dplyr::select(subjectkey, f1_parpsych, f2_ses_adi_ncrime, f3_p2lacksupp, f4_p1lacksupp, 
+                f5_famconf_cr, f6_parsu_biosep, f7_angarg_pr, f8_physemoagg_pr, 
+                f9_trauma, f10_neglos, cbcl_int_t, cbcl_ext_t, cardsort_uc, flanker_uc) %>% 
+  dplyr::rename("F1: caregiver psychopathology" = f1_parpsych,
+                "F2: socioeconomic disadvantage and lack of neighborhood safety" = f2_ses_adi_ncrime,
+                "F3: secondary caregiver lack of support" = f3_p2lacksupp,
+                "F4: primary caregiver lack of support" = f4_p1lacksupp,
+                "F5: family conflict (child report)" = f5_famconf_cr,
+                "F6: caregiver substance use / biological separation" = f6_parsu_biosep,
+                "F7: family anger/arguments (caregiver report)" = f7_angarg_pr,
+                "F8: family physical/emotional aggression (caregiver report)" = f8_physemoagg_pr,
+                "F9: physical trauma exposure" = f9_trauma,
+                "F10: caregiver lack of supervision" = f10_neglos,
+                "1. internalizing behaviors" = cbcl_int_t,
+                "2. externalizing behaviors" = cbcl_ext_t,
+                "3. cognitive flexibility" = cardsort_uc,
+                "4. inhibitory control" = flanker_uc) %>% 
+  # need to drop columns with missing values to compute correlation matrix
+  drop_na() %>% 
+  tibble::column_to_rownames(var = "subjectkey")
+```
+
+## 2) *compute* the correlation matrix:
+```{r}
+# compute correlation matrix
+corr <- as.data.frame(round(cor(df_corr), 3))
+
+# move row names to column
+corr <- tibble::rownames_to_column(corr, "score") 
+
+# view first 6 rows of the correlation matrix
+head(corr[, 1:6])
+```
+
+## 3) *prepare* correlation matrix for heatmap
+```{r}
+df_hm <- corr %>% 
+  dplyr::filter(score == "1. internalizing behaviors" |
+           score == "2. externalizing behaviors" |
+           score == "3. cognitive flexibility" |
+           score == "4. inhibitory control") %>% 
+  dplyr::select(-"1. internalizing behaviors", -"2. externalizing behaviors",
+                -"3. cognitive flexibility", -"4. inhibitory control") %>% 
+  dplyr::mutate(X = row_number()) %>% 
+  pivot_longer(cols = c("F1: caregiver psychopathology",
+                        "F2: socioeconomic disadvantage and lack of neighborhood safety",
+                        "F3: secondary caregiver lack of support",
+                        "F4: primary caregiver lack of support",
+                        "F5: family conflict (child report)",
+                        "F6: caregiver substance use / biological separation",
+                        "F7: family anger/arguments (caregiver report)",
+                        "F8: family physical/emotional aggression (caregiver report)",
+                        "F9: physical trauma exposure",
+                        "F10: caregiver lack of supervision"),
+                      names_to = "factor",
+                      values_to = "correlation") %>% 
+  dplyr::rename(behavior = score) %>% 
+  dplyr::select(X, factor, behavior, correlation) %>% 
+  dplyr::mutate(factor = as.factor(factor),
+                behavior = as.factor(behavior))
+
+# save heatmap dataframe
+write.csv(df_hm, "../results/correlation_factors_outcome_full.csv", row.names = F)
+
+df_hm
+```
+
+
+```{r}
+jpeg(file = "../plots/elafactors_behav_heatmap.jpeg", width = 10, height = 6, units = "in", res = 1080)
+
+ggplot(data = df_hm, aes(x = behavior, y = factor, fill = correlation)) +
+  geom_tile() +
+  labs(x = "",
+       y = "",
+       fill = "correlation (r)") +
+  theme_bw() +
+  scale_fill_viridis(option = "C") +
+  theme(text = element_text(size = 16, face = "bold"),
+        legend.title = element_text(size = 12),
+        axis.text.x = element_text(angle = 45, hjust=1)) +
+  scale_y_discrete(labels = c("F1: caregiver psychopathology",
+                        "F2: socioeconomic disadvantage and lack of neighborhood safety",
+                        "F3: secondary caregiver lack of support",
+                        "F4: primary caregiver lack of support",
+                        "F5: family conflict (child report)",
+                        "F6: caregiver substance use / biological separation",
+                        "F7: family anger/arguments (caregiver report)",
+                        "F8: family physical/emotional aggression (caregiver report)",
+                        "F9: physical trauma exposure",
+                        "F10: caregiver lack of supervision"))
+
+dev.off()
+```
+
+
