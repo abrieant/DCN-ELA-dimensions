@@ -18,13 +18,14 @@ require(polycor)
 ```
 
 ```{r}
-#keeping the key 
+#read in data
 ELAdata_touse_forFA_noNAs <- read.csv('ELAdata_with_subjectIDs.csv')
 ```
 
 
 ```{r}
-###getting the correlation matrix of the data we currently have. This will allow us to determine whether certain variables are highly correlated with one another. NB. Had to remove demo_comb_income_v2 from p as too many categories
+###getting the correlation matrix of the data we currently have. This will allow us to determine whether certain variables are highly correlated with one another. NB. Had to move demo_comb_income_v2 from p (polytomous) as too many categories
+
 mix_corr_mat_preagg <-mixedCor(ELAdata_touse_forFA_noNAs[,c(2:77)], ncat = 6, smooth=TRUE,global=TRUE, correct=FALSE, c = c(5:12,14,72,74), p= c(13,22:31,67:71,73), d=c(1:4,15:21,32:66,75,76))
 mix_corr_mat_preagg_df <- mix_corr_mat_preagg$rho
 ```
@@ -38,9 +39,11 @@ cor.plot(mix_corr_mat_preagg_df)
 ```
 
 ```{r}
-#####AGGREGATING THE VARIABLES THAT HAVE HIGH MULTICOLINEARITY BETWEEN ONE ANOTHER AND ALSO MAKE CONCEPTUAL SENSE TO GROUP TOGETHER. These are combining the initial individual variables (N.B. using dataframe not assigned as factors). If >2 variables are grouped the sum is halved to ensure that there are a maximum of 4 categories
+#####AGGREGATING THE VARIABLES THAT HAVE HIGH MULTICOLINEARITY BETWEEN ONE ANOTHER AND ALSO MAKE CONCEPTUAL SENSE TO GROUP TOGETHER. These are combining the initial individual variables. If >2 variables are grouped the sum is halved to ensure that there are a maximum of 4 categories
 
-##KSADS 758 -> 769 are highly correlated
+##KSADS 758 - 769 are highly correlated
+
+#aggregating items 758-760 as they are all related to XXX
 ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_759_760 <- ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_p + ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_759_p + ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_760_p
 ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_759_760 <-ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_759_760/2
 ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_759_760 <- ceiling(ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_759_760)
@@ -113,118 +116,3 @@ cor.plot(mix_corr_mat_postagg_df)
 write.csv(ELAdata_touse_forFA_noNAs_noOriginalVar, file = "ELAdata_touse_forFA_noNAs_noOriginalVar.csv", row.names=FALSE)
 ```
 
-#site analysis
-
-```{r}
-#read in site
-site <- read_tsv(paste('abcd_lt01.txt', sep='/'), col_names=TRUE) %>%
-  filter(eventname == "baseline_year_1_arm_1") %>% 
-  dplyr::select(subjectkey,site_id_l)
-
-ELAdata_touse_forFA_noNAs_noOriginalVar_site <- ELAdata_touse_forFA_noNAs_noOriginalVar %>%
-    left_join(site,by='subjectkey')%>%
-    dplyr::rename(abcd_site = 'site_id_l')
-head(ELAdata_touse_forFA_noNAs_noOriginalVar_site)
-
-ELAdata_touse_forFA_noNAs_noOriginalVar_site$abcd_site <- as.factor(ELAdata_touse_forFA_noNAs_noOriginalVar_site$abcd_site)
-```
-
-```{r}
-#Split file according to site
-NoSite01 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site01")
-NoSite02 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site02")
-NoSite03 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site03")
-NoSite04 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site04")
-NoSite05 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site05")
-NoSite06 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site06")
-NoSite07 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site07")
-NoSite08 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site08")
-NoSite09 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site09")
-NoSite10 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site10")
-NoSite11 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site11")
-NoSite12 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site12")
-NoSite13 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site13")
-NoSite14 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site14")
-NoSite15 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site15")
-NoSite16 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site16")
-NoSite17 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site17")
-NoSite18 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site18")
-NoSite19 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site19")
-NoSite20 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site20")
-NoSite21 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site21")
-NoSite22 <- subset(ELAdata_touse_forFA_noNAs_noOriginalVar_site, abcd_site!="site22")
-```
-
-```{r}
-#Remove abcd_site variable
-NoSite01 <- NoSite01 %>% 
-  dplyr::select(-abcd_site)
-NoSite02 <- NoSite02 %>% 
-  dplyr::select(-abcd_site)
-NoSite03 <- NoSite03 %>% 
-  dplyr::select(-abcd_site)
-NoSite04 <- NoSite04 %>% 
-  dplyr::select(-abcd_site)
-NoSite05 <- NoSite05 %>% 
-  dplyr::select(-abcd_site)
-NoSite06 <- NoSite06 %>% 
-  dplyr::select(-abcd_site)
-NoSite07 <- NoSite07 %>% 
-  dplyr::select(-abcd_site)
-NoSite08 <- NoSite08 %>% 
- dplyr:: select(-abcd_site)
-NoSite09 <- NoSite09 %>% 
-  dplyr::select(-abcd_site)
-NoSite10 <- NoSite10 %>% 
- dplyr:: select(-abcd_site)
-NoSite11 <- NoSite11 %>% 
- dplyr:: select(-abcd_site)
-NoSite12 <- NoSite12 %>% 
-  dplyr::select(-abcd_site)
-NoSite13 <- NoSite13 %>% 
-  dplyr::select(-abcd_site)
-NoSite14 <- NoSite14 %>% 
-  dplyr::select(-abcd_site)
-NoSite15 <- NoSite15 %>% 
-  dplyr::select(-abcd_site)
-NoSite16 <- NoSite16 %>% 
-  dplyr::select(-abcd_site)
-NoSite17 <- NoSite17 %>% 
-  dplyr::select(-abcd_site)
-NoSite18 <- NoSite18 %>% 
-  dplyr::select(-abcd_site)
-NoSite19 <- NoSite19 %>% 
-  dplyr::select(-abcd_site)
-NoSite20 <- NoSite20 %>% 
-  dplyr::select(-abcd_site)
-NoSite21 <- NoSite21 %>% 
-  dplyr::select(-abcd_site)
-NoSite22 <- NoSite22 %>% 
-  dplyr::select(-abcd_site)
-```
-
-```{r}
-###writing tese dataframes
-write.csv(NoSite01, file = "NoSite01.csv", row.names=FALSE)
-write.csv(NoSite02, file = "NoSite02.csv", row.names=FALSE)
-write.csv(NoSite03, file = "NoSite03.csv", row.names=FALSE)
-write.csv(NoSite04, file = "NoSite04.csv", row.names=FALSE)
-write.csv(NoSite05, file = "NoSite05.csv", row.names=FALSE)
-write.csv(NoSite06, file = "NoSite06.csv", row.names=FALSE)
-write.csv(NoSite07, file = "NoSite07.csv", row.names=FALSE)
-write.csv(NoSite08, file = "NoSite08.csv", row.names=FALSE)
-write.csv(NoSite09, file = "NoSite09.csv", row.names=FALSE)
-write.csv(NoSite10, file = "NoSite10.csv", row.names=FALSE)
-write.csv(NoSite11, file = "NoSite11.csv", row.names=FALSE)
-write.csv(NoSite12, file = "NoSite12.csv", row.names=FALSE)
-write.csv(NoSite13, file = "NoSite13.csv", row.names=FALSE)
-write.csv(NoSite14, file = "NoSite14.csv", row.names=FALSE)
-write.csv(NoSite15, file = "NoSite15.csv", row.names=FALSE)
-write.csv(NoSite16, file = "NoSite16.csv", row.names=FALSE)
-write.csv(NoSite17, file = "NoSite17.csv", row.names=FALSE)
-write.csv(NoSite18, file = "NoSite18.csv", row.names=FALSE)
-write.csv(NoSite19, file = "NoSite19.csv", row.names=FALSE)
-write.csv(NoSite20, file = "NoSite20.csv", row.names=FALSE)
-write.csv(NoSite21, file = "NoSite21.csv", row.names=FALSE)
-write.csv(NoSite22, file = "NoSite22.csv", row.names=FALSE)
-```
