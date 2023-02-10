@@ -17,9 +17,7 @@ require(car)
 ```{r read in csv file}
 ##check that this csv file name is consistent with pull_variables output
 ELAdata = read.csv(file = "ELAdata_v2.csv")
-
 ```
-
 
 ```{r exclude relatives}
 #merge with file excluding relatives
@@ -37,6 +35,7 @@ write.csv(ELAdata_norelatives, file = "ELAdata_norel.csv", row.names = FALSE)
 ```
 
 ```{r code missing values and exlcude variables with NA > 50%}
+
 #Replace 777 and 999 as na (ABCD also codes 555 and 88 as missing, but none of our variables have these values)
 ELAdata_norelatives <- ELAdata_norelatives %>% dplyr::na_if(999)
 ELAdata_norelatives <- ELAdata_norelatives %>% dplyr::na_if(777)
@@ -47,16 +46,13 @@ ELA_var_sum_of_NA
 ```
 
 ```{r recoding}
-#recode demo prim, 1=bio separation from parent, 0=lives with bio parents
+#recode demo_prim, 1=separation from bio parent, 0=lives with bio parents
 ELAdata_norelatives$demo_prim_biosep <- ifelse(ELAdata_norelatives$demo_prim >= 3,1,0)
-table(ELAdata_norelatives$demo_prim_biosep)
 
-#recode parent marital status, coding 1 and 6 are now = 0 (no parental separation) otherwise 1 (parental separation)s
+#recode parent marital status, coding 1 and 6 are now = 0 (no parental separation) otherwise 1 (parental separation)
 ELAdata_norelatives$demo_parent_sep <- ifelse(ELAdata_norelatives$demo_prnt_marital_v2 == 1 | ELAdata_norelatives$demo_prnt_marital_v2 == 6, 0, 1)
 
-table(ELAdata_norelatives$demo_parent_sep)
-
-#droping variables we don't need for the factor analysis
+#dropping variables we don't need for the factor analysis
 ELAdata_touse_forFA <- ELAdata_norelatives %>%
   dplyr::select(-demo_prim, -demo_prnt_marital_v2, -starts_with("kbi_p"), -starts_with("live"))
 ```
@@ -142,7 +138,7 @@ ELAdata_touse_forFA$crpbi_caregiver14_y = recode(ELAdata_touse_forFA$crpbi_careg
 ELAdata_touse_forFA$crpbi_caregiver15_y = recode(ELAdata_touse_forFA$crpbi_caregiver15_y, "1=3; 2=2; 3=1")
 ELAdata_touse_forFA$crpbi_caregiver16_y = recode(ELAdata_touse_forFA$crpbi_caregiver16_y, "1=3; 2=2; 3=1")
 
-##income and education variables
+####income and education variables
 
 #demo_comb_income_v2 ranges from 1 to 10, 1 is lowest income category and 10 is highest
 ELAdata_touse_forFA$demo_comb_income_v2 = recode(ELAdata_touse_forFA$demo_comb_income_v2, "1=10; 2=9; 3=8; 4=7; 5=6; 6=5; 7=4; 8=3; 9=2; 10=1")
@@ -158,7 +154,7 @@ ELAdata_touse_forFA$parent_monitor_q3_y = recode(ELAdata_touse_forFA$parent_moni
 ELAdata_touse_forFAparent_monitor_q4_y = recode(ELAdata_touse_forFA$parent_monitor_q4_y, "1=5; 2=4; 3=3; 4=2; 5=1")
 ELAdata_touse_forFA$parent_monitor_q5_y = recode(ELAdata_touse_forFA$parent_monitor_q5_y, "1=5; 2=4; 3=3; 4=2; 5=1")
 
-##neighborhood variables
+####neighborhood variables
 
 #neighborhood_crime_y ranges 1-5
 ELAdata_touse_forFA$neighborhood_crime_y = recode(ELAdata_touse_forFA$neighborhood_crime_y, "1=5; 2=4; 3=3; 4=2; 5=1")
