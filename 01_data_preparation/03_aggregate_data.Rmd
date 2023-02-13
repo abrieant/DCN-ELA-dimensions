@@ -43,15 +43,17 @@ cor.plot(mix_corr_mat_preagg_df)
 
 ##KSADS 758 - 769 are highly correlated
 
-#aggregating items 758-760 as they are all related to XXX
+#aggregating items 758-760 as they are all related to witnessing violence
 ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_759_760 <- ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_p + ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_759_p + ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_760_p
 ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_759_760 <-ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_759_760/2
 ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_759_760 <- ceiling(ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_759_760)
 
+#aggregating items 761-765 as they are all related to experiencing extreme physical threats/violence
 ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_761_to_765 <- ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_761_p + ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_762_p + ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_763_p + ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_764_p + ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_765_p
 ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_761_to_765 <- ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_761_to_765/2
 ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_761_to_765 <- ceiling(ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_761_to_765)
 
+#aggregating items 767-769 as they are all related to sexual abuse
 ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_767_768_769 <- ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_767_p + ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_768_p+ ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_769_p
 ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_767_768_769 <-ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_767_768_769/2
 ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_767_768_769 <- ceiling(ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_767_768_769)
@@ -69,7 +71,7 @@ ELAdata_touse_forFA_noNAs$famhx_ss_moth_prob_alc_dg <-ELAdata_touse_forFA_noNAs$
 
 
 ```{r}
-####REMOVING THE ORIGINAL VARIABLES WE AGGREGATED (plus asr_scr variables that are also covered in other variables)
+####REMOVING THE ORIGINAL/INDIVIDUAL VARIABLES WE AGGREGATED (plus asr_scr variables that are also covered in other variables)
 
 ELAdata_touse_forFA_noNAs_noOriginalVar <- ELAdata_touse_forFA_noNAs %>% 
     dplyr::select(-ksads_ptsd_raw_758_p, -ksads_ptsd_raw_759_p, -ksads_ptsd_raw_760_p,
@@ -91,7 +93,7 @@ IncidenceRates_Zero_ELA <- apply(ELAdata_touse_forFA_noNAs_noOriginalVar, 2, fun
 IncidenceProportion_Zero_ELA <- as.data.frame(IncidenceRates_Zero_ELA/nrow(ELAdata_touse_forFA_noNAs_noOriginalVar))
 
 IncidenceProportion_Zero_ELA_filter <- filter(IncidenceProportion_Zero_ELA, IncidenceRates_Zero_ELA/nrow(ELAdata_touse_forFA_noNAs_noOriginalVar) > .995)
-##I think we could have a quick summary here as to whether we removed any variables based on this criteria. What do you think? - Hajer 
+
 ```
 
 
@@ -103,7 +105,6 @@ mix_corr_mat_postagg_df <- mix_corr_mat_postagg$rho
 
 ```{r}
 write.csv(mix_corr_mat_postagg_df,file = "mixed_corr_matrix_postagg.csv", row.names = FALSE)
-
 ```
 
 

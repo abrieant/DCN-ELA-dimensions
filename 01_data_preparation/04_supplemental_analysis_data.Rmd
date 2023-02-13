@@ -5,7 +5,7 @@ date: '2023-02-10'
 output: html_document
 ---
 
-#site analysis
+#data for supplemental analyses running the factor analysis removing 1 site each time
 
 ```{r}
 #read in site
@@ -96,7 +96,7 @@ NoSite22 <- NoSite22 %>%
 ```
 
 ```{r}
-###writing tese dataframes
+###writing these dataframes
 write.csv(NoSite01, file = "NoSite01.csv", row.names=FALSE)
 write.csv(NoSite02, file = "NoSite02.csv", row.names=FALSE)
 write.csv(NoSite03, file = "NoSite03.csv", row.names=FALSE)
