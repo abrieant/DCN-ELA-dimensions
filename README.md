@@ -56,5 +56,43 @@ This repository contains the following:
 
 03_mds - a directory with files for multidimensional scaling analyses
 
+  plots - a directory with plot outputs
+  
+  scripts - a directory with scripts for multidimensional scaling analysis
+    
+    01a_mds_trainset_allitems.Rmd
+    -Purpose: run mds with training set
+    -Output: mds goodness of fit metrics and plots
+    
+    01b_mds_validset_allitems.Rmd
+    -Purpose: run mds with validation set
+    -Output: mds goodness of fit metrics and plots
+    
+    02_mds_trainset_childitems.Rmd
+    -Purpose: run mds removing parent report items to see if results change
+    -Output: mds goodness of fit metrics and plots
+    
+    03_mds_trainset_parentitems.Rmd
+    -Purpose: run mds removing child report items to see if results change
+    -Output: mds goodness of fit metrics and plots
+  
 04_outcomes - a directory with files for analyses testing associations between adversity factors and child outcomes
+
+  plots - a directory with plot outputs
+  
+  scripts - a directory with scripts for outcome analyses
+  
+    01_data_cleaning_full.Rmd
+    -Purpose: merge outcome variables with adversity factors and clean
+    -Output: two cleaned .csv data files (one wide format, one long)
+    -Data files needed: 10factors_fscores.csv (from 02_factor_analysis), abcd_cbcls01.csv (from NDA),         
+    abcd_tbss01.csv (from NDA)
+    
+    02_correlations_full.Rmd
+    
+    03_regression.Rmd
+    
+    04_mvmlm_plots.Rmd
+  
+  
   
