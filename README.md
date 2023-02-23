@@ -1,6 +1,9 @@
 # DCN-ELA-dimensions
 Scripts and output for "Characterizing the dimensional structure of early-life adversity in the Adolescent Brain Cognitive Development (ABCD) Study"
 
+Note: data cannot be shared publicly per ABCD Study data sharing guidelines. Data can be accessed through the 
+National Data Archive at https://nda.nih.gov/abcd/ with an approved Data Use Certification.
+
 This repository contains the following:
 
 01_data_preparation - a directory with scripts and outputs needed to import, prep, and clean data for analysis
@@ -33,4 +36,25 @@ This repository contains the following:
     -Output: .csv file with correlation matrix; .csv file with XX subjects and XX variables
     
   04_supplemental_analysis_data.Rmd
+  
+02_factor_analysis - a directory with factor analysis inputs and outputs
+  
+  EFA_full_sample.inp/.out
+    -Mplus script for Exploratory Factor Analysis with the full analytic sample (as opposed to supplemental          leave-site-out analyses)
+    -Generates eigenvalues and model fit indices to help determine optimal model
+    
+  ESEM_10_factorscores.inp/.out
+    -Mplus script for Exploratory Structural Equation model that specifies 10 factors (based on EFA results)
+    -Exports factor scores for 10 factors as .dat file
+    -Note: it is necessary to specify as ESEM (rather than EFA) in order to obtain factor scores from Mplus
+    
+  factor_loadings_10factors.xlsx
+    -formatted factor loadings from EFA 10 factor solution
+    
+  supplemental_site_analysis - a directory with inputs and outputs for the EFA analysis with one site removed
+    -systematically removed one site for each iteration, 22 sites total resulting in 22 iterations
+
+03_mds - a directory with files for multidimensional scaling analyses
+
+04_outcomes - a directory with files for analyses testing associations between adversity factors and child outcomes
   
