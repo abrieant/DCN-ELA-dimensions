@@ -78,7 +78,7 @@ This repository contains the following:
   
 04_outcomes - a directory with files for analyses testing associations between adversity factors and child outcomes
 
-  plots - a directory with plot outputs
+  plots - a directory with .jpeg plot outputs
   
   scripts - a directory with scripts for outcome analyses
   
@@ -89,10 +89,16 @@ This repository contains the following:
     abcd_tbss01.csv (from NDA)
     
     02_correlations_full.Rmd
+    -Purpose: test correlations between factor scores and outcomes
+    -Output: .jpeg heatmaps
     
     03_regression.Rmd
+    -Purpose: run regression model for associations between factor scores and outcomes (with test and validation     sets), including multivariate multilevel models
+    -Output: model fits and parameter estimates, plots
     
     04_mvmlm_plots.Rmd
+    -Purpose: plot results from the multivariate multilevel models
+    -Output: mvmlm plots, scatterpolots for spearman correlations between actual and predicted child behavior       scores
   
   
   
