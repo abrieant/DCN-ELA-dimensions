@@ -1,6 +1,5 @@
 ---
-title: An R Markdown document converted from "/Users/jenniferharris/Documents/abcd-repronim/project_week/ELA_merge2.ipynb"
-output: html_document
+title: 01_pull_variables
 ---
 
 ```{r}
@@ -20,45 +19,39 @@ rel <- read_tsv(paste('acspsw03.txt', sep='/'), col_names=TRUE) %>%
 #Read in family substance use summary scores
 fhx <- read_tsv(paste('abcd_fhxssp01.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
-  dplyr::select(subjectkey,famhx_ss_fath_prob_alc_p,famhx_ss_moth_prob_alc_p,famhx_ss_fath_prob_dg_p,famhx_ss_moth_prob_dg_p)
+  dplyr::select(subjectkey,famhx_ss_fath_prob_alc_p,famhx_ss_moth_prob_alc_p,famhx_ss_fath_prob_dg_p,
+                famhx_ss_moth_prob_dg_p)
 ```
 
 ```{r}
 ##Read in parent demographics
 pdemo <- read_tsv(paste('pdem02.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
-  dplyr::select(subjectkey,demo_prim,demo_prnt_marital_v2,demo_prnt_ed_v2,demo_prtnr_ed_v2,demo_comb_income_v2,demo_fam_exp1_v2,demo_fam_exp2_v2,
-                demo_fam_exp3_v2,demo_fam_exp4_v2,demo_fam_exp5_v2,demo_fam_exp6_v2,demo_fam_exp7_v2)
-```
-
-```{r}
-##Read in KSADS background items
-
-##i think we ended up not using this items so this could probablt be deleted-- hajer can you confirm?
-kbi <- read_tsv(paste('dibf01.txt', sep='/'), col_names=TRUE) %>%
-  filter(eventname == "baseline_year_1_arm_1") %>% 
-  dplyr::select(subjectkey,kbi_p_c_live_full_time,kbi_p_c_guard___5,kbi_p_c_guard___6,
-                kbi_p_c_guard___7,kbi_p_c_guard___8,kbi_p_c_guard___9,kbi_p_c_guard___10,kbi_p_c_guard___11,kbi_p_c_guard___12)
+  dplyr::select(subjectkey,demo_prim,demo_prnt_marital_v2,demo_prnt_ed_v2,demo_prtnr_ed_v2,demo_comb_income_v2,
+                demo_fam_exp1_v2,demo_fam_exp2_v2,demo_fam_exp3_v2,demo_fam_exp4_v2,demo_fam_exp5_v2,
+                demo_fam_exp6_v2,demo_fam_exp7_v2)
 ```
 
 ```{r}
 ##Read in CRPBI
 crpbi <- read_tsv(paste('crpbi01.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
-  dplyr::select(subjectkey,crpbi_parent1_y,crpbi_caregiver12_y,crpbi_parent2_y, crpbi_caregiver13_y,crpbi_parent3_y, crpbi_caregiver14_y,crpbi_parent4_y,
-                crpbi_caregiver15_y,crpbi_parent5_y,crpbi_caregiver16_y)
+  dplyr::select(subjectkey,crpbi_parent1_y,crpbi_caregiver12_y,crpbi_parent2_y,crpbi_caregiver13_y,
+                crpbi_parent3_y, crpbi_caregiver14_y,crpbi_parent4_y,crpbi_caregiver15_y,crpbi_parent5_y,
+                crpbi_caregiver16_y)
 ```
 
 ```{r}
 ##Read in parent report family environment scale
 fes02 <- read_tsv(paste('fes02.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
-  dplyr::select(subjectkey,fam_enviro1_p,fam_enviro2r_p,fam_enviro3_p,fam_enviro4r_p,fam_enviro5_p,fam_enviro6_p,fam_enviro7r_p,fam_enviro8_p,fam_enviro9r_p)
+  dplyr::select(subjectkey,fam_enviro1_p,fam_enviro2r_p,fam_enviro3_p,fam_enviro4r_p,fam_enviro5_p,
+                fam_enviro6_p,fam_enviro7r_p,fam_enviro8_p,fam_enviro9r_p)
 
 #data were double-entered, removed duplicates
 fes02<-fes02 %>% distinct()
 
-#NAs for many items (below), unclear why. Omitted these variables.
+#Note: NAs for many items (below), unclear why. Omitted these variables.
 #Fes_31_p,fes_32_p,fes_51_p,fes_52r_p,fes_1_p,fes_72r_p,fes_2r_p,fes_81_p,fes_19_p,fes_29r_p,fes_39_p,fes_42_p,fes_49r_p,fes_59_p,fes_69_p, fes_79r_p,fes_9_p
 ```
 
@@ -66,23 +59,27 @@ fes02<-fes02 %>% distinct()
 ##Read in youth report family environment scale
 fes01 <- read_tsv(paste('abcd_fes01.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
-  dplyr::select(subjectkey,fes_youth_q1,fes_youth_q2,fes_youth_q3,fes_youth_q4,fes_youth_q5,fes_youth_q6,fes_youth_q7,fes_youth_q8,fes_youth_q9)
+  dplyr::select(subjectkey,fes_youth_q1,fes_youth_q2,fes_youth_q3,fes_youth_q4,fes_youth_q5,fes_youth_q6,
+                fes_youth_q7,fes_youth_q8,fes_youth_q9)
 ```
 
 ```{r}
 ##Read in ksads trauma, parent interview
 ptsd <- read_tsv(paste('abcd_ptsd01.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
-  dplyr::select(subjectkey,ksads_ptsd_raw_754_p,ksads_ptsd_raw_755_p,ksads_ptsd_raw_756_p,ksads_ptsd_raw_757_p,ksads_ptsd_raw_758_p,ksads_ptsd_raw_759_p,
-                ksads_ptsd_raw_760_p,ksads_ptsd_raw_761_p,ksads_ptsd_raw_762_p,ksads_ptsd_raw_763_p,ksads_ptsd_raw_764_p,ksads_ptsd_raw_765_p,ksads_ptsd_raw_766_p,
-                ksads_ptsd_raw_767_p,ksads_ptsd_raw_768_p,ksads_ptsd_raw_769_p,ksads_ptsd_raw_770_p)
+  dplyr::select(subjectkey,ksads_ptsd_raw_754_p,ksads_ptsd_raw_755_p,ksads_ptsd_raw_756_p,ksads_ptsd_raw_757_p,
+                ksads_ptsd_raw_758_p,ksads_ptsd_raw_759_p,ksads_ptsd_raw_760_p,ksads_ptsd_raw_761_p,
+                ksads_ptsd_raw_762_p,ksads_ptsd_raw_763_p,ksads_ptsd_raw_764_p,ksads_ptsd_raw_765_p,
+                ksads_ptsd_raw_766_p,ksads_ptsd_raw_767_p,ksads_ptsd_raw_768_p,ksads_ptsd_raw_769_p,
+                ksads_ptsd_raw_770_p)
 ```
 
 ```{r}
 ##Read in parental monitoring
 pmq <- read_tsv(paste('pmq01.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
-  dplyr::select(subjectkey,parent_monitor_q1_y,parent_monitor_q2_y,parent_monitor_q3_y,parent_monitor_q4_y,parent_monitor_q5_y)
+  dplyr::select(subjectkey,parent_monitor_q1_y,parent_monitor_q2_y,parent_monitor_q3_y,parent_monitor_q4_y,
+                parent_monitor_q5_y)
 ```
 
 ```{r}
@@ -103,11 +100,21 @@ ynsc <- read_tsv(paste('abcd_nsc01.txt', sep='/'), col_names=TRUE) %>%
 ##Read in ASR (parent psychopathology)
 asr <- read_tsv(paste('abcd_asrs01.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
-  dplyr::select(subjectkey,asr_scr_anxdisord_r,asr_scr_somaticpr_r,asr_scr_depress_r,asr_scr_avoidant_r,asr_scr_adhd_r,asr_scr_antisocial_r,asr_scr_inattention_r,
-                asr_scr_hyperactive_r)
+  dplyr::select(subjectkey,asr_scr_anxdisord_r,asr_scr_somaticpr_r,asr_scr_depress_r,asr_scr_avoidant_r,
+                asr_scr_adhd_r,asr_scr_antisocial_r,asr_scr_inattention_r,asr_scr_hyperactive_r)
 ```
 
 ```{r}
+#Read in ADI data file
+ADI <- read.table(file = "abcd_rhds01.txt", header=TRUE, na.strings = "NA") %>%
+  filter(eventname == "baseline_year_1_arm_1") %>% 
+  dplyr::select(subjectkey,reshist_addr1_adi_wsum)
+
+#convert to numeric
+ADI[,2:2] <- sapply(ADI[,2:2], as.numeric)
+```
+
+```{r merge all data frames}
 ELAdata <- full_join(fhx, asr)%>%
   full_join(pdemo) %>%
   full_join(kbi)%>%
@@ -118,7 +125,8 @@ ELAdata <- full_join(fhx, asr)%>%
   full_join(pmq)%>%
   full_join(pnscss)%>%
   full_join(ynsc)%>%
-  full_join(rel)
+  full_join(rel)%>%
+  full_join(ADI)
 ```
 
 ```{r}
@@ -228,19 +236,6 @@ Final_imaging_IDs_fromFA.to_csv("Final_Imaging_FA_ID.tsv", sep="\t", index=None)
 ```
 
 ### Switch kernel back to R
-
-```{r}
-#install.packages("tidyverse")
-library(tidyverse)
-install.packages('polycor')
-library(polycor)
-install.packages('psych')
-library(psych)# need for factor analysis
-```
-
-```{r}
-path <- "/home/jovyan/ABCD3"
-```
 
 ```{r}
 ELAdata = read.csv(file = "ELAdata_v2.csv")
@@ -380,20 +375,4 @@ data2_final <- data2_final %>%
 cols <- c('famhx_ss_fath_prob_alc_p','famhx_ss_moth_prob_alc_p','famhx_ss_fath_prob_dg_p','famhx_ss_moth_prob_dg_p','demo_fam_exp1_v2','demo_fam_exp2_v2','demo_fam_exp3_v2','demo_fam_exp4_v2','demo_fam_exp5_v2','demo_fam_exp6_v2','demo_fam_exp7_v2','crpbi_parent1_y','crpbi_caregiver12_y','crpbi_parent2_y','crpbi_caregiver13_y','crpbi_parent3_y','crpbi_caregiver14_y','crpbi_parent4_y','crpbi_caregiver15_y','crpbi_parent5_y','crpbi_caregiver16_y','fes_youth_q1','fes_youth_q2','fes_youth_q3','fes_youth_q4','fes_youth_q5','fes_youth_q6','fes_youth_q7','fes_youth_q8','fes_youth_q9','fam_enviro1_p','fam_enviro2r_p','fam_enviro3_p','fam_enviro4r_p','fam_enviro5_p','fam_enviro6_p','fam_enviro7r_p','fam_enviro8_p','fam_enviro9r_p','ksads_ptsd_raw_754_p','ksads_ptsd_raw_755_p','ksads_ptsd_raw_756_p','ksads_ptsd_raw_757_p','ksads_ptsd_raw_758_p','ksads_ptsd_raw_759_p','ksads_ptsd_raw_760_p','ksads_ptsd_raw_761_p','ksads_ptsd_raw_762_p','ksads_ptsd_raw_763_p','ksads_ptsd_raw_764_p','ksads_ptsd_raw_765_p','ksads_ptsd_raw_766_p','ksads_ptsd_raw_767_p','ksads_ptsd_raw_768_p','ksads_ptsd_raw_769_p','ksads_ptsd_raw_770_p','demo_prim_biosep','demo_parent_sep','parent_monitor_q1_y', 'parent_monitor_q2_y', 'parent_monitor_q3_y','parent_monitor_q4_y', 'parent_monitor_q5_y')
 data2_final[cols] <- lapply(data2_final[cols], factor)
 summary(data2_final)
-```
-
-
-```{r}
-
-###hajer -- move this up and merge
-
-#Read in ADI data file
-ADI <- read.table(file = "abcd_rhds01.txt", header=TRUE, na.strings = "NA") %>%
-  filter(eventname == "baseline_year_1_arm_1") %>% 
-  dplyr::select(subjectkey,reshist_addr1_adi_wsum)
-#convert to numeric
-ADI[,2:2] <- sapply(ADI[,2:2], as.numeric)
-
-#merge with full data file
-ELAdata <- full_join(ELAdata,ADI)
 ```
