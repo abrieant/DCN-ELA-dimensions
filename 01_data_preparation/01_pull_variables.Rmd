@@ -28,7 +28,9 @@ fhx <- read_tsv(paste(path, 'abcd_fhxssp01.txt', sep='/'), col_names=TRUE) %>%
 
 ```{r}
 ##Read in parent demographics
-pdemo <- read_tsv(paste(path, 'pdem02.txt', sep='/'), col_names=TRUE) %>%
+#need to first remove row with variable description to read in properly
+
+pdemo <- read_tsv(paste(path,'pdem02.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
   dplyr::select(subjectkey,demo_prim,demo_prnt_marital_v2,demo_prnt_ed_v2,demo_prtnr_ed_v2,demo_comb_income_v2,
                 demo_fam_exp1_v2,demo_fam_exp2_v2,demo_fam_exp3_v2,demo_fam_exp4_v2,demo_fam_exp5_v2,
@@ -50,9 +52,6 @@ fes02 <- read_tsv(paste(path, 'fes02.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
   dplyr::select(subjectkey,fam_enviro1_p,fam_enviro2r_p,fam_enviro3_p,fam_enviro4r_p,fam_enviro5_p,
                 fam_enviro6_p,fam_enviro7r_p,fam_enviro8_p,fam_enviro9r_p)
-
-#data were double-entered, removed duplicates
-fes02<-fes02 %>% distinct()
 
 #Note: NAs for many items (below), unclear why. Omitted these variables.
 #Fes_31_p,fes_32_p,fes_51_p,fes_52r_p,fes_1_p,fes_72r_p,fes_2r_p,fes_81_p,fes_19_p,fes_29r_p,fes_39_p,fes_42_p,fes_49r_p,fes_59_p,fes_69_p, fes_79r_p,fes_9_p
@@ -109,18 +108,15 @@ asr <- read_tsv(paste(path, 'abcd_asrs01.txt', sep='/'), col_names=TRUE) %>%
 
 ```{r}
 #Read in ADI data file
-ADI <- read.table(file = "abcd_rhds01.txt", header=TRUE, na.strings = "NA") %>%
+ADI <- read_tsv(paste(path, 'abcd_rhds01.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
   dplyr::select(subjectkey,reshist_addr1_adi_wsum)
 
-#convert to numeric
-ADI[,2:2] <- sapply(ADI[,2:2], as.numeric)
 ```
 
 ```{r merge all data frames}
 ELAdata <- full_join(fhx, asr)%>%
   full_join(pdemo) %>%
-  full_join(kbi)%>%
   full_join(crpbi) %>%
   full_join(fes01)%>%
   full_join(fes02)%>%
@@ -133,7 +129,7 @@ ELAdata <- full_join(fhx, asr)%>%
 ```
 
 ```{r}
-write.csv(ELAdata, file = "ELAdata_v2.csv", row.names = FALSE)
+write.csv(ELAdata, file = "ELAdata.csv", row.names = FALSE)
 ```
 
 ### Switch kernel to python

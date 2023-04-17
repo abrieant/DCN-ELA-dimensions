@@ -12,7 +12,7 @@ This repository contains the following:
     -Purpose: read in and merge all necessary data files from the National Data Archive (NDA)
     -Output: a .csv file with XX subjects and XX variables
     -Note: Data for this project were derived from the ABCD 4.0 release (baseline data)
-    -Data files:
+    -Data files (12):
       -acspsw03.txt (family ID variable)
       -abcd_fhxssp01.txt (family substance use)
       -pdem02.txt (demographics including marital status, socioeconomic status, etc.)
