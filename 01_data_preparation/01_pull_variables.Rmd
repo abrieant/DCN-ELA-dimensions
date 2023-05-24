@@ -132,120 +132,13 @@ ELAdata <- full_join(fhx, asr)%>%
 write.csv(ELAdata, file = "ELAdata.csv", row.names = FALSE)
 ```
 
-### Switch kernel to python
+```{r select one relative from each family}
 
-```{r}
-import pandas as pd # to read/manipulate/write data from files
-import numpy as np # to manipulate data/generate random numbers
-import plotly.express as px # interactive visualizations
-import seaborn as sns # static visualizations
-import matplotlib.pyplot as plt # fine tune control over visualizations
-
-from pathlib import Path # represent and interact with directories/folders in the operating system
-from collections import namedtuple # structure data in an easy to consume way
-
-import requests # retrieve data from an online source
-```
-
-```{r}
-# save directory we downloaded the ABCD data to `data_path`
-data_path = Path("/home/jovyan/shared/project-early-life-adversity/scripts_files_q1")
-```
-
-### Read in ELA data
-
-```{r}
-ELAdata =  pd.read_csv('/home/jovyan/shared/project-early-life-adversity/scripts_files_q1/ELAdata_v2.csv',  index_col=None)
-```
-
-### Read in IDs for Q2 and change subject key format
-
-```{r}
-Im_Ids =  pd.read_csv('/home/jovyan/shared/project-early-life-adversity/scripts_files_q1/subjects_dcanderiv.csv',  index_col=None)
-```
-
-```{r}
-Im_Ids['subjectkey'] = Im_Ids['subjectkey'].str[8:]
-```
-
-```{r}
-Im_Ids['subjectkey'] = "NDAR_" + Im_Ids['subjectkey']
-Im_Ids
-```
-
-### Get full df for Q2
-
-```{r}
-Alldata_Im = pd.merge(Im_Ids, ELAdata, how ='inner', on='subjectkey')
-```
-
-### Take IDs
-
-```{r}
-Alldata_Im_ID = Alldata_Im['subjectkey']
-```
-
-### Merge Imaging IDs (Q2 IDs) with ELA df to ensure Q2 data is at the top of the df
-
-```{r}
-AllELAdata = pd.merge(Alldata_Im_ID, ELAdata, how ='outer', on='subjectkey')
-#AllELAdata = AllELAdata.drop_duplicates(subset='rel_family_id', keep='first')
-AllELAdata
+#keep first participant from each family
+ELAdata_norel <- ELAdata[!duplicated(ELAdata$rel_family_id), ]
 
 ```
 
-### Select one relative from each family
-
-```{r}
-ELAdata_norel = AllELAdata.drop_duplicates(subset='rel_family_id', keep='first')
-ELAdata_norel
-```
-
-### Double-check all participants for Q2 are here 
-
-```{r}
-Checknum = pd.merge(Im_Ids, ELAdata_norel, how ='inner', on='subjectkey')
-Checknum
-
-#Difference of 2 - 2 people have relatives in the imaging list
-```
-
-```{r}
-#Export to tsv
-ELAdata_norel_ID = ELAdata_norel['subjectkey']
-ELAdata_norel_ID.to_csv("ELAdata_norel_ID.tsv", sep="\t", index=None)
-```
-
-## Drop any rows with na values
-
-```{r}
-ELAdata_norel_nona = ELAdata_norel.dropna()
-```
-
-## Check number remaining from imaging sample
-
-```{r}
-Checknum2 = pd.merge(Im_Ids, ELAdata_norel_nona, how ='inner', on='subjectkey')
-Checknum2
-```
-
-```{r}
-Final_imaging_IDs_fromFA = Checknum2['subjectkey']
-Final_imaging_IDs_fromFA.to_csv("Final_Imaging_FA_ID.tsv", sep="\t", index=None)
-```
-
-### Switch kernel back to R
-
-```{r}
-ELAdata = read.csv(file = "ELAdata_v2.csv")
-```
-
-```{r}
-#read in site
-site <- read_tsv(paste(path, 'abcd_lt01.txt', sep='/'), col_names=TRUE) %>%
-  filter(eventname == "baseline_year_1_arm_1") %>% 
-  dplyr::select(subjectkey,site_id_l)
-```
 
 ```{r}
 ##Read in demographics
@@ -255,19 +148,7 @@ demo <- read_tsv(paste(path, 'abcd_lt01.txt', sep='/'), col_names=TRUE) %>%
 ```
 
 ```{r}
-#merge with JH file excluding relatives
-
-ELA_norel_ID <- read_tsv('ELAdata_norel_ID.tsv', col_names=TRUE)
-
-ELA_data_norel <- merge(ELAdata, ELA_norel_ID[, c('subjectkey')], by = "subjectkey")
-```
-
-```{r}
 write.csv(ELA_data_norel, file = "ELAdata_norel.csv", row.names = FALSE)
-```
-
-```{r}
-nrow(ELA_data_norel)
 ```
 
 ```{r}
@@ -327,13 +208,6 @@ ls(ELAdata_forFA_noNAs)
 ```
 
 ```{r}
-ELAdata_forFA_noNAs <- ELAdata_forFA_noNAs %>%
-    left_join(site,by='subjectkey')%>%
-    dplyr::rename(abcd_site = 'site_id_l')
-head(ELAdata_forFA_noNAs)
-```
-
-```{r}
 write.csv(ELAdata_forFA_noNAs, file = "ELAdata_withkey.csv", row.names = FALSE)
 ```
 
@@ -358,20 +232,6 @@ ncol(data2)
 ```
 
 ```{r}
-#drop abcd_site
-drop <- c("abcd_site")
-data2_final <- data2[,!(names(data2) %in% drop)]
-head(data2_final$abcd_site)
-```
-
-```{r}
 data2_final <- data2_final %>% 
     dplyr::select(-subjectkey)
-```
-
-
-```{r}
-cols <- c('famhx_ss_fath_prob_alc_p','famhx_ss_moth_prob_alc_p','famhx_ss_fath_prob_dg_p','famhx_ss_moth_prob_dg_p','demo_fam_exp1_v2','demo_fam_exp2_v2','demo_fam_exp3_v2','demo_fam_exp4_v2','demo_fam_exp5_v2','demo_fam_exp6_v2','demo_fam_exp7_v2','crpbi_parent1_y','crpbi_caregiver12_y','crpbi_parent2_y','crpbi_caregiver13_y','crpbi_parent3_y','crpbi_caregiver14_y','crpbi_parent4_y','crpbi_caregiver15_y','crpbi_parent5_y','crpbi_caregiver16_y','fes_youth_q1','fes_youth_q2','fes_youth_q3','fes_youth_q4','fes_youth_q5','fes_youth_q6','fes_youth_q7','fes_youth_q8','fes_youth_q9','fam_enviro1_p','fam_enviro2r_p','fam_enviro3_p','fam_enviro4r_p','fam_enviro5_p','fam_enviro6_p','fam_enviro7r_p','fam_enviro8_p','fam_enviro9r_p','ksads_ptsd_raw_754_p','ksads_ptsd_raw_755_p','ksads_ptsd_raw_756_p','ksads_ptsd_raw_757_p','ksads_ptsd_raw_758_p','ksads_ptsd_raw_759_p','ksads_ptsd_raw_760_p','ksads_ptsd_raw_761_p','ksads_ptsd_raw_762_p','ksads_ptsd_raw_763_p','ksads_ptsd_raw_764_p','ksads_ptsd_raw_765_p','ksads_ptsd_raw_766_p','ksads_ptsd_raw_767_p','ksads_ptsd_raw_768_p','ksads_ptsd_raw_769_p','ksads_ptsd_raw_770_p','demo_prim_biosep','demo_parent_sep','parent_monitor_q1_y', 'parent_monitor_q2_y', 'parent_monitor_q3_y','parent_monitor_q4_y', 'parent_monitor_q5_y')
-data2_final[cols] <- lapply(data2_final[cols], factor)
-summary(data2_final)
 ```
