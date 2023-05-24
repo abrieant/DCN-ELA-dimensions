@@ -137,26 +137,6 @@ write.csv(ELAdata, file = "ELAdata.csv", row.names = FALSE)
 #keep first participant from each family
 ELAdata_norel <- ELAdata[!duplicated(ELAdata$rel_family_id), ]
 
-#need to compare this with original and make sure included subject keys match
-write.csv(ELAdata_norel, file = "ELAdata_norel_new.csv", row.names = FALSE)
-
-ELAdata_norel_old <- read.csv('/Users/ab3377/Library/CloudStorage/GoogleDrive-ab3377@yale.edu/My Drive/CANDLab/Projects/abcd-ela-dimensions/01_ela_dimensions_mixcor_ABCD4/02_factor_analysis/ELAdata_norel.csv')
-
-identical(ELAdata_norel$subjectkey,ELAdata_norel_old$subjectkey)
-
-common <- intersect(ELAdata_norel$subjectkey,ELAdata_norel_old$subjectkey)
-#only 8978 common... 876 different
-
-#ID sorting may have been different? resulting in different sibs being excluded now?
-#how were they originally sorted? --> based on imaging IDs that Jenny identified? (see below)
-    
-    ### Merge Imaging IDs (Q2 IDs) with ELA df to ensure Q2 data is at the top of the df
-
-    #AllELAdata = pd.merge(Alldata_Im_ID, ELAdata, how ='outer', on='subjectkey')
-
-#could try and replicate this merge/sort... or provide a .csv with the subjectkeys that were included
-
-
 ```
 
 
@@ -254,10 +234,4 @@ ncol(data2)
 ```{r}
 data2_final <- data2_final %>% 
     dplyr::select(-subjectkey)
-```
-
-```{r}
-cols <- c('famhx_ss_fath_prob_alc_p','famhx_ss_moth_prob_alc_p','famhx_ss_fath_prob_dg_p','famhx_ss_moth_prob_dg_p','demo_fam_exp1_v2','demo_fam_exp2_v2','demo_fam_exp3_v2','demo_fam_exp4_v2','demo_fam_exp5_v2','demo_fam_exp6_v2','demo_fam_exp7_v2','crpbi_parent1_y','crpbi_caregiver12_y','crpbi_parent2_y','crpbi_caregiver13_y','crpbi_parent3_y','crpbi_caregiver14_y','crpbi_parent4_y','crpbi_caregiver15_y','crpbi_parent5_y','crpbi_caregiver16_y','fes_youth_q1','fes_youth_q2','fes_youth_q3','fes_youth_q4','fes_youth_q5','fes_youth_q6','fes_youth_q7','fes_youth_q8','fes_youth_q9','fam_enviro1_p','fam_enviro2r_p','fam_enviro3_p','fam_enviro4r_p','fam_enviro5_p','fam_enviro6_p','fam_enviro7r_p','fam_enviro8_p','fam_enviro9r_p','ksads_ptsd_raw_754_p','ksads_ptsd_raw_755_p','ksads_ptsd_raw_756_p','ksads_ptsd_raw_757_p','ksads_ptsd_raw_758_p','ksads_ptsd_raw_759_p','ksads_ptsd_raw_760_p','ksads_ptsd_raw_761_p','ksads_ptsd_raw_762_p','ksads_ptsd_raw_763_p','ksads_ptsd_raw_764_p','ksads_ptsd_raw_765_p','ksads_ptsd_raw_766_p','ksads_ptsd_raw_767_p','ksads_ptsd_raw_768_p','ksads_ptsd_raw_769_p','ksads_ptsd_raw_770_p','demo_prim_biosep','demo_parent_sep','parent_monitor_q1_y', 'parent_monitor_q2_y', 'parent_monitor_q3_y','parent_monitor_q4_y', 'parent_monitor_q5_y')
-data2_final[cols] <- lapply(data2_final[cols], factor)
-summary(data2_final)
 ```
