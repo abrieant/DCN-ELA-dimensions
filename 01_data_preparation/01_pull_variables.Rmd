@@ -134,42 +134,37 @@ write.csv(ELAdata, file = "ELAdata.csv", row.names = FALSE)
 
 ```{r select one relative from each family}
 
+###reading in the rs-fMRI data (that will be used for a subsequent study) and adjusting the subject IDs to match the other files
+rsfMRI_subjects <- read.csv("/Users/hajernakua/Downloads/subjects_dcanderiv.csv")
+rsfMRI_subjects$subjectkey <- sub("sub-", "", rsfMRI_subjects[,1]) 
+rsfMRI_subjects$subjectkey <- sub("*NDAR", "NDAR_", rsfMRI_subjects[,1])
+
+##merging subjects with ELA data and the rs-fMRI data 
+ELAdata_wImaging <- merge(ELAdata, rsfMRI_subjects, by = "subjectkey")
+
+##getting another data-frame with subjects without rs-fMRI data 
+ELA_noImaging <- anti_join(ELAdata, ELAdata_wImaging, by = "subjectkey")
+
+##check if there are spaces
+rsfMRI_subjects$subjectkey <- trimws(rsfMRI_subjects$subjectkey, which = c("both"))
+ELAdata$subjectkey <- trimws(ELAdata$subjectkey, which = c("both"))
+
+##binding the rows of the two dataframes -> this will leave subjects with rs-fMRI data above those who don't 
+ELAdata_corrected <- rbind(ELAdata_wImaging, ELA_noImaging)
+
 #keep first participant from each family
-ELAdata_norel <- ELAdata[!duplicated(ELAdata$rel_family_id), ]
-
-#need to compare this with original and make sure included subject keys match
-write.csv(ELAdata_norel, file = "ELAdata_norel_new.csv", row.names = FALSE)
-
-ELAdata_norel_old <- read.csv('/Users/ab3377/Library/CloudStorage/GoogleDrive-ab3377@yale.edu/My Drive/CANDLab/Projects/abcd-ela-dimensions/01_ela_dimensions_mixcor_ABCD4/02_factor_analysis/ELAdata_norel.csv')
-
-identical(ELAdata_norel$subjectkey,ELAdata_norel_old$subjectkey)
-
-common <- intersect(ELAdata_norel$subjectkey,ELAdata_norel_old$subjectkey)
-#only 8978 common... 876 different
-
-#ID sorting may have been different? resulting in different sibs being excluded now?
-#how were they originally sorted? --> based on imaging IDs that Jenny identified? (see below)
-    
-    ### Merge Imaging IDs (Q2 IDs) with ELA df to ensure Q2 data is at the top of the df
-
-    #AllELAdata = pd.merge(Alldata_Im_ID, ELAdata, how ='outer', on='subjectkey')
-
-#could try and replicate this merge/sort... or provide a .csv with the subjectkeys that were included
-
+ELAdata_corrected <- ELAdata_corrected[!duplicated(ELAdata_corrected$rel_family_id), ]
 
 ```
 
 
 ```{r}
 ##Read in demographics
-demo <- read_tsv(paste(path, 'abcd_lt01.txt', sep='/'), col_names=TRUE) %>%
+demo <- read_tsv(paste('/Users/hajernakua/Downloads/abcd_lt01.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
   dplyr::select(subjectkey,interview_age, sex)
 ```
 
-```{r}
-write.csv(ELA_data_norel, file = "ELAdata_norel.csv", row.names = FALSE)
-```
 
 ```{r}
 ELA_data_norel <- ELA_data_norel %>%
@@ -210,9 +205,6 @@ ELAdata_forFA <- ELA_data_norel %>%
    dplyr::select(-demo_prim, -demo_prnt_marital_v2, -starts_with("kbi_p"), -starts_with("live"))
 ```
 
-```{r}
-ls(ELAdata_forFA)
-```
 
 ```{r}
 ELAdata_forFA_noNAs <-ELAdata_forFA %>% drop_na()
@@ -223,33 +215,11 @@ nrow(ELAdata_forFA_noNAs)
 sum(ELAdata_forFA_noNAs$ksads_ptsd_raw_763_p == "777")
 ```
 
-```{r}
-ls(ELAdata_forFA_noNAs)
-```
 
 ```{r}
-write.csv(ELAdata_forFA_noNAs, file = "ELAdata_withkey.csv", row.names = FALSE)
+write.csv(ELAdata_forFA_noNAs, file = "ELAdata_noNAs.csv", row.names = FALSE)
 ```
 
-```{r}
-#drop subject key
-
-drop <- c("subjectkey")
-
-ELAdata_forFA_noNAs_nokey <- ELAdata_forFA_noNAs[,!(names(ELAdata_forFA_noNAs) %in% drop)]
-
-nrow(ELAdata_forFA_noNAs_nokey)
-```
-
-```{r}
-write.csv(ELAdata_forFA_noNAs_nokey, file = "ELAdata_noNAs_nokey.csv", row.names = FALSE)
-```
-
-```{r}
-data2 <- read.csv('ELAdata_withkey.csv')
-head(data2)
-ncol(data2)
-```
 
 ```{r}
 data2_final <- data2_final %>% 
