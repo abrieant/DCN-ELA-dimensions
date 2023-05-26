@@ -1,8 +1,9 @@
 # DCN-ELA-dimensions
 Scripts and output for "Characterizing the dimensional structure of early-life adversity in the Adolescent Brain Cognitive Development (ABCD) Study"
 
-Note: data cannot be shared publicly per ABCD Study data sharing guidelines. Data can be accessed through the 
-National Data Archive at https://nda.nih.gov/abcd/ with an approved Data Use Certification.
+5/22/23: We are actively working to refine project scripts to facilitate reproducibility. Please reach out with any questions.
+
+Note: data cannot be shared publicly per ABCD Study data sharing guidelines. Data can be accessed through the National Data Archive at https://nda.nih.gov/abcd/ with an approved Data Use Certification.
 
 This repository contains the following:
 
