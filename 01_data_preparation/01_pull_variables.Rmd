@@ -28,7 +28,6 @@ fhx <- read_tsv(paste(path, 'abcd_fhxssp01.txt', sep='/'), col_names=TRUE) %>%
 
 ```{r}
 ##Read in parent demographics
-#need to first remove row with variable description to read in properly
 
 pdemo <- read_tsv(paste(path,'pdem02.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
@@ -134,100 +133,72 @@ write.csv(ELAdata, file = "ELAdata.csv", row.names = FALSE)
 
 ```{r select one relative from each family}
 
-###reading in the rs-fMRI data (that will be used for a subsequent study) and adjusting the subject IDs to match the other files
-rsfMRI_subjects <- read.csv("/Users/hajernakua/Downloads/subjects_dcanderiv.csv")
-rsfMRI_subjects$subjectkey <- sub("sub-", "", rsfMRI_subjects[,1]) 
-rsfMRI_subjects$subjectkey <- sub("*NDAR", "NDAR_", rsfMRI_subjects[,1])
+#read in tsv file with IDs (note: separately, in python, we selected one relative from each family, resulting in n = 9854)
 
-##merging subjects with ELA data and the rs-fMRI data 
-ELAdata_wImaging <- merge(ELAdata, rsfMRI_subjects, by = "subjectkey")
+ELA_norel_ID <- read_tsv('ELAdata_norel_ID.tsv', col_names=TRUE)
 
-##getting another data-frame with subjects without rs-fMRI data 
-ELA_noImaging <- anti_join(ELAdata, ELAdata_wImaging, by = "subjectkey")
-
-##check if there are spaces
-rsfMRI_subjects$subjectkey <- trimws(rsfMRI_subjects$subjectkey, which = c("both"))
-ELAdata$subjectkey <- trimws(ELAdata$subjectkey, which = c("both"))
-
-##binding the rows of the two dataframes -> this will leave subjects with rs-fMRI data above those who don't 
-ELAdata_corrected <- rbind(ELAdata_wImaging, ELA_noImaging)
-
-#keep first participant from each family
-ELAdata_corrected <- ELAdata_corrected[!duplicated(ELAdata_corrected$rel_family_id), ]
+#merge with ELA data
+ELA_data_norel <- merge(ELAdata, ELA_norel_ID[, c('subjectkey')], by = "subjectkey")
 
 ```
 
 
 ```{r}
-##Read in demographics
-demo <- read_tsv(paste('/Users/hajernakua/Downloads/abcd_lt01.txt', sep='/'), col_names=TRUE) %>%
+##Read in and merge demographics
+demo <- read_tsv(paste(path, 'abcd_lt01.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
   dplyr::select(subjectkey,interview_age, sex)
+
+ELA_data_norel <- merge(ELA_data_norel, demo, by = "subjectkey")
 ```
 
+```{r remove family ID, no longer needed}
 
-```{r}
 ELA_data_norel <- ELA_data_norel %>%
     dplyr::select(-rel_family_id)
 ```
 
-```{r}
+```{r convert variables to numeric and recode missing values}
+
+ELA_data_norel <- ELA_data_norel %>%
+  mutate_at(vars(2:79), as.numeric)
+
 #Replace 777 and 999 as na
-ELA_data_norel<- ELA_data_norel %>% dplyr::na_if(999)
-ELA_data_norel<- ELA_data_norel %>% dplyr::na_if(777)
+
+ELA_data_norel <- ELA_data_norel %>%
+  mutate_at(vars(2:79), ~replace(., . == 777 | . == 999, NA))
+
+#confirm that there are no 777 999 values
+has_777_or_999 <- any(ELA_data_norel == 777 | df_updated == 999, na.rm = TRUE)
+if (has_777_or_999) {
+  print("The dataframe contains values of 777 or 999.")
+} else {
+  print("The dataframe does not contain values of 777 or 999.")
+}
 ```
 
-```{r}
+```{r check degree of missing data across variables}
+
 ELA_var_sums_NA <- as.data.frame(sapply(ELA_data_norel, function(x) sum(is.na(x))))
 ELA_var_sums_NA
 ```
 
-```{r}
+```{r recode primary caregiver and marital status variables}
 #recode demo prim, 1=bio separation from parent, 0=lives with bio parents
 
 ELA_data_norel$demo_prim_biosep <- ifelse(ELA_data_norel$demo_prim >= 3,1,0)
-table(ELA_data_norel$demo_prim_biosep)
-```
 
-```{r}
 #recode parent marital status, coding 1 and 6 are now = 0 (no parental separation) otherwise 1 (parental separation)
-#converted 777 to NAs
-ELA_data_norel$demo_prnt_marital_v2 <- na_if(ELA_data_norel$demo_prnt_marital_v2, 777)
-ELA_data_norel$demo_parent_sep <- ifelse(ELA_data_norel$demo_prnt_marital_v2 == 1 | ELA_data_norel$demo_prnt_marital_v2 == 6, 0, 1)
-```
 
-```{r}
-table(ELA_data_norel$demo_parent_sep)
-```
+ELA_data_norel$demo_parent_sep <- ifelse(ELA_data_norel$demo_prnt_marital_v2 == 1 |    ELA_data_norel$demo_prnt_marital_v2 == 6, 0, 1)
 
-```{r}
+#remove original variables
 ELAdata_forFA <- ELA_data_norel %>%
-   dplyr::select(-demo_prim, -demo_prnt_marital_v2, -starts_with("kbi_p"), -starts_with("live"))
+   dplyr::select(-demo_prim, -demo_prnt_marital_v2)
+
 ```
 
-
-```{r}
-ELAdata_forFA_noNAs <-ELAdata_forFA %>% drop_na()
-```
-
-```{r}
-nrow(ELAdata_forFA_noNAs)
-sum(ELAdata_forFA_noNAs$ksads_ptsd_raw_763_p == "777")
-```
-
-
-```{r}
-write.csv(ELAdata_forFA_noNAs, file = "ELAdata_noNAs.csv", row.names = FALSE)
-```
-
-
-```{r}
+```{r save out data}
 data2_final <- data2_final %>% 
     dplyr::select(-subjectkey)
-```
-
-```{r}
-cols <- c('famhx_ss_fath_prob_alc_p','famhx_ss_moth_prob_alc_p','famhx_ss_fath_prob_dg_p','famhx_ss_moth_prob_dg_p','demo_fam_exp1_v2','demo_fam_exp2_v2','demo_fam_exp3_v2','demo_fam_exp4_v2','demo_fam_exp5_v2','demo_fam_exp6_v2','demo_fam_exp7_v2','crpbi_parent1_y','crpbi_caregiver12_y','crpbi_parent2_y','crpbi_caregiver13_y','crpbi_parent3_y','crpbi_caregiver14_y','crpbi_parent4_y','crpbi_caregiver15_y','crpbi_parent5_y','crpbi_caregiver16_y','fes_youth_q1','fes_youth_q2','fes_youth_q3','fes_youth_q4','fes_youth_q5','fes_youth_q6','fes_youth_q7','fes_youth_q8','fes_youth_q9','fam_enviro1_p','fam_enviro2r_p','fam_enviro3_p','fam_enviro4r_p','fam_enviro5_p','fam_enviro6_p','fam_enviro7r_p','fam_enviro8_p','fam_enviro9r_p','ksads_ptsd_raw_754_p','ksads_ptsd_raw_755_p','ksads_ptsd_raw_756_p','ksads_ptsd_raw_757_p','ksads_ptsd_raw_758_p','ksads_ptsd_raw_759_p','ksads_ptsd_raw_760_p','ksads_ptsd_raw_761_p','ksads_ptsd_raw_762_p','ksads_ptsd_raw_763_p','ksads_ptsd_raw_764_p','ksads_ptsd_raw_765_p','ksads_ptsd_raw_766_p','ksads_ptsd_raw_767_p','ksads_ptsd_raw_768_p','ksads_ptsd_raw_769_p','ksads_ptsd_raw_770_p','demo_prim_biosep','demo_parent_sep','parent_monitor_q1_y', 'parent_monitor_q2_y', 'parent_monitor_q3_y','parent_monitor_q4_y', 'parent_monitor_q5_y')
-data2_final[cols] <- lapply(data2_final[cols], factor)
-summary(data2_final)
 ```
