@@ -19,44 +19,6 @@ require(car)
 ELAdata = read.csv(file = "ELAdata_v2.csv")
 ```
 
-```{r exclude relatives}
-#merge with file excluding relatives
-ELA_norelative_IDs <- read_tsv('ELAdata_norel_ID.tsv', col_names=TRUE)
-
-ELAdata_norelatives <- merge(ELAdata, ELA_norelative_IDs[, c('subjectkey')], by = "subjectkey")
-
-##removing the relative family ID because we don't need it for any other part of the script
-ELAdata_norelatives <- ELAdata_norelatives %>%
-  dplyr::select(-rel_family_id)
-
-#create .csv file
-write.csv(ELAdata_norelatives, file = "ELAdata_norel.csv", row.names = FALSE)
-
-```
-
-```{r code missing values and exlcude variables with NA > 50%}
-
-#Replace 777 and 999 as na (ABCD also codes 555 and 88 as missing, but none of our variables have these values)
-ELAdata_norelatives <- ELAdata_norelatives %>% dplyr::na_if(999)
-ELAdata_norelatives <- ELAdata_norelatives %>% dplyr::na_if(777)
-
-##summing the NAs for each variable to know which variables to exclude (variables excluded if #NAs > 50%)
-ELA_var_sum_of_NA <- as.data.frame(sapply(ELAdata_norelatives, function(x) sum(is.na(x))))
-ELA_var_sum_of_NA
-```
-
-```{r recoding}
-#recode demo_prim, 1=separation from bio parent, 0=lives with bio parents
-ELAdata_norelatives$demo_prim_biosep <- ifelse(ELAdata_norelatives$demo_prim >= 3,1,0)
-
-#recode parent marital status, coding 1 and 6 are now = 0 (no parental separation) otherwise 1 (parental separation)
-ELAdata_norelatives$demo_parent_sep <- ifelse(ELAdata_norelatives$demo_prnt_marital_v2 == 1 | ELAdata_norelatives$demo_prnt_marital_v2 == 6, 0, 1)
-
-#dropping variables we don't need for the factor analysis
-ELAdata_touse_forFA <- ELAdata_norelatives %>%
-  dplyr::select(-demo_prim, -demo_prnt_marital_v2, -starts_with("kbi_p"), -starts_with("live"))
-```
-
 ```{r recode education variable so that it is polytomous w/fewer categories}
 #NDA coding: 0 = Never attended/Kindergarten only; 1 = 1st grade; 2 = 2nd grade; 3 = 3rd grade; 4 = 4th grade; 5 = 5th grade; 6 = 6th grade; 7 = 7th grade; 8 = 8th grade; 9 = 9th grade; 10 = 10th grade; 11 = 11th grade; 12 = 12th grade; 13 = High school graduate; 14 = GED or equivalent; 15 = Some college; 16 = Associate degree: Occupational; 17 = Associate degree: Academic Program; 18 = Bachelor's degree (ex. BA); 19 = Master's degree (ex. MA); 20 = Professional School degree (ex. MD); 21 = Doctoral degree
 
