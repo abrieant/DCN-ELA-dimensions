@@ -17,61 +17,69 @@ require(polycor)
 
 ```{r}
 #read in data (output from 02_data_cleaning)
-ELAdata_touse_forFA_noNAs <- read.csv('ELAdata_forFA_noNAs.csv')
+ELAdata_forFA_noNAs <- read.csv('ELAdata_forFA_noNAs.csv')
+
+#remove demographic variables for FA
+ELAdata_forFA_noNAs <- ELAdata_forFA_noNAs %>% 
+    dplyr::select(-interview_age, -sex)
 ```
 
 
 ```{r}
-###getting the correlation matrix of the data we currently have. This will allow us to determine whether certain variables are highly correlated with one another. NB. Had to move demo_comb_income_v2 from p (polytomous) as too many categories
+###getting the correlation matrix of the data (mixed matrix because we have continuous, dichotomous, and polytomous data). This will allow us to determine whether certain variables are highly correlated with one another. NB. Had to move demo_comb_income_v2 from p (polytomous) as too many categories
 
-mix_corr_mat_preagg <-mixedCor(ELAdata_touse_forFA_noNAs[,c(2:77)], ncat = 6, smooth=TRUE,global=TRUE, correct=FALSE, c = c(5:12,14,72,74), p= c(13,22:31,67:71,73), d=c(1:4,15:21,32:66,75,76))
+#'preagg' denotes that this is the matrix before any variables are aggregated due to high correlation
+
+mix_corr_mat_preagg <-mixedCor(ELAdata_forFA_noNAs[,c(2:77)], ncat = 6, smooth=TRUE,global=TRUE, correct=FALSE, c = c(5:12,14,72,74), p= c(13,22:31,67:71,73), d=c(1:4,15:21,32:66,75,76))
+
 mix_corr_mat_preagg_df <- mix_corr_mat_preagg$rho
 ```
 
-```{r}
+```{r write out csv with correlation matrix so we can identify variables that are very highly correlated}
+
 write.csv(mix_corr_mat_preagg_df,file = "mixed_corr_matrix_preagg.csv", row.names = FALSE)
+
 ```
 
-```{r}
-cor.plot(mix_corr_mat_preagg_df)
-```
+```{r aggregation}
+#Following procedures from Michelini et al. (2019), in cases where variables had very high intercorrelations (rs > 0.75), conceptually similar variables were aggregated to avoid inflation in the factor structure resulting from high collinearity in the data.
 
-```{r}
 #####AGGREGATING THE VARIABLES THAT HAVE HIGH MULTICOLINEARITY BETWEEN ONE ANOTHER AND ALSO MAKE CONCEPTUAL SENSE TO GROUP TOGETHER. These are combining the initial individual variables. If >2 variables are grouped the sum is halved to ensure that there are a maximum of 4 categories
 
 ##KSADS 758 - 769 are highly correlated
 
 #aggregating items 758-760 as they are all related to witnessing violence
-ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_759_760 <- ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_p + ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_759_p + ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_760_p
-ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_759_760 <-ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_759_760/2
-ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_759_760 <- ceiling(ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_758_759_760)
+ELAdata_forFA_noNAs$ksads_ptsd_raw_758_759_760 <- ELAdata_forFA_noNAs$ksads_ptsd_raw_758_p + ELAdata_forFA_noNAs$ksads_ptsd_raw_759_p + ELAdata_forFA_noNAs$ksads_ptsd_raw_760_p
+ELAdata_forFA_noNAs$ksads_ptsd_raw_758_759_760 <-ELAdata_forFA_noNAs$ksads_ptsd_raw_758_759_760/2
+ELAdata_forFA_noNAs$ksads_ptsd_raw_758_759_760 <- ceiling(ELAdata_forFA_noNAs$ksads_ptsd_raw_758_759_760)
 
 #aggregating items 761-765 as they are all related to experiencing extreme physical threats/violence
-ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_761_to_765 <- ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_761_p + ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_762_p + ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_763_p + ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_764_p + ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_765_p
-ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_761_to_765 <- ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_761_to_765/2
-ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_761_to_765 <- ceiling(ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_761_to_765)
+ELAdata_forFA_noNAs$ksads_ptsd_raw_761_to_765 <- ELAdata_forFA_noNAs$ksads_ptsd_raw_761_p + ELAdata_forFA_noNAs$ksads_ptsd_raw_762_p + ELAdata_forFA_noNAs$ksads_ptsd_raw_763_p + ELAdata_forFA_noNAs$ksads_ptsd_raw_764_p + ELAdata_forFA_noNAs$ksads_ptsd_raw_765_p
+ELAdata_forFA_noNAs$ksads_ptsd_raw_761_to_765 <- ELAdata_forFA_noNAs$ksads_ptsd_raw_761_to_765/2
+ELAdata_forFA_noNAs$ksads_ptsd_raw_761_to_765 <- ceiling(ELAdata_forFA_noNAs$ksads_ptsd_raw_761_to_765)
 
 #aggregating items 767-769 as they are all related to sexual abuse
-ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_767_768_769 <- ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_767_p + ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_768_p+ ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_769_p
-ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_767_768_769 <-ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_767_768_769/2
-ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_767_768_769 <- ceiling(ELAdata_touse_forFA_noNAs$ksads_ptsd_raw_767_768_769)
+ELAdata_forFA_noNAs$ksads_ptsd_raw_767_768_769 <- ELAdata_forFA_noNAs$ksads_ptsd_raw_767_p + ELAdata_forFA_noNAs$ksads_ptsd_raw_768_p+ ELAdata_forFA_noNAs$ksads_ptsd_raw_769_p
+ELAdata_forFA_noNAs$ksads_ptsd_raw_767_768_769 <-ELAdata_forFA_noNAs$ksads_ptsd_raw_767_768_769/2
+ELAdata_forFA_noNAs$ksads_ptsd_raw_767_768_769 <- ceiling(ELAdata_forFA_noNAs$ksads_ptsd_raw_767_768_769)
 
 #demo_fam_exp1, _exp2 & _exp3, and _exp6 & _exp7 are highly correlated. Post aggregation exp1-3, 4 and 5 are all highly correlated
-ELAdata_touse_forFA_noNAs$demo_fam_exp1_5_v2 <- ELAdata_touse_forFA_noNAs$demo_fam_exp1_v2 + ELAdata_touse_forFA_noNAs$demo_fam_exp2_v2 + ELAdata_touse_forFA_noNAs$demo_fam_exp3_v2 + ELAdata_touse_forFA_noNAs$demo_fam_exp4_v2 + ELAdata_touse_forFA_noNAs$demo_fam_exp5_v2
-ELAdata_touse_forFA_noNAs$demo_fam_exp1_5_v2 <- ELAdata_touse_forFA_noNAs$demo_fam_exp1_5_v2/2
-ELAdata_touse_forFA_noNAs$demo_fam_exp1_5_v2 <- ceiling(ELAdata_touse_forFA_noNAs$demo_fam_exp1_5_v2)
+ELAdata_forFA_noNAs$demo_fam_exp1_5_v2 <- ELAdata_forFA_noNAs$demo_fam_exp1_v2 + ELAdata_forFA_noNAs$demo_fam_exp2_v2 + ELAdata_forFA_noNAs$demo_fam_exp3_v2 + ELAdata_forFA_noNAs$demo_fam_exp4_v2 + ELAdata_forFA_noNAs$demo_fam_exp5_v2
 
-ELAdata_touse_forFA_noNAs$demo_fam_exp6_7_v2 <- ELAdata_touse_forFA_noNAs$demo_fam_exp6_v2 + ELAdata_touse_forFA_noNAs$demo_fam_exp7_v2
+ELAdata_forFA_noNAs$demo_fam_exp1_5_v2 <- ELAdata_forFA_noNAs$demo_fam_exp1_5_v2/2
+ELAdata_forFA_noNAs$demo_fam_exp1_5_v2 <- ceiling(ELAdata_forFA_noNAs$demo_fam_exp1_5_v2)
+
+ELAdata_forFA_noNAs$demo_fam_exp6_7_v2 <- ELAdata_forFA_noNAs$demo_fam_exp6_v2 + ELAdata_forFA_noNAs$demo_fam_exp7_v2
 
 #post aggregation famhx_ss_moth_prob_alc_p and famhx_ss_moth_prob_dg_p are too highly correlated 
-ELAdata_touse_forFA_noNAs$famhx_ss_moth_prob_alc_dg <-ELAdata_touse_forFA_noNAs$famhx_ss_moth_prob_alc_p +ELAdata_touse_forFA_noNAs$famhx_ss_moth_prob_dg_p
+ELAdata_forFA_noNAs$famhx_ss_moth_prob_alc_dg <-ELAdata_forFA_noNAs$famhx_ss_moth_prob_alc_p +ELAdata_forFA_noNAs$famhx_ss_moth_prob_dg_p
 ```
 
 
 ```{r}
 ####REMOVING THE ORIGINAL/INDIVIDUAL VARIABLES WE AGGREGATED (plus asr_scr variables that are also covered in other variables)
 
-ELAdata_touse_forFA_noNAs_noOriginalVar <- ELAdata_touse_forFA_noNAs %>% 
+ELAdata_forFA_noNAs_noOriginalVar <- ELAdata_forFA_noNAs %>% 
     dplyr::select(-ksads_ptsd_raw_758_p, -ksads_ptsd_raw_759_p, -ksads_ptsd_raw_760_p,
            -ksads_ptsd_raw_761_p, -ksads_ptsd_raw_762_p, -ksads_ptsd_raw_763_p,
            -ksads_ptsd_raw_764_p, -ksads_ptsd_raw_765_p, -ksads_ptsd_raw_767_p, 
@@ -87,31 +95,28 @@ ELAdata_touse_forFA_noNAs_noOriginalVar <- ELAdata_touse_forFA_noNAs %>%
 
 ```{r}
 ####CHECKING FREQUENCIES POST AGGREGATION - will remove variables with an incidence rate <0.05% 
-IncidenceRates_Zero_ELA <- apply(ELAdata_touse_forFA_noNAs_noOriginalVar, 2, function(x) sum(x == 0))
-IncidenceProportion_Zero_ELA <- as.data.frame(IncidenceRates_Zero_ELA/nrow(ELAdata_touse_forFA_noNAs_noOriginalVar))
+IncidenceRates_Zero_ELA <- apply(ELAdata_forFA_noNAs_noOriginalVar, 2, function(x) sum(x == 0))
+IncidenceProportion_Zero_ELA <- as.data.frame(IncidenceRates_Zero_ELA/nrow(ELAdata_forFA_noNAs_noOriginalVar))
 
-IncidenceProportion_Zero_ELA_filter <- filter(IncidenceProportion_Zero_ELA, IncidenceRates_Zero_ELA/nrow(ELAdata_touse_forFA_noNAs_noOriginalVar) > .995)
+IncidenceProportion_Zero_ELA_filter <- filter(IncidenceProportion_Zero_ELA, IncidenceRates_Zero_ELA/nrow(ELAdata_forFA_noNAs_noOriginalVar) > .995)
 
 ```
 
 
 ```{r}
 ###getting the correlation matrix of the data post-aggregation. NB. Had to remove demo_comb_income_v2 from p as too many categories
-mix_corr_mat_postagg <-mixedCor(ELAdata_touse_forFA_noNAs_noOriginalVar[,c(2:61)], ncat = 6, smooth=TRUE,global=TRUE, correct=FALSE, c = c(3:8,10,50,52), p= c(9,11:20,45:49,51,55:60), d=c(1:2,21:44,53,54))
+mix_corr_mat_postagg <-mixedCor(ELAdata_forFA_noNAs_noOriginalVar[,c(2:61)], ncat = 6, smooth=TRUE,global=TRUE, correct=FALSE, c = c(3:8,10,50,52), p= c(9,11:20,45:49,51,55:60), d=c(1:2,21:44,53,54))
+
 mix_corr_mat_postagg_df <- mix_corr_mat_postagg$rho
 ```
 
-```{r}
+```{r write out correlation matrix with new aggregated variables, verify all within acceptable range}
+
 write.csv(mix_corr_mat_postagg_df,file = "mixed_corr_matrix_postagg.csv", row.names = FALSE)
 ```
 
 
-```{r}
-cor.plot(mix_corr_mat_postagg_df)
-```
-
-```{r}
-###writing this dataframe 
-write.csv(ELAdata_touse_forFA_noNAs_noOriginalVar, file = "ELAdata_touse_forFA_noNAs_noOriginalVar.csv", row.names=FALSE)
+```{r save dataframe}
+write.csv(ELAdata_forFA_noNAs_noOriginalVar, file = "ELAdata_forFA_noNAs_noOriginalVar.csv", row.names=FALSE)
 ```
 
