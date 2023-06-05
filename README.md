@@ -11,7 +11,7 @@ This repository contains the following:
 
   01_pull_variables.Rmd
     -Purpose: read in and merge all necessary data files from the National Data Archive (NDA)
-    -Output: a .csv file with XX subjects and XX variables
+    -Output: a .csv file with 9854 subjects and 79 variables
     -Note: Data for this project were derived from the ABCD 4.0 release (baseline data)
     -Data files (12):
       -acspsw03.txt (family ID variable)
@@ -29,12 +29,12 @@ This repository contains the following:
     
   02_data_cleaning.Rmd
     -Purpose: clean raw data and prepare for analysis (e.g., exclude relatives, handle mising values, recoding)
-    -Output: a .csv file with XX subjects and XX variables
+    -Output: a .csv file with 7115 subjects and 83 variables
   
   03_aggregate_data.Rmd
     -Purpose: identify variables with high correlations, aggregate any variables that are highly correlated and 
     conceptually similar to retain in factor analysis
-    -Output: .csv file with correlation matrix; .csv file with XX subjects and XX variables
+    -Output: .csv file with correlation matrix; .csv file with 7115 subjects and 61 variables
     
   04_supplemental_analysis_data.Rmd
   

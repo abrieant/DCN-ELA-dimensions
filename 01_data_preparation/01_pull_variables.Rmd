@@ -28,7 +28,6 @@ fhx <- read_tsv(paste(path, 'abcd_fhxssp01.txt', sep='/'), col_names=TRUE) %>%
 
 ```{r}
 ##Read in parent demographics
-#need to first remove row with variable description to read in properly
 
 pdemo <- read_tsv(paste(path,'pdem02.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
@@ -134,104 +133,71 @@ write.csv(ELAdata, file = "ELAdata.csv", row.names = FALSE)
 
 ```{r select one relative from each family}
 
-#keep first participant from each family
-ELAdata_norel <- ELAdata[!duplicated(ELAdata$rel_family_id), ]
+#read in tsv file with IDs (note: separately, in python, we selected one relative from each family, resulting in n = 9854)
+
+ELA_norel_ID <- read_tsv('ELAdata_norel_ID.tsv', col_names=TRUE)
+
+#merge with ELA data
+ELA_data_norel <- merge(ELAdata, ELA_norel_ID[, c('subjectkey')], by = "subjectkey")
 
 ```
 
 
 ```{r}
-##Read in demographics
+##Read in and merge demographics
 demo <- read_tsv(paste(path, 'abcd_lt01.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
   dplyr::select(subjectkey,interview_age, sex)
+
+ELA_data_norel <- merge(ELA_data_norel, demo, by = "subjectkey")
 ```
 
-```{r}
-write.csv(ELA_data_norel, file = "ELAdata_norel.csv", row.names = FALSE)
-```
+```{r remove family ID, no longer needed}
 
-```{r}
 ELA_data_norel <- ELA_data_norel %>%
     dplyr::select(-rel_family_id)
 ```
 
-```{r}
+```{r convert variables to numeric and recode missing values}
+
+ELA_data_norel <- ELA_data_norel %>%
+  mutate_at(vars(2:79), as.numeric)
+
 #Replace 777 and 999 as na
-ELA_data_norel<- ELA_data_norel %>% dplyr::na_if(999)
-ELA_data_norel<- ELA_data_norel %>% dplyr::na_if(777)
+
+ELA_data_norel <- ELA_data_norel %>%
+  mutate_at(vars(2:79), ~replace(., . == 777 | . == 999, NA))
+
+#confirm that there are no 777 999 values
+has_777_or_999 <- any(ELA_data_norel == 777 | df_updated == 999, na.rm = TRUE)
+if (has_777_or_999) {
+  print("The dataframe contains values of 777 or 999.")
+} else {
+  print("The dataframe does not contain values of 777 or 999.")
+}
 ```
 
-```{r}
+```{r check degree of missing data across variables}
+
 ELA_var_sums_NA <- as.data.frame(sapply(ELA_data_norel, function(x) sum(is.na(x))))
 ELA_var_sums_NA
 ```
 
-```{r}
+```{r recode primary caregiver and marital status variables}
 #recode demo prim, 1=bio separation from parent, 0=lives with bio parents
 
 ELA_data_norel$demo_prim_biosep <- ifelse(ELA_data_norel$demo_prim >= 3,1,0)
-table(ELA_data_norel$demo_prim_biosep)
-```
 
-```{r}
 #recode parent marital status, coding 1 and 6 are now = 0 (no parental separation) otherwise 1 (parental separation)
-#converted 777 to NAs
-ELA_data_norel$demo_prnt_marital_v2 <- na_if(ELA_data_norel$demo_prnt_marital_v2, 777)
-ELA_data_norel$demo_parent_sep <- ifelse(ELA_data_norel$demo_prnt_marital_v2 == 1 | ELA_data_norel$demo_prnt_marital_v2 == 6, 0, 1)
-```
 
-```{r}
-table(ELA_data_norel$demo_parent_sep)
-```
+ELA_data_norel$demo_parent_sep <- ifelse(ELA_data_norel$demo_prnt_marital_v2 == 1 |    ELA_data_norel$demo_prnt_marital_v2 == 6, 0, 1)
 
-```{r}
+#remove original variables
 ELAdata_forFA <- ELA_data_norel %>%
-   dplyr::select(-demo_prim, -demo_prnt_marital_v2, -starts_with("kbi_p"), -starts_with("live"))
+   dplyr::select(-demo_prim, -demo_prnt_marital_v2)
+
 ```
 
-```{r}
-ls(ELAdata_forFA)
-```
-
-```{r}
-ELAdata_forFA_noNAs <-ELAdata_forFA %>% drop_na()
-```
-
-```{r}
-nrow(ELAdata_forFA_noNAs)
-sum(ELAdata_forFA_noNAs$ksads_ptsd_raw_763_p == "777")
-```
-
-```{r}
-ls(ELAdata_forFA_noNAs)
-```
-
-```{r}
-write.csv(ELAdata_forFA_noNAs, file = "ELAdata_withkey.csv", row.names = FALSE)
-```
-
-```{r}
-#drop subject key
-
-drop <- c("subjectkey")
-
-ELAdata_forFA_noNAs_nokey <- ELAdata_forFA_noNAs[,!(names(ELAdata_forFA_noNAs) %in% drop)]
-
-nrow(ELAdata_forFA_noNAs_nokey)
-```
-
-```{r}
-write.csv(ELAdata_forFA_noNAs_nokey, file = "ELAdata_noNAs_nokey.csv", row.names = FALSE)
-```
-
-```{r}
-data2 <- read.csv('ELAdata_withkey.csv')
-head(data2)
-ncol(data2)
-```
-
-```{r}
-data2_final <- data2_final %>% 
-    dplyr::select(-subjectkey)
+```{r save out data}
+write.csv(ELAdata_forFA, file = "ELAdata_forFA.csv", row.names = FALSE)
 ```
