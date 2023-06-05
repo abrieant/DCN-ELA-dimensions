@@ -199,6 +199,5 @@ ELAdata_forFA <- ELA_data_norel %>%
 ```
 
 ```{r save out data}
-data2_final <- data2_final %>% 
-    dplyr::select(-subjectkey)
+write.csv(ELAdata_forFA, file = "ELAdata_forFA.csv", row.names = FALSE)
 ```

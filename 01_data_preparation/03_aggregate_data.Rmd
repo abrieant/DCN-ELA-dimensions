@@ -12,14 +12,12 @@ require(tidyverse)
 require(ggplot2)
 require(readxl)
 require(REdaS) # for diagnostic data checks before FA
-require(psych)# need for factor analysis
-require(GPArotation) # need for factor analysis
 require(polycor)
 ```
 
 ```{r}
-#read in data
-ELAdata_touse_forFA_noNAs <- read.csv('ELAdata_with_subjectIDs.csv')
+#read in data (output from 02_data_cleaning)
+ELAdata_touse_forFA_noNAs <- read.csv('ELAdata_forFA_noNAs.csv')
 ```
 
 
