@@ -1,7 +1,7 @@
 # DCN-ELA-dimensions
 Scripts and output for "Characterizing the dimensional structure of early-life adversity in the Adolescent Brain Cognitive Development (ABCD) Study"
 
-5/22/23: We are actively working to refine project scripts to facilitate reproducibility. Please reach out with any questions.
+Please reach out to the authors with any questions or to report any issues.
 
 Note: data cannot be shared publicly per ABCD Study data sharing guidelines. Data can be accessed through the National Data Archive at https://nda.nih.gov/abcd/ with an approved Data Use Certification.
 
@@ -43,7 +43,6 @@ This repository contains the following:
   EFA_full_sample.inp/.out
     -Mplus script for Exploratory Factor Analysis with the full analytic sample (as opposed to supplemental leave-site-out analyses)
     -Generates eigenvalues and model fit indices to help determine optimal model
-    -Note: Mplus cannot handle string values, so the NDA subject key needs to be replaced
     
   ESEM_10_factorscores.inp/.out
     -Mplus script for Exploratory Structural Equation model that specifies 10 factors (based on EFA results)
