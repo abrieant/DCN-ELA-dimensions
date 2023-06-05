@@ -117,6 +117,16 @@ write.csv(mix_corr_mat_postagg_df,file = "mixed_corr_matrix_postagg.csv", row.na
 
 
 ```{r save dataframe}
-write.csv(ELAdata_forFA_noNAs_noOriginalVar, file = "ELAdata_forFA_noNAs_noOriginalVar.csv", row.names=FALSE)
+
+#note: mplus (used in next step for factor analysis) cannot handle string variables
+#NDA subjectkey needs to be replaced with an alternate, numeric-only ID
+
+ELAdata_forFA_noNAs_noOriginalVar <- ELAdata_forFA_noNAs_noOriginalVar %>% 
+  mutate(altid = row_number()) %>%
+  select(last_col(), everything()) %>%
+  select(-subjectkey)
+
+#save out omitting column names, make sure to modify path
+write.table(ELAdata_forFA_noNAs_noOriginalVar, "/Users/ab3377/Desktop/ela_dimensions_OSF/DCN-ELA-dimensions/02_factor_analysis/ELAdata_forFA_noNAs_noOriginalVar.csv", sep = ",", col.names = FALSE, row.names = FALSE, quote = FALSE)
 ```
 

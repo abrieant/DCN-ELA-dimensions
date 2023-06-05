@@ -1,6 +1,6 @@
 TITLE:	EFA with continuous, censored, categorical, and count factor indicators 
 
-DATA:	FILE = "ELAdata_touse_forFA_noNAs_noOriginalVar.csv";
+DATA:	FILE = "ELAdata_forFA_noNAs_noOriginalVar.csv";
 listwise is on;
 
 VARIABLE: 

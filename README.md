@@ -41,8 +41,9 @@ This repository contains the following:
 02_factor_analysis - a directory with factor analysis inputs and outputs
   
   EFA_full_sample.inp/.out
-    -Mplus script for Exploratory Factor Analysis with the full analytic sample (as opposed to supplemental          leave-site-out analyses)
+    -Mplus script for Exploratory Factor Analysis with the full analytic sample (as opposed to supplemental leave-site-out analyses)
     -Generates eigenvalues and model fit indices to help determine optimal model
+    -Note: Mplus cannot handle string values, so the NDA subject key needs to be replaced
     
   ESEM_10_factorscores.inp/.out
     -Mplus script for Exploratory Structural Equation model that specifies 10 factors (based on EFA results)
@@ -81,25 +82,26 @@ This repository contains the following:
 
   plots - a directory with .jpeg plot outputs
   
-  scripts - a directory with scripts for outcome analyses
+    scripts - a directory with scripts for outcome analyses
   
     01_data_cleaning_full.Rmd
     -Purpose: merge outcome variables with adversity factors and clean
     -Output: two cleaned .csv data files (one wide format, one long)
-    -Data files needed: 10factors_fscores.csv (from 02_factor_analysis), abcd_cbcls01.csv (from NDA),         
-    abcd_tbss01.csv (from NDA)
+    -Data files needed: 10factors_fscores.csv (from 02_factor_analysis), abcd_cbcls01.csv (from NDA),         abcd_tbss01.csv (from NDA)
     
     02_correlations_full.Rmd
     -Purpose: test correlations between factor scores and outcomes
     -Output: .jpeg heatmaps
     
     03_regression.Rmd
-    -Purpose: run regression model for associations between factor scores and outcomes (with test and validation     sets), including multivariate multilevel models
+    -Purpose: run regression model for associations between factor scores and outcomes (with test and 
+    validation sets), including multivariate multilevel models
     -Output: model fits and parameter estimates, plots
     
     04_mvmlm_plots.Rmd
     -Purpose: plot results from the multivariate multilevel models
-    -Output: mvmlm plots, scatterpolots for spearman correlations between actual and predicted child behavior       scores
+    -Output: mvmlm plots, scatterpolots for spearman correlations between actual and predicted child
+    behavior scores
   
   
   
