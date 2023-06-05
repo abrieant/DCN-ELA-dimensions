@@ -8,6 +8,12 @@ output: html_document
 #data for supplemental analyses running the factor analysis removing 1 site each time
 
 ```{r}
+#read in data (output from 03_aggregate_data)
+ELAdata_touse_forFA_noNAs_noOriginalVar <- read.csv('ELAdata_touse_forFA_noNAs_noOriginalVar.csv')
+
+```
+
+```{r}
 #read in site
 site <- read_tsv(paste('abcd_lt01.txt', sep='/'), col_names=TRUE) %>%
   filter(eventname == "baseline_year_1_arm_1") %>% 
